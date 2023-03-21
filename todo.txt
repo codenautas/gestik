@@ -1,9 +1,12 @@
 
-borrar ejemplos 
+borrar ejemplos
 mejorar en puntapie inicial
     obj: mejorar puntapie y ver si se puede traer facilmente al fork (para no cambiar en dos lados)
+    mirar el documento mantenimiento.md y aplicarlo
     levantar puntapie-inicial localmente para poder probar los cambios 
     mejoras 
+        agregar tema de fork al readme
         scripts npm actualizados
         ts-configs con los nuevo 
         subir versiones de package
+levantar issues de github
