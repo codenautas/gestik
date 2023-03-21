@@ -1,4 +1,9 @@
 
-levantar gestik PI (puntapie inicial)
-limpiar ejemplos PI y renombrar
-crear la tabla tickets
+borrar ejemplos 
+mejorar en puntapie inicial
+    obj: mejorar puntapie y ver si se puede traer facilmente al fork (para no cambiar en dos lados)
+    levantar puntapie-inicial localmente para poder probar los cambios 
+    mejoras 
+        scripts npm actualizados
+        ts-configs con los nuevo 
+        subir versiones de package
