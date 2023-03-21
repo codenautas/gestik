@@ -1,4 +1,4 @@
-# puntapie-inicial
+# gestik
 
 Puntapié inicial para hacer una aplicación en backend-plus desde cero
 
@@ -19,12 +19,12 @@ Tener instalado:
 Elegir un nombre para el sistema (por ejemplo "nueva app"). 
 
 Si se va a usar el git como repositorio (github, gitlab o lo que sea),
-crear el repositorio y clonarlo en una carpeta. Pero no clonar puntapie-inicial. 
+crear el repositorio y clonarlo en una carpeta. Pero no clonar gestik. 
 Si no generar una carpeta en blanco (o del repositorio que sea).
 
-Bajar el `puntapie-inicial` (sin clonar ni hacer branch) en la carpeta del sistema nuevo. 
+Bajar el `gestik` (sin clonar ni hacer branch) en la carpeta del sistema nuevo. 
 
-[![code download zip](code-download.png)](https://github.com/codenautas/puntapie-inicial/archive/refs/heads/master.zip)
+[![code download zip](code-download.png)](https://github.com/codenautas/gestik/archive/refs/heads/master.zip)
 
 
 Cambiar todas las ocurrencias de puntapie inicial por nueva app, 
@@ -39,7 +39,7 @@ y cambiar los parámetros necesarios (url, puertos, etc) .
 
 Los elementos para personalizarla son:
    1. El ícono de desarrollo 🏗 que está en `.vscode/settings.json "window-title"` 
-   por cualquier otro [UNICODE](amp-what.com)
+   por cualquier otro [UNICODE](http://amp-what.com)
    2. La licencia (la que viene predeterminada es MIT) en el `package.json`
    3. El nombre, versión y título de la aplicación en `package.json` y el `README.MD`
    4. La gráfica en las carpetas `img` y `css` dentro de `src/unlogged` y `src/client` 
