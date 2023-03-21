@@ -1,0 +1,22 @@
+server:
+  port: 3000
+  base-url: /gestik
+db:
+  description: base de prueba
+  host: localhost
+  port: 5432
+  database: gestik_db
+  schema: gestik
+  user: gestik_admin
+  password: cambiar_esta_clave
+install:
+  dump:
+    db:
+      owner: gestik_owner
+client-setup: 
+  lang: es
+devel:
+  delay: 0
+log:
+  db:
+    on-demand: true

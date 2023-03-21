@@ -1,6 +1,6 @@
 "use strict";
 
-import {TableDefinition, TableContext} from "./types-puntapie-inicial";
+import {TableDefinition, TableContext} from "./types-gestik";
 
 import { getPolicies } from "./table-ejemplo_noticias";
 

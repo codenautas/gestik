@@ -1,0 +1,4 @@
+
+levantar gestik PI (puntapie inicial)
+limpiar ejemplos PI y renombrar
+crear la tabla tickets

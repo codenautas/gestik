@@ -3,7 +3,7 @@
   "version": "0.1.5",
   "private": true,
   "license": "MIT",
-  "description": "Puntapié inicial para hacer una aplicación en backend-plus desde cero",
+  "description": "Gestión de tickets y requerimientos",
   "main": "dist/server/server-gestik.js",
   "files": [
     "dist",

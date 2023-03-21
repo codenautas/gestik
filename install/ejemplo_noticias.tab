@@ -44,7 +44,7 @@
   publicar: false
 -
   url: esta
-  titulo: Puntapié inicial para desarrollar una app backend-plus desde cero
+  titulo: Gestión de tickets y requerimientos
   texto: >
     Por fin se publicó un ejemplo desde cero para empezar una aplicación backend-plus.
     Si bien por ahora parece que faltara mucho, 

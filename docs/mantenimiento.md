@@ -1,4 +1,4 @@
-# Mantenimiento de puntapie-inicial
+# Mantenimiento de gestik
 
 Cada tanto hay que actualizar las versiones y ver que todo compile bien. 
 
@@ -9,8 +9,8 @@ Cada tanto hay que actualizar las versiones y ver que todo compile bien.
 Clonar, actualizar e instalar
 
 ```sh
-git clone https://github.com/codenautas/puntapie-inicial
-cd puntapie-inicial
+git clone https://github.com/codenautas/gestik
+cd gestik
 ncu -u         # hay que tener instalado en npm-update-check
 npm install
 ```
@@ -52,7 +52,7 @@ Arrancar el backend
 npm start
 ```
 
-Y abrir el navegador en [http://localhost:3000/puntapie_inicial](http://localhost:3000/puntapie_inicial) o el puerto que figure en `local-config.yaml`
+Y abrir el navegador en [http://localhost:3000/gestik](http://localhost:3000/gestik) o el puerto que figure en `local-config.yaml`
 
 ###
 
