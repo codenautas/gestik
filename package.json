@@ -1,10 +1,10 @@
 {
-  "name": "puntapie-inicial",
+  "name": "gestik",
   "version": "0.1.5",
   "private": true,
   "license": "MIT",
   "description": "Puntapié inicial para hacer una aplicación en backend-plus desde cero",
-  "main": "dist/server/server-puntapie-inicial.js",
+  "main": "dist/server/server-gestik.js",
   "files": [
     "dist",
     "install"
@@ -13,24 +13,19 @@
     "@mui/material": "^5.10.17",
     "@mui/icons-material": "^5.10.16",
     "@mui/lab": "^5.0.0-alpha.111",
-    "ajax-best-promise": "^0.3.7",
-    "backend-plus": "^1.16.15",
-    "best-globals": "^1.0.3",
-    "json4all": "^1.1.0",
-    "like-ar": "^0.3.6",
-    "mini-tools": "^1.11.2",
-    "npm-check-updates": "^16.5.1",
+    "backend-plus": "^1.17.13",
     "pg-triggers": "^0.3.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^8.0.5",
     "redux": "^4.2.0",
     "redux-typed-reducer": "^0.1.1"
-  },
-  "devDependencies": {
+},
+"devDependencies": {
     "@types/react": "^18.0.26",
     "@types/react-dom": "^18.0.9",
     "@types/react-redux": "^7.1.24",
+    "npm-check-updates": "^16.5.1",
     "source-map-loader": "^4.0.1",
     "ts-loader": "^9.4.2",
     "typescript": "^4.9.4",
@@ -52,6 +47,6 @@
     "test": "mocha --reporter spec --bail --check-leaks test/",
     "dump": "npm start -- --dump-db",
     "dumpb": "(tsc -p tsconfig-server.json  || echo \"continue w/error\") && npm run dump",
-    "start": "node dist/server/server-puntapie-inicial.js"
+    "start": "node dist/server/server-gestik.js"
   }
 }
