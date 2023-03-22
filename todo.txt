@@ -1,5 +1,9 @@
 
 borrar ejemplos
+    no está funcionando porque no genera el dist/unlogged
+levantar issues de github
+dividirnos tareas con Leo y Sebas
+
 mejorar en puntapie inicial
     obj: mejorar puntapie y ver si se puede traer facilmente al fork (para no cambiar en dos lados)
     mirar el documento mantenimiento.md y aplicarlo
@@ -9,4 +13,5 @@ mejorar en puntapie inicial
         scripts npm actualizados
         ts-configs con los nuevo 
         subir versiones de package
-levantar issues de github
+
+    
