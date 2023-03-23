@@ -1,10 +1,9 @@
 "use strict";
 
 // import * as Path from 'path';
-import { AppBackend, ExpressPlus, Context, Request, 
+import { AppBackend, Context, Request, 
     ClientModuleDefinition, OptsClientPage, MenuDefinition, MenuInfoBase
 } from "backend-plus";
-import * as MiniTools from 'mini-tools';
 
 // import {changing} from 'best-globals';
 
@@ -14,11 +13,6 @@ import { usuarios   } from './table-usuarios';
 import { tickets   } from './table-tickets';
 
 import {staticConfigYaml} from './def-config';
-
-function json(sql:string, orderby:string){
-    return `COALESCE((SELECT jsonb_agg(to_jsonb(j.*) ORDER BY ${orderby}) from (${sql}) as j),'[]'::jsonb)`
-}
-
 
 export class AppGestik extends AppBackend{
     constructor(){
