@@ -7,7 +7,7 @@ export function tickets():TableDefinition{
         editable: true,
         name: 'tickets',
         fields: [
-            {name:'ticket', typeName:'bigint', sequence:{prefix:undefined, firstValue:101, name:'tickets_seq' }},
+            {name:'ticket', typeName:'bigint', nullable:true, editable:false, sequence:{prefix:undefined, firstValue:101, name:'tickets_seq' }},
             {name:'titulo', typeName:'text', label:'título'},
             {name:'descripcion', typeName:'text' },
             {name:'operativo', typeName:'text' },
