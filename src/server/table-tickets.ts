@@ -8,23 +8,23 @@ export function tickets():TableDefinition{
         name: 'tickets',
         fields: [
             {name:'ticket', typeName:'bigint', nullable:true, editable:false, sequence:{prefix:undefined, firstValue:101, name:'tickets_seq' }},
-            {name:'titulo', typeName:'text', label:'título'},
-            {name:'descripcion', typeName:'text' },
-            {name:'operativo', typeName:'text' },
+            {name:'asunto', typeName:'text', label:'asubto'},
+            {name:'descripcion', typeName:'text', label:'descripción' },
+            {name:'proyecto', typeName:'text' },
             {name:'prioridad', typeName:'text' },
-            {name:'esfuerzo_estimado', typeName:'text' },
-            {name:'asignado', typeName:'text' },
+            {name:'f_tiket', typeName:'text', label:'fecha tiket' },
+            {name:'requirente', typeName:'text' },
             {name:'estado', typeName:'text' },
+            {name:'destino', typeName:'text' },
+            {name:'asignado', typeName:'text' },
+            {name:'version', typeName:'text', label:'versión' },
+            {name:'esfuerzo_estimado', typeName:'text', label:'esfuerzo estimado'},
+            {name:'f_realizacion', typeName:'date', label:'fecha realización'},
+            {name:'f_instalacion', typeName:'date', label:'fecha instalación'},
             {name:'modulo', typeName:'text', label:'módulo' },
             {name:'tema', typeName:'text'},
-            {name:'fecha_pedido', typeName:'date' },
-            {name:'persona_pidio', typeName:'text', label:'persona pidió'},
-            {name:'persona_recibio', typeName:'text', label:'persona recibió'},
-            {name:'fecha_realizacion', typeName:'date', label:'fecha_realización'},
             {name:'observaciones', typeName:'text'},
-            {name:'sugerencias PEI', typeName:'text'},
-
-            {name:'bloqueado', typeName:'boolean' }
+            {name:'sugerencias PEI', typeName:'text'}
         ],
         primaryKey: ['ticket']
     }
