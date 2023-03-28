@@ -7,7 +7,7 @@ export function estados():TableDefinition{
         editable: true,
         name: 'estados',
         fields: [
-            {name:'estado', typeName:'bigint',},
+            {name:'estado', typeName:'text',},
             {name:'label', typeName:'text',},
             {name:'codigo', typeName:'text' },
             {name:'descripcion', typeName:'text' },
