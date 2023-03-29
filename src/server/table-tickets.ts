@@ -12,7 +12,7 @@ export function tickets():TableDefinition{
             {name:'descripcion', typeName:'text', label:'descripción' },
             {name:'proyecto', typeName:'text' },
             {name:'prioridad', typeName:'text' },
-            {name:'f_tiket', typeName:'text', label:'fecha tiket' },
+            {name:'f_ticket', typeName:'text', label:'fecha ticket' },
             {name:'requirente', typeName:'text' },
             {name:'estado', typeName:'text' },
             {name:'destino', typeName:'text' },

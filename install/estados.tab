@@ -1,10 +1,10 @@
-estado|codigo|label|todos_pueden_modificar
-1|borrador|null|true
-2|nuevo|null|true
-3|en_analisis|en análisis|false
-4|en_proceso|null|false
-5|en_espera|null|false
-6|a_verificar|null|false
-7|verificado|verificado|false
-8|finalizado|finalizado|false
-9|anulado|anulado|false
+estado|label|todos_pueden_modificar
+borrador|null|true
+nuevo|null|true
+en_analisis|en análisis|false
+en_proceso|null|false
+en_espera|null|false
+a_verificar|null|false
+verificado|null|false
+finalizado|null|false
+anulado|null|false

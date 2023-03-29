@@ -9,11 +9,18 @@ export function estados():TableDefinition{
         fields: [
             {name:'estado', typeName:'text',},
             {name:'label', typeName:'text',},
-            {name:'codigo', typeName:'text' },
             {name:'descripcion', typeName:'text' },
             {name:'todos_pueden_modificar', typeName:'text' }
         ],
-        primaryKey: ['estado']
+        primaryKey: ['estado'],
+        detailTables: [{
+            "table": "tickets",
+            "fields": [
+                "estado"
+            ],
+            "abr": "T"
+            }
+        ],
     }
     return td
 }
