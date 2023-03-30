@@ -29,7 +29,9 @@ export function tickets():TableDefinition{
         primaryKey: ['ticket'],
         foreignKeys: [
             {references: "estados", fields: ['estado']},
+            {references: "proyectos", fields: ['proyecto']},
             {references: "usuarios", fields: [{source:'asignado' , target:'usuario'}]},
+            {references: "prioridades", fields: ['prioridad']},
         ],
     }
     return td

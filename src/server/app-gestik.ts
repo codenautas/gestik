@@ -12,6 +12,8 @@ import {ProceduresGestik} from "./procedures-gestik";
 import { usuarios   } from './table-usuarios';
 import { tickets   } from './table-tickets';
 import { estados   } from './table-estados';
+import { prioridades   } from './table-prioridades';
+import { proyectos   } from './table-proyectos';
 
 import {staticConfigYaml} from './def-config';
 
@@ -39,6 +41,8 @@ export class AppGestik extends AppBackend{
             {menuType:'menu', name:'redaccion', label:'redacción',  menuContent:[
                 {menuType:'table', name:'tickets'},
                 {menuType:'table', name:'estados'},
+                {menuType:'table', name:'prioridades'},
+                {menuType:'table', name:'proyectos'},
             ]},
         ];
         if(context.user && context.user.rol=="admin"){
@@ -81,9 +85,11 @@ export class AppGestik extends AppBackend{
         super.prepareGetTables();
         this.getTableDefinition={
             ... this.getTableDefinition,
-            usuarios,    
             tickets,
-            estados
+            proyectos,
+            prioridades,
+            estados,
+            usuarios
         }
     }       
 }

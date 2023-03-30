@@ -8,7 +8,6 @@ export function estados():TableDefinition{
         name: 'estados',
         fields: [
             {name:'estado', typeName:'text',},
-            {name:'label', typeName:'text',},
             {name:'descripcion', typeName:'text' },
             {name:'todos_pueden_modificar', typeName:'text' }
         ],
