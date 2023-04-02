@@ -8,6 +8,7 @@ export function tickets():TableDefinition{
         name: 'tickets',
         fields: [
             {name:'ticket', typeName:'bigint', nullable:true, editable:false, sequence:{prefix:undefined, firstValue:101, name:'tickets_seq' }},
+            {name:'tipo_ticket', typeName:'text', label:'tipo ticket'},
             {name:'asunto', typeName:'text', label:'asunto'},
             {name:'descripcion', typeName:'text', label:'descripción' },
             {name:'proyecto', typeName:'text' },
@@ -32,6 +33,7 @@ export function tickets():TableDefinition{
             {references: "proyectos", fields: ['proyecto']},
             {references: "usuarios", fields: [{source:'asignado' , target:'usuario'}]},
             {references: "prioridades", fields: ['prioridad']},
+            {references: "tipos_ticket", fields: ['tipo_ticket']},
         ],
     }
     return td
