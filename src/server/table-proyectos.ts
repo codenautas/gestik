@@ -15,7 +15,7 @@ export function proyectos():TableDefinition{
             "fields": [
                 "proyecto"
             ],
-            "abr": "PR"
+            "abr": "T"
             }
         ],
     }

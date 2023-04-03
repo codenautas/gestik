@@ -15,7 +15,7 @@ export function tipos_ticket():TableDefinition{
             "fields": [
                 "tipo_ticket"
             ],
-            "abr": "t"
+            "abr": "T"
             }
         ],
     }

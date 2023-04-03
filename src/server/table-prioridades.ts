@@ -11,12 +11,15 @@ export function prioridades():TableDefinition{
             {name:'orden', typeName:'integer' }
         ],
         primaryKey: ['prioridad'],
+        sortColumns: [
+            {column:'orden'}, {column:'prioridad'}
+        ],
         detailTables: [{
             "table": "tickets",
             "fields": [
                 "prioridad"
             ],
-            "abr": "P"
+            "abr": "T"
             }
         ],
     }

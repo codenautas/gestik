@@ -11,12 +11,15 @@ export function solapas():TableDefinition{
             {name:'orden', typeName:'integer' },
         ],
         primaryKey: ['solapa'],
+        sortColumns: [
+            {column:'orden'}, {column:'solapa'}
+        ],
         detailTables: [{
             "table": "estados",
             "fields": [
                 "solapa"
             ],
-            "abr": "S"
+            "abr": "E"
             }
         ],
     }

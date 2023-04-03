@@ -10,7 +10,7 @@ export function estados():TableDefinition{
             {name:'estado', typeName:'text' },
             {name:'descripcion', typeName:'text' },
             {name:'solapa', typeName:'text' },
-            {name:'todos_pueden_modificar', typeName:'text' }
+            {name:'todos_pueden_modificar', typeName:'boolean', defaultValue:false}
         ],
         primaryKey: ['estado'],
         foreignKeys: [
