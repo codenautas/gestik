@@ -1,10 +1,10 @@
-estado|solapa|todos_pueden_modificar
-borrador|nuevos|true
-nuevo|nuevos|true
-en_analisis|activos|false
-en_proceso|activos|false
-en_espera|activos|false
-a_verificar|activos|false
-verificado|cerrados|false
-finalizado|cerrados|false
-anulado|cerrados|false
+estado|solapa|todos_pueden_modificar|descripcion
+borrador|nuevos|true|todavía no está listo para desarrollo (quizás falten insumos, especificar la redacción o priorizar)
+nuevo|nuevos|true|listo para que desarrollo lo tome
+en_analisis|activos|false|está del lado de desarrollo, se está analizando el requerimiento y todavía no se empezó el desarrollo propiamente dicho
+en_proceso|activos|false|cuando el desarrollador marca que empezó la tarea
+en_espera|activos|false|cuando faltan insumos o aclaraciones del usuario
+a_verificar|activos|false|cuando ya está en el ambiente de aceptación de usuario
+verificado|cerrados|false|cuando el usuario comprobó que anda y está de acuerdo en el pase a producción
+finalizado|cerrados|false|cuando está instalado
+anulado|cerrados|false|cuando se desestima

@@ -15,6 +15,7 @@ export function tickets():TableDefinition{
             {name:'prioridad', typeName:'text' },
             {name:'f_ticket', typeName:'date', title:'fecha ticket' },
             {name:'requirente', typeName:'text' },
+            {name:'equipo_requirente', typeName:'text' },
             {name:'estado', typeName:'text', defaultValue: 'borrador' },
             {name:'destino', typeName:'text' },
             {name:'asignado', typeName:'text' },
@@ -34,6 +35,7 @@ export function tickets():TableDefinition{
             {references: "usuarios", fields: [{source:'asignado' , target:'usuario'}]},
             {references: "prioridades", fields: ['prioridad']},
             {references: "tipos_ticket", fields: ['tipo_ticket']},
+            {references: "equipos", fields: [{source:'equipo_requirente' , target:'equipo'}]},
         ],
     }
     return td

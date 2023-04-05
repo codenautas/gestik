@@ -13,6 +13,7 @@ import { usuarios   } from './table-usuarios';
 import { tickets   } from './table-tickets';
 import { solapas   } from './table-solapas';
 import { estados   } from './table-estados';
+import { equipos   } from './table-equipos';
 import { prioridades   } from './table-prioridades';
 import { proyectos   } from './table-proyectos';
 import { tipos_ticket   } from './table-tipos_ticket';
@@ -42,6 +43,7 @@ export class AppGestik extends AppBackend{
         var menuContent:MenuInfoBase[]=[
             {menuType:'menu', name:'redaccion', label:'redacción',  menuContent:[
                 {menuType:'table', name:'tickets'},
+                {menuType:'table', name:'equipos'},
                 {menuType:'table', name:'estados'},
                 {menuType:'table', name:'prioridades'},
                 {menuType:'table', name:'proyectos'},
@@ -95,6 +97,7 @@ export class AppGestik extends AppBackend{
             prioridades,
             solapas,
             estados,
+            equipos,
             usuarios
         }
     }       
