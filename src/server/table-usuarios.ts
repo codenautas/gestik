@@ -26,7 +26,8 @@ export function usuarios(context:TableContext):TableDefinition{
             where:admin || context.forDump?'true':"usuario = "+context.be.db.quoteNullable(context.user.usuario)
         },
         "detailTables": [
-            {table: "tickets", abr: "T", fields: [{source:'usuario', target:'asignado'}], refreshParent:true, refreshFromParent:true}
+            {table: "tickets", abr: "TA", fields: [{source:'usuario', target:'asignado'}], refreshParent:true, refreshFromParent:true},
+            {table: "tickets", abr: "TR", fields: [{source:'usuario', target:'requirente'}], refreshParent:true, refreshFromParent:true}
         ],
     };
 }

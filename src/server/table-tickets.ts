@@ -1,8 +1,9 @@
 "use strict"
 
-import { TableDefinition } from "backend-plus";
+import { TableContext, TableDefinition } from "backend-plus";
 
-export function tickets():TableDefinition{
+export function tickets(context: TableContext):TableDefinition{
+
     const td:TableDefinition = {
         editable: true,
         name: 'tickets',
@@ -14,7 +15,7 @@ export function tickets():TableDefinition{
             {name:'proyecto', typeName:'text' },
             {name:'prioridad', typeName:'text' },
             {name:'f_ticket', typeName:'date', title:'fecha ticket' },
-            {name:'requirente', typeName:'text' },
+            {name:'requirente', typeName:'text', defaultValue: context.user.usuario },
             {name:'equipo_requirente', typeName:'text' },
             {name:'estado', typeName:'text', defaultValue: 'borrador' },
             {name:'destino', typeName:'text' },
@@ -32,7 +33,8 @@ export function tickets():TableDefinition{
         foreignKeys: [
             {references: "estados", fields: ['estado']},
             {references: "proyectos", fields: ['proyecto']},
-            {references: "usuarios", fields: [{source:'asignado' , target:'usuario'}]},
+            {references: "usuarios", fields: [{source:'asignado' , target:'usuario'}], alias: 'useras'},
+            {references: "usuarios", fields: [{source:'requirente' , target:'usuario'}], alias: 'userreq'},
             {references: "prioridades", fields: ['prioridad']},
             {references: "tipos_ticket", fields: ['tipo_ticket']},
             {references: "equipos", fields: [{source:'equipo_requirente' , target:'equipo'}]},

@@ -10,7 +10,8 @@ export function estados():TableDefinition{
             {name:'estado', typeName:'text' },
             {name:'descripcion', typeName:'text' },
             {name:'solapa', typeName:'text' },
-            {name:'todos_pueden_modificar', typeName:'boolean', defaultValue:false}
+            {name:'todos_pueden_modificar', typeName:'boolean', defaultValue:false},
+            {name:'cant_tickets', typeName: "bigint", inTable:false, editable:false}, 
         ],
         primaryKey: ['estado'],
         foreignKeys: [
@@ -24,6 +25,7 @@ export function estados():TableDefinition{
             "abr": "T"
             }
         ],
+        sql:{fields:{ cant_tickets:{ expr: `(SELECT count(*) FROM tickets t WHERE t.estado = estados.estado)` }}}
     }
     return td
 }
