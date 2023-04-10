@@ -7,7 +7,8 @@ export function proyectos():TableDefinition{
         editable: true,
         name: 'proyectos',
         fields: [
-            {name:'proyecto', typeName:'text',}
+            {name:'proyecto', typeName:'text'},
+            {name:'cant_tickets', typeName: "bigint", inTable:false, editable:false}
         ],
         primaryKey: ['proyecto'],
         detailTables: [{
@@ -18,6 +19,7 @@ export function proyectos():TableDefinition{
             "abr": "T"
             }
         ],
+        sql:{fields:{ cant_tickets:{ expr: `(SELECT count(*) FROM tickets t WHERE t.proyecto = proyectos.proyecto)` }}}
     }
     return td
 }
