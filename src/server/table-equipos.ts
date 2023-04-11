@@ -14,8 +14,9 @@ export function equipos():TableDefinition{
         detailTables: [{
             "table": "tickets",
             "fields": [
-                "equipo_requirente"
+                {source:'equipo', target:'equipo_requirente', },
             ],
+            label: "equipo_ticket",
             "abr": "T"
             }
         ],

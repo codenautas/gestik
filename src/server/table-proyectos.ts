@@ -11,13 +11,9 @@ export function proyectos():TableDefinition{
             {name:'cant_tickets', typeName: "bigint", inTable:false, editable:false}
         ],
         primaryKey: ['proyecto'],
-        detailTables: [{
-            "table": "tickets",
-            "fields": [
-                "proyecto"
-            ],
-            "abr": "T"
-            }
+        detailTables: [
+            { "table": "tickets", "fields": [ "proyecto" ], "abr": "T" },
+            { "table": "proyectos_estados", "fields": [ "proyecto"], "abr": "E", label: "estados" },
         ],
         sql:{fields:{ cant_tickets:{ expr: `(SELECT count(*) FROM tickets t WHERE t.proyecto = proyectos.proyecto)` }}}
     }

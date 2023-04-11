@@ -18,6 +18,7 @@ import { prioridades   } from './table-prioridades';
 import { proyectos   } from './table-proyectos';
 import { tipos_ticket   } from './table-tipos_ticket';
 import { proyectos_estados   } from './table-proyectos_estados';
+import { parametros } from './table-parametros';
 
 import {staticConfigYaml} from './def-config';
 
@@ -51,6 +52,7 @@ export class AppGestik extends AppBackend{
                 {menuType:'table', name:'solapas'},
                 {menuType:'table', name:'tipos_ticket'},
                 {menuType:'table', name:'proyectos_estados'},
+                {menuType:'table', name:'parametros'},
             ]},
         ];
         if(context.user && context.user.rol=="admin"){
@@ -101,6 +103,7 @@ export class AppGestik extends AppBackend{
             estados,
             proyectos_estados,
             equipos,
+            parametros,
             usuarios
         }
     }       
