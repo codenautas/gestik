@@ -1,0 +1,20 @@
+ticket|tipo_ticket|asunto|descripcion|proyecto|prioridad|f_ticket|requirente|equipo_requirente|estado|destino|asignado|version|esfuerzo_estimado|f_realizacion|f_instalacion|modulo|tema|observaciones|sugerencias_pei
+1|tarea|Cambiar el tipo de estados.todos_pueden_modificar||GESTIK|Alta||||finalizado||||20m||||||
+2|tarea|Cambiar la abreviatura de estados.tickets||GESTIK|Alta||||finalizado||||20m||||||
+3|tarea|Cambiar la abreviatura de prioridades.tickets||GESTIK|Alta||||finalizado||||20m||||||
+4|tarea|Agregar la tabla tipo de tickets||GESTIK|||||finalizado||||4h||||||
+5|tarea|No usar la propiedad label en los campos de tickets|usar en cambio la propiedad title que es para especificar el título|GESTIK|Alta||||finalizado||||20m||||||
+6|tarea|No usar mayúsculas en los nombres de los campos|Se puede usar mayúsculas en el title|GESTIK|Alta||||finalizado||||20m||||||
+7|tarea|El valor por defecto del estado del ticket es borrador||GESTIK|Alta||||finalizado||||30m||||||
+10|tarea|Agregar tabla solapas||GESTIK|||||finalizado||||4h||||||
+11|tarea|Agregar tabla equipos||GESTIK|Alta||||finalizado||||4h||||||
+12|tarea|Agergar tabla tipo_ticket||GESTIK|||||finalizado||||4h||||||
+14|tarea|Agregar los tickets de gestik|(esta lista)|GESTIK|Baja||||finalizado||||1h||||||
+15|tarea|Agregar una tabla virtual proyectos_estados|O sea un .ts table-proyectos_estados que esté basada en un select cross join de ambas tablas. Con detail tables tickets.|GESTIK|Normal||||finalizado||||1d||||||
+16|tarea|Agregar a la tabla proyectos un detail a la tabla virtual proyectos_estados|con abreviatura "E" y label "estados" (porque proyectos ya tiene)|GESTIK|Normal||||finalizado||||2h||||||
+17|tarea|Agregar a la tabla estados un detail a la tabla virtual proyectos_estados|con abreviatura "P" y label "proyectos" (porque estados ya tiene)|GESTIK|Normal||||finalizado||||2h||||||
+18|tarea|Agregar el campo calculado "cant_tickets" a las tablas estados y proyectos||GESTIK|Normal||||finalizado||||6h||||||
+19|tarea|Agregar el campo calculado "cant_tickets" a las tablas estados_proyectos||GESTIK|Normal||||finalizado||||2h||||||
+8|tarea|Agregar la tabla parametros|Pk: unico_registro (boolean, not null, + constraint que valga true) Con los campos: estado_predeterminado tipo_predeterminado|GESTIK|Baja||||nuevo||||h||||||
+9|tarea|Tomar los valores predeterminados de la tabla parámetros|tanto para estado como para tipo de ticket|GESTIK|Baja||||nuevo||||d||||||
+13|tarea|Instalar la primera versión en un servidor|Ponerlo con nombre desa_gestick|GESTIK|Baja||||nuevo||||d||||||
