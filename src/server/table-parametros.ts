@@ -18,7 +18,7 @@ export function parametros(context: TableContext): TableDefinition {
             {consName:'unico registro', constraintType:'check', expr:'unico_registro is true'}
         ],
         sql:{
-            postCreateSqls:'insert into parametros (unico_registro) values (true);'
+            postCreateSqls:`insert into parametros (unico_registro,estado_predeterminado,tipo_predeterminado) values (true,'borrador','tarea');`
         },
         foreignKeys: [
             {references: "estados", fields: [{source:'estado_predeterminado' , target:'estado'}], alias: 'estado'},

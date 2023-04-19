@@ -36,6 +36,8 @@ install:
       - ../node_modules/pg-triggers/lib/table-changes.sql
       - ../node_modules/pg-triggers/lib/function-changes-trg.sql
       - ../node_modules/pg-triggers/lib/enance.sql    
+      - ../install/set_ticket_default_estado.sql    
+      - ../install/set_ticket_default_tipo.sql    
 logo: 
   path: client/img
 `;
