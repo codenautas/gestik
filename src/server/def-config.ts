@@ -17,6 +17,9 @@ login:
   activeClausule: activo
   unloggedLandPage: false
   plus:
+    maxAge-5-sec: 5000    
+    maxAge: 864000000
+    maxAge-10-day: 864000000
     allowHttpLogin: true
     fileStore: true
     loginForm:
