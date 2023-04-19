@@ -17,7 +17,7 @@ export function tickets(context: TableContext):TableDefinition{
             {name:'f_ticket', typeName:'date', title:'fecha ticket' },
             {name:'requirente', typeName:'text', defaultValue: context.user.usuario },
             {name:'equipo_requirente', typeName:'text' },
-            {name:'estado', typeName:'text' },
+            {name:'estado', typeName:'text'},
             {name:'destino', typeName:'text' },
             {name:'asignado', typeName:'text' },
             {name:'version', typeName:'text', title:'versión' },
