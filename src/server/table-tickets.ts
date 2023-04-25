@@ -3,18 +3,17 @@
 import { TableContext, TableDefinition } from "backend-plus";
 
 export function tickets(context: TableContext):TableDefinition{
-
     const td:TableDefinition = {
         editable: true,
         name: 'tickets',
         fields: [
-            {name:'ticket', typeName:'bigint', nullable:true, editable:false, sequence:{prefix:undefined, firstValue:101, name:'tickets_seq' }},
+            {name:'ticket', typeName:'bigint', nullable:true, editable:false, sequence:{prefix:undefined, firstValue:1, name:'tickets_seq' }},
             {name:'tipo_ticket', typeName:'text', title:'tipo ticket'},
-            {name:'asunto', typeName:'text', title:'asunto'},
+            {name:'asunto', typeName:'text', title:'asunto', nullable:false},
             {name:'descripcion', typeName:'text', title:'descripción' },
             {name:'proyecto', typeName:'text' },
             {name:'prioridad', typeName:'text' },
-            {name:'f_ticket', typeName:'date', title:'fecha ticket' },
+            {name:'f_ticket', typeName:'date', title:'fecha ticket', defaultDbValue: 'current_date'},
             {name:'requirente', typeName:'text', defaultValue: context.user.usuario },
             {name:'equipo_requirente', typeName:'text' },
             {name:'estado', typeName:'text'},
