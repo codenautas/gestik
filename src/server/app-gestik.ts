@@ -43,22 +43,19 @@ export class AppGestik extends AppBackend{
     }
     getMenu(context:Context):MenuDefinition{
         var menuContent:MenuInfoBase[]=[
-            {menuType:'menu', name:'redaccion', label:'redacción',  menuContent:[
-                {menuType:'table', name:'tickets'},
-                {menuType:'table', name:'equipos'},
-                {menuType:'table', name:'estados'},
-                {menuType:'table', name:'prioridades'},
-                {menuType:'table', name:'proyectos'},
-                {menuType:'table', name:'solapas'},
-                {menuType:'table', name:'tipos_ticket'},
-                {menuType:'table', name:'proyectos_estados'},
-                {menuType:'table', name:'parametros'},
-            ]},
+            {menuType:'table', name:'tickets'},
+            {menuType:'table', name:'proyectos'},
+            {menuType:'table', name:'solapas'},
         ];
         if(context.user && context.user.rol=="admin"){
             menuContent.push(
                 {menuType:'menu', name:'config', label:'configurar', menuContent:[
-                    {menuType:'table', name:'usuarios'  },
+                    {menuType:'table', name:'equipos'},
+                    {menuType:'table', name:'estados'},
+                    {menuType:'table', name:'prioridades'},
+                    {menuType:'table', name:'tipos_ticket'},
+                    {menuType:'table', name:'parametros'},
+                    {menuType:'table', name:'usuarios'},
                 ]}
             )
         };
