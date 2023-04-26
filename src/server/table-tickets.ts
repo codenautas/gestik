@@ -21,6 +21,7 @@ export function tickets(context: TableContext):TableDefinition{
             {name:'asignado', typeName:'text' },
             {name:'version', typeName:'text', title:'versión' },
             {name:'esfuerzo_estimado', typeName:'text', title:'esfuerzo estimado'},
+            {name:'solapa', typeName:'text'},
             {name:'f_realizacion', typeName:'date', title:'fecha realización'},
             {name:'f_instalacion', typeName:'date', title:'fecha instalación'},
             {name:'modulo', typeName:'text', title:'módulo' },
@@ -36,6 +37,7 @@ export function tickets(context: TableContext):TableDefinition{
             {references: "usuarios", fields: [{source:'requirente' , target:'usuario'}], alias: 'userreq'},
             {references: "prioridades", fields: ['prioridad']},
             {references: "tipos_ticket", fields: ['tipo_ticket']},
+            {references: "solapas", fields: ['solapa']},
             {references: "equipos", fields: [{source:'equipo_requirente' , target:'equipo'}]},
         ],
     }

@@ -12,6 +12,7 @@ export function estados():TableDefinition{
             {name:'solapa', typeName:'text' },
             {name:'todos_pueden_modificar', typeName:'boolean', defaultValue:false},
             {name:'cant_tickets', typeName: "bigint", inTable:false, editable:false}, 
+            {name:'orden', typeName: "integer"}, 
         ],
         primaryKey: ['estado'],
         foreignKeys: [
@@ -20,7 +21,7 @@ export function estados():TableDefinition{
         detailTables: [
             { "table": "tickets", "fields": [ "estado"], "abr": "T" },
             { "table": "proyectos_estados", "fields": [ "estado"], "abr": "P", label: "proyectos"},
-    ],
+        ],
         sql:{fields:{ cant_tickets:{ expr: `(SELECT count(*) FROM tickets t WHERE t.estado = estados.estado)` }}}
     }
     return td
