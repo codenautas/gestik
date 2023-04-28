@@ -6,6 +6,7 @@ export function proyectos_estados():TableDefinition{
 
     const td:TableDefinition = {
         editable: false,
+        allow: {"vertical-edit": false},
         name: 'proyectos_estados',
         fields: [
             {name: 'proyecto', typeName: 'text'},
@@ -13,10 +14,18 @@ export function proyectos_estados():TableDefinition{
             {name: 'cant_tickets', typeName: 'bigint', inTable:false,},
         ],
         primaryKey: ['proyecto', 'estado'],
+        detailTables: [
+            {table: 'tickets', fields:['proyecto', 'estado'], abr:'t'}
+        ],
         sql: {
             isTable: false,
-            from: `(SELECT * FROM proyectos CROSS JOIN estados)`,
-            fields:{ cant_tickets:{ expr: `(SELECT count(*) FROM tickets t WHERE t.estado = proyectos_estados.estado and t.proyecto = proyectos_estados.proyecto)` }},
+            from: `(SELECT * 
+                FROM proyectos AS p 
+                CROSS JOIN estados AS e 
+                LEFT JOIN LATERAL (
+                    SELECT count(*) as cant_tickets FROM tickets t WHERE t.proyecto = p.proyecto AND t.estado = e.estado
+                ) AS t ON true
+            )`
         },
     }
     return td
