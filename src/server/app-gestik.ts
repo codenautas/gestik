@@ -18,6 +18,8 @@ import { prioridades   } from './table-prioridades';
 import { proyectos   } from './table-proyectos';
 import { tipos_ticket   } from './table-tipos_ticket';
 import { proyectos_estados   } from './table-proyectos_estados';
+import { proyectos_solapas } from './table-proyectos_solapas';
+import { proyectos_estados_solapas } from './table-proyectos_estados_solapas';
 import { parametros } from './table-parametros';
 
 import {staticConfigYaml} from './def-config';
@@ -84,7 +86,9 @@ export class AppGestik extends AppBackend{
             prioridades,
             solapas,
             estados,
+            proyectos_estados_solapas,
             proyectos_estados,
+            proyectos_solapas,
             equipos,
             parametros,
             usuarios
