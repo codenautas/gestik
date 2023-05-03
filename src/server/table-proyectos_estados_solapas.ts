@@ -17,9 +17,18 @@ export function proyectos_estados_solapas():TableDefinition{
         sql: {
             isTable: false,
             from: `(SELECT *
-                    FROM ((SELECT proyectos.proyecto, estados.estado 
-                           FROM proyectos CROSS JOIN estados) as sub_proyectos_estados CROSS JOIN solapas))`,
-            fields:{ cant_tickets:{ expr: `(SELECT count(*) FROM tickets t WHERE t.estado = proyectos_estados_solapas.estado and t.proyecto = proyectos_estados_solapas.proyecto)` }},
+                    FROM (
+                            (SELECT p.proyecto, e.estado 
+                            FROM proyectos p
+                            CROSS JOIN estados e
+                            ) as sub_proyectos_estados 
+                            CROSS JOIN solapas
+                        ) AS pes
+                        LEFT JOIN LATERAL (
+                            SELECT count(*) AS cant_tickets FROM tickets t 
+                            WHERE t.estado = pes.estado and t.proyecto = pes.proyecto
+                        ) AS t ON true
+                    )`,
         },
         detailTables: [
             {"table": "tickets", "fields": ["proyecto","estado"], "abr": "T"},
