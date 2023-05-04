@@ -7,7 +7,7 @@ export function tickets(context: TableContext):TableDefinition{
         editable: true,
         name: 'tickets',
         fields: [
-            {name:'ticket', typeName:'bigint', nullable:true, editable:false, sequence:{prefix:undefined, firstValue:111, name:'tickets_seq' }},
+            {name:'ticket', typeName:'bigint', nullable:true, editable:false, sequence:{prefix:undefined, firstValue:1, name:'tickets_seq' }},
             {name:'tipo_ticket', typeName:'text', title:'tipo ticket'},
             {name:'asunto', typeName:'text', title:'asunto', nullable:false},
             {name:'descripcion', typeName:'text', title:'descripción' },

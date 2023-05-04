@@ -1,4 +1,2 @@
-usuario|rol|activo|nombre|apellido|telefono|interno|mail|mail_alternativo|clave_nueva
-bob|admin|true||Marley|||||
-emilio|admin|true|||||||
-seba|admin|true|||||||
+usuario|apellido|md5clave|rol|activo
+bob|Marley|6bdb73cceeff578319840176854246e5|admin|true
