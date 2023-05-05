@@ -21,6 +21,7 @@ import { proyectos_estados   } from './table-proyectos_estados';
 import { proyectos_solapas } from './table-proyectos_solapas';
 import { proyectos_estados_solapas } from './table-proyectos_estados_solapas';
 import { parametros } from './table-parametros';
+import { anotaciones } from './table-anotaciones';
 
 import {staticConfigYaml} from './def-config';
 
@@ -47,13 +48,14 @@ export class AppGestik extends AppBackend{
         var menuContent:MenuInfoBase[]=[
             {menuType:'table', name:'tickets'},
             {menuType:'table', name:'proyectos'},
-            {menuType:'table', name:'solapas'},
+            {menuType:'table', name:'anotaciones'},
         ];
         if(context.user && context.user.rol=="admin"){
             menuContent.push(
                 {menuType:'menu', name:'config', label:'configurar', menuContent:[
                     {menuType:'table', name:'equipos'},
                     {menuType:'table', name:'estados'},
+                    {menuType:'table', name:'solapas'},
                     {menuType:'table', name:'prioridades'},
                     {menuType:'table', name:'tipos_ticket'},
                     {menuType:'table', name:'parametros'},
@@ -91,7 +93,8 @@ export class AppGestik extends AppBackend{
             proyectos_solapas,
             equipos,
             parametros,
-            usuarios
+            usuarios,
+            anotaciones
         }
     }       
 }
