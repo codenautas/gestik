@@ -28,9 +28,13 @@ export function tickets(context: TableContext):TableDefinition{
             {name:'observaciones', typeName:'text'},
             {name:'sugerencias_pei', typeName:'text'}
         ],
+        sortColumns: [
+            {column:'ticket', order:-1},
+        ],
+        hiddenColumns:['estados__solapa'],
         primaryKey: ['ticket'],
         foreignKeys: [
-            {references: "estados", fields: ['estado']},
+            {references: "estados", fields: ['estado'], displayFields:['solapa']},
             {references: "proyectos", fields: ['proyecto']},
             {references: "usuarios", fields: [{source:'asignado' , target:'usuario'}], alias: 'useras'},
             {references: "usuarios", fields: [{source:'requirente' , target:'usuario'}], alias: 'userreq'},
