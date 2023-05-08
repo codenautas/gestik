@@ -6,6 +6,7 @@ export function proyectos_solapas():TableDefinition{
 
     const td:TableDefinition = {
         editable: false,
+        allow: {"vertical-edit": false},
         name: 'proyectos_solapas',
         fields: [
             {name: 'proyecto', typeName: 'text'},
@@ -13,6 +14,9 @@ export function proyectos_solapas():TableDefinition{
             {name: 'cant_tickets', typeName: 'bigint', inTable:false,},
         ],
         primaryKey: ['proyecto', 'solapa'],
+        softForeignKeys: [
+            {references: 'solapas', fields: ['solapa'], displayFields: ['orden'], displayAfterFieldName: 'cant_tickets'}
+        ],
         sql: {
             isTable: false,
             from: `(SELECT * FROM proyectos AS p CROSS JOIN solapas AS s
@@ -24,8 +28,10 @@ export function proyectos_solapas():TableDefinition{
                 )`,
         },
         detailTables: [
+            {"table": "tickets", "fields": [{source:'solapa' , target:'estados__solapa'}], "abr": "T"},
             {"table": "proyectos_estados_solapas", "fields": ["solapa","proyecto"], "abr": "PES", label: "pes"},
         ],
+        sortColumns: [{column: 'solapas__orden'}, {column: 'solapa'}, {column: 'proyecto'}]
     }
     return td
 }
