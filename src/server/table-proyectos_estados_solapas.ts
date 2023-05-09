@@ -6,6 +6,7 @@ export function proyectos_estados_solapas():TableDefinition{
 
     const td:TableDefinition = {
         editable: false,
+        allow: {"vertical-edit": false},
         name: 'proyectos_estados_solapas',
         fields: [
             {name: 'proyecto', typeName: 'text'},
@@ -18,11 +19,11 @@ export function proyectos_estados_solapas():TableDefinition{
             isTable: false,
             from: `(SELECT *
                     FROM (
-                            (SELECT p.proyecto, e.estado 
+                            (SELECT p.proyecto, e.estado, e.solapa as solapa_pe, e.orden as estado_orden
                             FROM proyectos p
                             CROSS JOIN estados e
                             ) as sub_proyectos_estados 
-                            CROSS JOIN solapas
+                            LEFT JOIN solapas s on s.solapa = sub_proyectos_estados.solapa_pe
                         ) AS pes
                         LEFT JOIN LATERAL (
                             SELECT count(*) AS cant_tickets FROM tickets t 
@@ -33,6 +34,12 @@ export function proyectos_estados_solapas():TableDefinition{
         detailTables: [
             {"table": "tickets", "fields": ["proyecto","estado"], "abr": "T"},
         ],
+        softForeignKeys: [
+            {references: 'estados', fields: ['estado'], displayFields: ['orden'], displayAfterFieldName: 'cant_tickets'},
+            {references: 'solapas', fields: ['solapa'], displayFields: ['orden'], displayAfterFieldName: 'cant_tickets'}
+        ],
+        hiddenColumns:['estados__orden','solapas__orden'],
+        sortColumns: [{column: 'estados__orden'},{column: 'solapas__orden'}]
     }
     return td
 }
