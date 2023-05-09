@@ -14,6 +14,9 @@ export function estados():TableDefinition{
             {name:'cant_tickets', typeName: "bigint", inTable:false, editable:false}, 
             {name:'orden', typeName: "integer"}, 
         ],
+        sortColumns: [
+            {column:'orden'}, {column:'estado'}
+        ],
         primaryKey: ['estado'],
         foreignKeys: [
             {references: "solapas", fields: ['solapa']}
