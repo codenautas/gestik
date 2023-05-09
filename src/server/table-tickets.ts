@@ -40,7 +40,8 @@ export function tickets(context: TableContext):TableDefinition{
             {references: "usuarios", fields: [{source:'requirente' , target:'usuario'}], alias: 'userreq'},
             {references: "prioridades", fields: ['prioridad']},
             {references: "tipos_ticket", fields: ['tipo_ticket']},
-            {references: "equipos", fields: [{source:'equipo_requirente' , target:'equipo'},{source:'destino' , target:'equipo'}]},
+            {references: "equipos", fields: [{source:'equipo_requirente' , target:'equipo'}], alias:'eqreq'},
+            {references: "equipos", fields: [{source:'destino' , target:'equipo'}], alias: 'eqdest'},
         ],
     }
     return td
