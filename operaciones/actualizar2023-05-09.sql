@@ -8,8 +8,8 @@ create table "anotaciones" (
   "timestamp" timestamp default current_timestamp
 , primary key ("anotacion", "ticket")
 );
-grant select, insert, update, delete on "anotaciones" to gestik_admin;
-grant all on "anotaciones" to gestik_owner;
+grant select, insert, update, delete on "anotaciones" to gestik_muleto_admin;
+grant all on "anotaciones" to gestik_muleto_owner;
 
 alter table "anotaciones" add constraint "usuario<>''" check ("usuario"<>'');
 alter table "anotaciones" add constraint "detalle<>''" check ("detalle"<>'');
@@ -22,10 +22,10 @@ create index "usuario 4 anotaciones IDX" ON "anotaciones" ("usuario");
 
 CREATE SEQUENCE "anotacion_seq" START 1;
 ALTER TABLE "anotaciones" ALTER COLUMN "anotacion" SET DEFAULT nextval('anotacion_seq'::regclass);
-GRANT USAGE, SELECT ON SEQUENCE "anotacion_seq" TO gestik_admin;
+GRANT USAGE, SELECT ON SEQUENCE "anotacion_seq" TO gestik_muleto_admin;
 
 alter table "tickets" drop constraint if exists "tickets equipos REL";
 alter table "tickets" add constraint "tickets eqreq REL" foreign key ("equipo_requirente") references "equipos" ("equipo")  on update cascade;
 alter table "tickets" add constraint "tickets eqdest REL" foreign key ("destino") references "equipos" ("equipo")  on update cascade;
 
-create index "destino 4 tickets IDX" ON "tickets" ("destino");
+create index "destino 4 tickets IDX" ON "tickets" ("destino");

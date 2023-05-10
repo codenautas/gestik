@@ -17,7 +17,7 @@ export function tickets(context: TableContext):TableDefinition{
             {name:'requirente', typeName:'text', defaultValue: context.user.usuario },
             {name:'equipo_requirente', typeName:'text' },
             {name:'estado', typeName:'text'},
-            {name:'destino', typeName:'text' },
+            {name:'equipo_asignado', typeName:'text' },
             {name:'asignado', typeName:'text' },
             {name:'version', typeName:'text', title:'versión' },
             {name:'esfuerzo_estimado', typeName:'text', title:'esfuerzo estimado'},
@@ -41,7 +41,7 @@ export function tickets(context: TableContext):TableDefinition{
             {references: "prioridades", fields: ['prioridad']},
             {references: "tipos_ticket", fields: ['tipo_ticket']},
             {references: "equipos", fields: [{source:'equipo_requirente' , target:'equipo'}], alias:'eqreq'},
-            {references: "equipos", fields: [{source:'destino' , target:'equipo'}], alias: 'eqdest'},
+            {references: "equipos", fields: [{source:'equipo_asignado' , target:'equipo'}], alias: 'eqas'},
         ],
     }
     return td
