@@ -28,8 +28,8 @@ export function proyectos_solapas():TableDefinition{
                 )`,
         },
         detailTables: [
-            {"table": "tickets", "fields": [{source:'solapa' , target:'estados__solapa'}], "abr": "T"},
-            {"table": "proyectos_estados_solapas", "fields": ["solapa","proyecto"], "abr": "PES", label: "pes"},
+            {table: "proyectos_estados_solapas", fields: ["proyecto", "solapa"], abr: "E", label: "esatdos"},
+            {table: "tickets", fields: ["proyecto", {source:'solapa' , target:'estados__solapa'}], abr: "T"},
         ],
         sortColumns: [{column: 'solapas__orden'}, {column: 'solapa'}, {column: 'proyecto'}]
     }

@@ -6,14 +6,15 @@ export function anotaciones():TableDefinition{
     const td:TableDefinition = {
         editable: true,
         name: 'anotaciones',
+        elementName: 'anotación',
         fields: [
-            {name:'anotacion', typeName:'bigint', nullable:true, title:'anotación', editable:false, sequence:{prefix:undefined, firstValue:1, name:'anotacion_seq' } },
             {name:'ticket', typeName:'bigint' },
+            {name:'anotacion', typeName:'bigint', nullable:true, title:'anotación', editable:false, sequence:{prefix:undefined, firstValue:1, name:'anotacion_seq' } },
             {name:'usuario', typeName:'text' },
             {name:'detalle', typeName:'text' },
             {name:'timestamp', typeName:'timestamp', defaultDbValue:'current_timestamp', editable:false },
         ],
-        primaryKey: ['anotacion', 'ticket'],
+        primaryKey: ['ticket', 'anotacion'],
         foreignKeys: [
             {references: "tickets", fields: ['ticket']},
             {references: "usuarios", fields: ['usuario']},

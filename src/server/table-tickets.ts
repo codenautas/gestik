@@ -6,6 +6,7 @@ export function tickets(context: TableContext):TableDefinition{
     const td:TableDefinition = {
         editable: true,
         name: 'tickets',
+        elementName: 'ticket',
         fields: [
             {name:'ticket', typeName:'bigint', nullable:true, editable:false, sequence:{prefix:undefined, firstValue:1, name:'tickets_seq' }},
             {name:'tipo_ticket', typeName:'text', title:'tipo ticket'},
@@ -36,12 +37,12 @@ export function tickets(context: TableContext):TableDefinition{
         foreignKeys: [
             {references: "estados", fields: ['estado'], displayFields:['solapa']},
             {references: "proyectos", fields: ['proyecto']},
-            {references: "usuarios", fields: [{source:'asignado' , target:'usuario'}], alias: 'useras'},
-            {references: "usuarios", fields: [{source:'requirente' , target:'usuario'}], alias: 'userreq'},
+            {references: "usuarios", fields: [{source:'asignado' , target:'usuario'}], alias: 'usuario_asignado'},
+            {references: "usuarios", fields: [{source:'requirente' , target:'usuario'}], alias: 'usuario_requirente'},
             {references: "prioridades", fields: ['prioridad']},
             {references: "tipos_ticket", fields: ['tipo_ticket']},
-            {references: "equipos", fields: [{source:'equipo_requirente' , target:'equipo'}], alias:'eqreq'},
-            {references: "equipos", fields: [{source:'equipo_asignado' , target:'equipo'}], alias: 'eqas'},
+            {references: "equipos", fields: [{source:'equipo_requirente' , target:'equipo'}], alias:'equipo_requirente'},
+            {references: "equipos", fields: [{source:'equipo_asignado' , target:'equipo'}], alias: 'equipo_asignado'},
         ],
     }
     return td

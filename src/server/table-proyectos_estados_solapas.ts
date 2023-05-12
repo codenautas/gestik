@@ -8,13 +8,15 @@ export function proyectos_estados_solapas():TableDefinition{
         editable: false,
         allow: {"vertical-edit": false},
         name: 'proyectos_estados_solapas',
+        elementName: 'estado',
+        title: 'estados',
         fields: [
             {name: 'proyecto', typeName: 'text'},
-            {name: 'estado', typeName: 'text'},
             {name: 'solapa', typeName: 'text'},
+            {name: 'estado', typeName: 'text'},
             {name: 'cant_tickets', typeName: 'bigint', inTable:false},
         ],
-        primaryKey: ['proyecto', 'estado', 'solapa'],
+        primaryKey: ['proyecto', 'solapa', 'estado'],
         sql: {
             isTable: false,
             from: `(SELECT *
@@ -39,7 +41,7 @@ export function proyectos_estados_solapas():TableDefinition{
             {references: 'solapas', fields: ['solapa'], displayFields: ['orden'], displayAfterFieldName: 'cant_tickets'}
         ],
         hiddenColumns:['estados__orden','solapas__orden'],
-        sortColumns: [{column: 'estados__orden'},{column: 'solapas__orden'}]
+        sortColumns: [{column: 'solapas__orden'},{column: 'estados__orden'},]
     }
     return td
 }

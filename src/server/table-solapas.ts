@@ -16,8 +16,9 @@ export function solapas():TableDefinition{
             {column:'orden'}, {column:'solapa'}
         ],
         detailTables: [
-            {"table": "estados", "fields": ["solapa"], "abr": "E"},
-            {"table": "proyectos_solapas", "fields": [ "solapa"], "abr": "P", label: "proyectos"},
+            {table: "proyectos_solapas", fields: [ "solapa"], abr: "P", label: "proyectos"},
+            {table: "estados", fields: ["solapa"], abr: "E"},
+            {table: "tickets", fields: [{source:'solapa' , target:'estados__solapa'}], abr: "T"},
         ],
         sql:{fields:{ cant_tickets:{ expr: `(SELECT count(*) FROM estados e inner join tickets t on t.estado = e.estado WHERE e.solapa = solapas.solapa)` }}}
     }
