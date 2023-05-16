@@ -32,6 +32,9 @@ export function tickets(context: TableContext):TableDefinition{
         sortColumns: [
             {column:'ticket', order:-1},
         ],
+        detailTables: [
+            {table: "anotaciones", fields: ["ticket"], abr: "A"},
+        ],
         hiddenColumns:['estados__solapa'],
         primaryKey: ['ticket'],
         foreignKeys: [
