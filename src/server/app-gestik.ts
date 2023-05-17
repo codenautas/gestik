@@ -48,7 +48,6 @@ export class AppGestik extends AppBackend{
         var menuContent:MenuInfoBase[]=[
             {menuType:'table', name:'tickets'},
             {menuType:'table', name:'proyectos'},
-            {menuType:'table', name:'anotaciones'},
         ];
         if(context.user && context.user.rol=="admin"){
             menuContent.push(
