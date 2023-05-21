@@ -32,8 +32,6 @@ export const ProceduresGestik:ProcedureDef[] = [
             const campoDef = campos[parameters.campo];
             context.informProgress({message:be.messages.fileUploaded});
             let file = files![0]
-            // let ext = Path.extname(file.path).substr(1);
-            // let originalFilename = file.originalFilename.slice(0,-(ext.length+1));
             let originalFilename = file.originalFilename;
             let filename=originalFilename;
             var createResponse = function createResponse(adjuntoRow:any){

@@ -4,7 +4,7 @@ import "dialog-promise";
 
 myOwn.clientSides.subirAdjunto = {
     prepare: function(depot:myOwn.Depot, fieldName:string){
-        var botonCargarExcel = html.button('excel').create();
+        var botonCargarExcel = html.button('archivo').create();
         depot.rowControls[fieldName].appendChild(botonCargarExcel);
         botonCargarExcel.addEventListener('click', async function(){
             var showWithMiniMenu = false;
@@ -39,7 +39,7 @@ myOwn.clientSides.bajarAdjunto = {
         td.innerHTML='';
         let excelFileName=depot.row.archivo;
         if(excelFileName){
-            td.appendChild(html.a({class:'link-descarga-archivo', href:`download/file?name=${excelFileName}&anotacion=${depot.row.anotacion}&ticket=${depot.row.ticket}`, download:excelFileName},"excel").create());            
+            td.appendChild(html.a({class:'link-descarga-archivo', href:`download/file?name=${excelFileName}&anotacion=${depot.row.anotacion}&ticket=${depot.row.ticket}`, download:excelFileName},"archivo").create());            
         }
     },
     prepare:function(_depot:myOwn.Depot, _fieldName:string):void{
