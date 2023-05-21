@@ -10,8 +10,8 @@ export const ProceduresGestik:ProcedureDef[] = [
         progress: true,
         parameters:[
             {name: 'campo'    , typeName: 'text'},
+            {name: 'ticket'   , typeName: 'text'},
             {name: 'anotacion', typeName: 'text'},
-            {name: 'ticket', typeName: 'text'},
         ],
         files:{count:1},
         coreFunction:async function(context, parameters, files){
@@ -41,8 +41,8 @@ export const ProceduresGestik:ProcedureDef[] = [
                 }
                 return resultado
             }
-            var moveFile = async function moveFile(file:UploadedFileInfo, anotacion:string, ticket:string, fileName:string){
-                let newPath = `local-attachments/${anotacion}/${ticket}/${fileName}`;
+            var moveFile = async function moveFile(file:UploadedFileInfo, ticket:string, fileName:string){
+                let newPath = `local-attachments/${ticket}/${fileName}`;
                 return fs.move(file.path, newPath, { overwrite: true });
             }
             var {row} = await client.query(`
@@ -53,7 +53,7 @@ export const ProceduresGestik:ProcedureDef[] = [
                 [filename, parameters.anotacion, parameters.ticket]
             ).fetchUniqueRow();
             var resultado = createResponse(row);
-            await moveFile(file,row.anotacion,row.ticket, row[campoDef.nombre]);
+            await moveFile(file, row.ticket, row[campoDef.nombre]);
             return resultado;
         }
     }

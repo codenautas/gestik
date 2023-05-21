@@ -5,31 +5,41 @@ import "dialog-promise";
 myOwn.clientSides.subirAdjunto = {
     prepare: function(depot:myOwn.Depot, fieldName:string){
         var botonCargarExcel = html.button('archivo').create();
-        depot.rowControls[fieldName].appendChild(botonCargarExcel);
-        botonCargarExcel.addEventListener('click', async function(){
-            var showWithMiniMenu = false;
-            var messages = {
-                importDataFromFile: 'Seleccione un archivo',
-                import: 'Cargar'
-            };
-            var ajaxPath = ['archivo_subir'];
-            var params = {
-                campo:'archivo',
-                anotacion:depot.row.anotacion,
-                ticket:depot.row.ticket,
-            };
-            my.dialogUpload(
-                ajaxPath, 
-                params,
-                function(result:any){
-                    depot.rowControls.archivo.setTypedValue(result.nombre, true);
-                    return result.message;
-                },
-                showWithMiniMenu,
-                messages
-            )    
-        });
-        
+        if (depot.row.archivo == null) {
+            depot.rowControls[fieldName].appendChild(botonCargarExcel);
+            if (depot.row.anotacion == null) botonCargarExcel.disabled = true;
+            botonCargarExcel.addEventListener('click', async function(){
+                var showWithMiniMenu = false;
+                var messages = {
+                    importDataFromFile: 'Seleccione un archivo',
+                    import: 'Cargar'
+                };
+                var ajaxPath = ['archivo_subir'];
+                var params = {
+                    campo:'archivo',
+                    ticket:depot.row.ticket,
+                    anotacion:depot.row.anotacion,
+                };
+                my.dialogUpload(
+                    ajaxPath, 
+                    params,
+                    function(result:any){
+                        depot.rowControls.archivo.setTypedValue(result.nombre);
+                        botonCargarExcel.disabled = true;
+                        return result.message;
+                    },
+                    showWithMiniMenu,
+                    messages
+                )    
+            });
+        }
+        // @ts-ignore
+        depot.botonCargarExcel = botonCargarExcel;
+    },
+    update: function(depot:myOwn.Depot){
+        // @ts-ignore
+        var botonCargarExcel:HTMLButtonElement = depot.botonCargarExcel;
+        botonCargarExcel.disabled = depot.row.archivo != null || depot.row.anotacion == null;
     }
 }
 
@@ -39,7 +49,7 @@ myOwn.clientSides.bajarAdjunto = {
         td.innerHTML='';
         let excelFileName=depot.row.archivo;
         if(excelFileName){
-            td.appendChild(html.a({class:'link-descarga-archivo', href:`download/file?name=${excelFileName}&anotacion=${depot.row.anotacion}&ticket=${depot.row.ticket}`, download:excelFileName},"archivo").create());            
+            td.appendChild(html.a({class:'link-descarga-archivo', href:`download/file?ticket=${depot.row.ticket}&anotacion=${depot.row.anotacion}`, download:excelFileName},"archivo").create());            
         }
     },
     prepare:function(_depot:myOwn.Depot, _fieldName:string):void{
