@@ -22,12 +22,29 @@ import { proyectos_solapas } from './table-proyectos_solapas';
 import { proyectos_estados_solapas } from './table-proyectos_estados_solapas';
 import { parametros } from './table-parametros';
 import { anotaciones } from './table-anotaciones';
+import * as  MiniTools from "mini-tools";
+import * as backendPlus from "backend-plus";
 
 import {staticConfigYaml} from './def-config';
 
 export class AppGestik extends AppBackend{
     constructor(){
         super();
+    }
+    addSchrödingerServices(mainApp:backendPlus.Express, baseUrl:string){
+        var be=this;
+        super.addSchrödingerServices(mainApp, baseUrl);
+        mainApp.get(baseUrl+'/download/file', async function (req, res) {
+            // @ts-ignore
+            be.inDbClient(req,async (client)=>{
+                var result = await client.query(
+                    'SELECT anotacion, ticket, archivo FROM anotaciones WHERE anotacion = $1 AND ticket = $2',
+                    [req.query.anotacion, req.query.ticket]
+                ).fetchUniqueRow();
+                let path = `local-attachments/${result.row.anotacion}/${result.row.ticket}/${result.row.archivo}`;
+                MiniTools.serveFile(path, {})(req, res);
+            })
+        });
     }
     async postConfig(){
         await super.postConfig();
@@ -38,11 +55,8 @@ export class AppGestik extends AppBackend{
     }
 
     async getProcedures(){
-        var be = this;
-        return [
-            ...await super.getProcedures(),
-            ...ProceduresGestik
-        ].map(be.procedureDefCompleter, be);
+        var parentProc = await super.getProcedures();
+        return parentProc.concat(ProceduresGestik);
     }
     getMenu(context:Context):MenuDefinition{
         var menuContent:MenuInfoBase[]=[

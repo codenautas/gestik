@@ -13,11 +13,17 @@ export function anotaciones():TableDefinition{
             {name:'usuario', typeName:'text' },
             {name:'detalle', typeName:'text' },
             {name:'timestamp', typeName:'timestamp', defaultDbValue:'current_timestamp', editable:false },
+            {name:'subir', editable:false, clientSide:'subirAdjunto'    , typeName:'text'},
+            {name:'archivo', title:'archivo', editable:false , typeName:'text'},
+            {name:'bajar', editable:false, clientSide:'bajarAdjunto', typeName:'text'},
         ],
         primaryKey: ['ticket', 'anotacion'],
         foreignKeys: [
             {references: "tickets", fields: ['ticket']},
             {references: "usuarios", fields: ['usuario']},
+        ],
+        constraints:[
+            {constraintType:'unique', fields:['archivo']},
         ],
     }
     return td
