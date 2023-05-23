@@ -22,6 +22,8 @@ import { proyectos_solapas } from './table-proyectos_solapas';
 import { proyectos_estados_solapas } from './table-proyectos_estados_solapas';
 import { parametros } from './table-parametros';
 import { anotaciones } from './table-anotaciones';
+import { equipos_proyectos } from './table-equipos_proyectos';
+import { equipos_usuarios } from './table-equipos_usuarios';
 import * as  MiniTools from "mini-tools";
 import * as backendPlus from "backend-plus";
 
@@ -107,7 +109,9 @@ export class AppGestik extends AppBackend{
             equipos,
             parametros,
             usuarios,
-            anotaciones
+            anotaciones,
+            equipos_proyectos,
+            equipos_usuarios
         }
     }       
 }
