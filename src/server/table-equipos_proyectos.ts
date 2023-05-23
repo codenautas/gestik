@@ -14,7 +14,7 @@ export function equipos_proyectos():TableDefinition{
             {name: 'es_requirente', typeName: 'boolean'},
             {name: 'es_asignado', typeName: 'boolean'},
         ],
-        primaryKey: ['equipo', 'usuario'],
+        primaryKey: ['equipo', 'proyecto'],
         foreignKeys: [
             {references: "proyectos", fields: ['proyecto']},
             {references: "equipos", fields: ['equipo']},
