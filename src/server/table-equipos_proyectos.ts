@@ -11,6 +11,8 @@ export function equipos_proyectos():TableDefinition{
         fields: [
             {name: 'equipo', typeName: 'text'},
             {name: 'proyecto', typeName: 'text'},
+            {name: 'es_requirente', typeName: 'boolean'},
+            {name: 'es_asignado', typeName: 'boolean'},
         ],
         primaryKey: ['equipo', 'usuario'],
         foreignKeys: [
