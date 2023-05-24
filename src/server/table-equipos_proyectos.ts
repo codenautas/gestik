@@ -1,11 +1,11 @@
 "use strict"
 
-import { TableDefinition } from "backend-plus";
+import { TableDefinition, TableContext } from "types-gestik";
 
-export function equipos_proyectos():TableDefinition{
-
+export function equipos_proyectos(context: TableContext):TableDefinition{
+    var admin = context.user.rol == 'admin';
     const td:TableDefinition = {
-        editable: false,
+        editable: admin,
         allow: {"vertical-edit": false},
         name: 'equipos_proyectos',
         fields: [
@@ -16,8 +16,8 @@ export function equipos_proyectos():TableDefinition{
         ],
         primaryKey: ['equipo', 'proyecto'],
         foreignKeys: [
-            {references: "proyectos", fields: ['proyecto']},
-            {references: "equipos", fields: ['equipo']},
+            {references: 'proyectos', fields: ['proyecto'], displayAllFields:true},
+            {references: 'equipos'  , fields: ['equipo'  ], displayAllFields:true},
         ],
     }
     return td

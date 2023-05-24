@@ -77,6 +77,8 @@ export class AppGestik extends AppBackend{
                     {menuType:'table', name:'usuarios'},
                 ]}
             )
+        } else {
+            menuContent.push({menuType:'table', name:'usuarios', label:'mi usuario'})
         };
         return {menu:menuContent};
     }

@@ -10,7 +10,7 @@
     "install"
   ],
   "dependencies": {
-    "backend-plus": "^1.18.9",
+    "backend-plus": "^1.18.10",
     "pg-triggers": "^0.3.2",
     "fs-extra": "^11.1.1"
   },

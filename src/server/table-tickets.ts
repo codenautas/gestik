@@ -3,6 +3,8 @@
 import { TableContext, TableDefinition } from "backend-plus";
 
 export function tickets(context: TableContext):TableDefinition{
+    var admin = context.user.rol == 'admin';
+    var q = context.be.db.quoteLiteral;
     const td:TableDefinition = {
         editable: true,
         name: 'tickets',
@@ -47,6 +49,16 @@ export function tickets(context: TableContext):TableDefinition{
             {references: "equipos", fields: [{source:'equipo_requirente' , target:'equipo'}], alias:'equipo_requirente'},
             {references: "equipos", fields: [{source:'equipo_asignado' , target:'equipo'}], alias: 'equipo_asignado'},
         ],
+        sql:{
+            where: admin ? 'true' : `(
+                EXISTS (
+                    SELECT true FROM equipos_usuarios eu WHERE usuario = ${q(context.user.usuario)}
+                        AND (eu.equipo = tickets.equipo_requirente OR eu.equipo = tickets.equipo_asignado)
+                )
+                OR requirente = ${q(context.user.usuario)}
+                OR asignado = ${q(context.user.usuario)}
+            )`
+        }
     }
     return td
 }
