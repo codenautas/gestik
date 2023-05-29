@@ -96,6 +96,7 @@ export class AppGestik extends AppBackend{
         return list;
     }
     prepareGetTables(){
+        var be = this;
         super.prepareGetTables();
         this.getTableDefinition={
             ... this.getTableDefinition,
@@ -114,6 +115,12 @@ export class AppGestik extends AppBackend{
             anotaciones,
             equipos_proyectos,
             equipos_usuarios
+        }
+        for(var table in this.getTableDefinition){
+            be.appendToTableDefinition(table, function(tableDef){
+                tableDef.selfRefresh = true;
+                tableDef.refrescable = true;
+            });
         }
     }       
 }

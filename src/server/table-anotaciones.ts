@@ -8,6 +8,7 @@ export function anotaciones(context:TableContext):TableDefinition{
         name: 'anotaciones',
         elementName: 'anotación',
         fields: [
+            {name:'proyecto', typeName:'text'},
             {name:'ticket', typeName:'bigint' },
             {name:'anotacion', typeName:'bigint', nullable:true, title:'anotación', editable:false, sequence:{prefix:undefined, firstValue:1, name:'anotacion_seq' } },
             {name:'usuario', typeName:'text', defaultValue: context.user.usuario  },
@@ -17,13 +18,13 @@ export function anotaciones(context:TableContext):TableDefinition{
             {name:'archivo', title:'archivo', editable:false , typeName:'text'},
             {name:'bajar', editable:false, clientSide:'bajarAdjunto', typeName:'text'},
         ],
-        primaryKey: ['ticket', 'anotacion'],
+        primaryKey: ['proyecto', 'ticket', 'anotacion'],
         foreignKeys: [
-            {references: 'tickets', fields: ['ticket']},
+            {references: 'tickets', fields: ['proyecto','ticket']},
             {references: 'usuarios', fields: ['usuario']},
         ],
         constraints:[
-            {constraintType:'unique', fields:['archivo']},
+            {constraintType:'unique', fields:['proyecto','ticket','archivo']},
         ],
     }
     return td

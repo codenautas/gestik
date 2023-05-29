@@ -10,11 +10,12 @@ export function tickets(context: TableContext):TableDefinition{
         name: 'tickets',
         elementName: 'ticket',
         fields: [
-            {name:'ticket', typeName:'bigint', nullable:true, editable:false, sequence:{prefix:undefined, firstValue:1, name:'tickets_seq' }},
+            {name:'proyecto', typeName:'text' },
+            {name:'ticket', typeName:'bigint', nullable:true, editable:false, defaultDbValue:'0'},
             {name:'tipo_ticket', typeName:'text', title:'tipo ticket'},
             {name:'asunto', typeName:'text', title:'asunto', nullable:false},
             {name:'descripcion', typeName:'text', title:'descripción' },
-            {name:'proyecto', typeName:'text' },
+            {name:'modulo', typeName:'text', title:'módulo' },
             {name:'prioridad', typeName:'text' },
             {name:'f_ticket', typeName:'date', title:'fecha ticket', defaultDbValue: 'current_date'},
             {name:'requirente', typeName:'text', defaultValue: context.user.usuario },
@@ -26,19 +27,15 @@ export function tickets(context: TableContext):TableDefinition{
             {name:'esfuerzo_estimado', typeName:'text', title:'esfuerzo estimado'},
             {name:'f_realizacion', typeName:'date', title:'fecha realización'},
             {name:'f_instalacion', typeName:'date', title:'fecha instalación'},
-            {name:'modulo', typeName:'text', title:'módulo' },
             {name:'tema', typeName:'text'},
             {name:'observaciones', typeName:'text'},
             {name:'sugerencias_pei', typeName:'text'}
         ],
-        sortColumns: [
-            {column:'ticket', order:-1},
-        ],
         detailTables: [
-            {table: "anotaciones", fields: ["ticket"], abr: "A"},
+            {table: "anotaciones", fields: ["proyecto", "ticket"], abr: "A"},
         ],
         hiddenColumns:['estados__solapa'],
-        primaryKey: ['ticket'],
+        primaryKey: ['proyecto', 'ticket'],
         foreignKeys: [
             {references: "estados", fields: ['estado'], displayFields:['solapa']},
             {references: "proyectos", fields: ['proyecto']},
