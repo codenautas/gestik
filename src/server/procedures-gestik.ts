@@ -10,6 +10,7 @@ export const ProceduresGestik:ProcedureDef[] = [
         progress: true,
         parameters:[
             {name: 'campo'    , typeName: 'text'},
+            {name: 'proyecto', typeName: 'text'},
             {name: 'ticket'   , typeName: 'text'},
             {name: 'anotacion', typeName: 'text'},
         ],
@@ -41,19 +42,19 @@ export const ProceduresGestik:ProcedureDef[] = [
                 }
                 return resultado
             }
-            var moveFile = async function moveFile(file:UploadedFileInfo, ticket:string, fileName:string){
-                let newPath = `local-attachments/${ticket}/${fileName}`;
+            var moveFile = async function moveFile(file:UploadedFileInfo, proyecto:string, ticket:string, fileName:string){
+                let newPath = `local-attachments/${proyecto}/${ticket}/${fileName}`;
                 return fs.move(file.path, newPath, { overwrite: true });
             }
             var {row} = await client.query(`
                 update anotaciones 
                     set ${campoDef.sqlset}
-                    where anotacion = $2 and ticket = $3 returning *
+                    where anotacion = $2 and ticket = $3 and proyecto = $4 returning *
             `,
-                [filename, parameters.anotacion, parameters.ticket]
+                [filename, parameters.anotacion, parameters.ticket, parameters.proyecto]
             ).fetchUniqueRow();
             var resultado = createResponse(row);
-            await moveFile(file, row.ticket, row[campoDef.nombre]);
+            await moveFile(file, row.proyecto, row.ticket, row[campoDef.nombre]);
             return resultado;
         }
     }

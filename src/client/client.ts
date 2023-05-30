@@ -17,6 +17,7 @@ myOwn.clientSides.subirAdjunto = {
                 var ajaxPath = ['archivo_subir'];
                 var params = {
                     campo:'archivo',
+                    proyecto:depot.row.proyecto,
                     ticket:depot.row.ticket,
                     anotacion:depot.row.anotacion,
                 };
@@ -49,7 +50,7 @@ myOwn.clientSides.bajarAdjunto = {
         td.innerHTML='';
         let excelFileName=depot.row.archivo;
         if(excelFileName){
-            td.appendChild(html.a({class:'link-descarga-archivo', href:`download/file?ticket=${depot.row.ticket}&anotacion=${depot.row.anotacion}`, download:excelFileName},"archivo").create());            
+            td.appendChild(html.a({class:'link-descarga-archivo', href:`download/file?proyecto=${depot.row.proyecto}&ticket=${depot.row.ticket}&anotacion=${depot.row.anotacion}`, download:excelFileName},"archivo").create());            
         }
     },
     prepare:function(_depot:myOwn.Depot, _fieldName:string):void{

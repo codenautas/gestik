@@ -40,10 +40,10 @@ export class AppGestik extends AppBackend{
             // @ts-ignore
             be.inDbClient(req,async (client)=>{
                 var result = await client.query(
-                    'SELECT anotacion, ticket, archivo FROM anotaciones WHERE ticket = $1 AND anotacion = $2',
-                    [req.query.ticket, req.query.anotacion]
+                    'SELECT proyecto, ticket, anotacion, archivo FROM anotaciones WHERE proyecto = $1 and ticket = $2 AND anotacion = $3',
+                    [req.query.proyecto, req.query.ticket, req.query.anotacion]
                 ).fetchUniqueRow();
-                let path = `local-attachments/${result.row.ticket}/${result.row.archivo}`;
+                let path = `local-attachments/${result.row.proyecto}/${result.row.ticket}/${result.row.archivo}`;
                 MiniTools.serveFile(path, {})(req, res);
             })
         });
