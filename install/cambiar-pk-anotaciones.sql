@@ -1,5 +1,5 @@
 set search_path = gestik;
-
+ALTER TABLE IF EXISTS anotaciones alter COLUMN anotacion set DEFAULT 0;
 DROP FUNCTION if exists anotacion_pk_trg();
 CREATE OR REPLACE FUNCTION anotacion_pk_trg()
     RETURNS trigger

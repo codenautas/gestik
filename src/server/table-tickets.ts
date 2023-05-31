@@ -10,6 +10,7 @@ export function tickets(context: TableContext):TableDefinition{
         name: 'tickets',
         elementName: 'ticket',
         fields: [
+            {name:'cant_anotaciones', typeName: "bigint", inTable:false, editable:false, title:'CA', description: 'cantidad anotaciones'}, 
             {name:'proyecto', typeName:'text' },
             {name:'ticket', typeName:'bigint', nullable:true, editable:false, defaultDbValue:'0'},
             {name:'tipo_ticket', typeName:'text', title:'tipo ticket'},
@@ -47,6 +48,7 @@ export function tickets(context: TableContext):TableDefinition{
             {references: "equipos", fields: [{source:'equipo_asignado' , target:'equipo'}], alias: 'equipo_asignado'},
         ],
         sql:{
+            fields:{ cant_anotaciones:{ expr: `(SELECT count(*) FROM anotaciones a WHERE a.proyecto = tickets.proyecto and a.ticket = tickets.ticket)` }},
             where: admin ? 'true' : `(
                 EXISTS (
                     SELECT true FROM equipos_usuarios eu WHERE usuario = ${q(context.user.usuario)}

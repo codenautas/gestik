@@ -10,7 +10,7 @@ export function anotaciones(context:TableContext):TableDefinition{
         fields: [
             {name:'proyecto', typeName:'text'},
             {name:'ticket', typeName:'bigint' },
-            {name:'anotacion', typeName:'bigint', nullable:true, title:'anotación', editable:false },
+            {name:'anotacion', typeName:'bigint', nullable:true, title:'anotación', editable:false, defaultDbValue:'0' },
             {name:'usuario', typeName:'text', defaultValue: context.user.usuario  },
             {name:'detalle', typeName:'text' },
             {name:'timestamp', typeName:'timestamp', defaultDbValue:'current_timestamp', editable:false },
