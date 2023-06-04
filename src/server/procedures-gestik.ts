@@ -9,8 +9,7 @@ export const ProceduresGestik:ProcedureDef[] = [
         action:'archivo_subir',
         progress: true,
         parameters:[
-            {name: 'campo'    , typeName: 'text'},
-            {name: 'proyecto', typeName: 'text'},
+            {name: 'proyecto' , typeName: 'text'},
             {name: 'ticket'   , typeName: 'text'},
             {name: 'anotacion', typeName: 'text'},
         ],
@@ -18,27 +17,14 @@ export const ProceduresGestik:ProcedureDef[] = [
         coreFunction:async function(context, parameters, files){
             const be=context.be;
             const client=context.client;
-            const campos:{[k:string]:{
-                nombre:string
-                sqlset:string
-            }}={
-                archivo:{
-                    nombre:'archivo',
-                    sqlset:`archivo = coalesce(archivo, $1)`
-                },
-            };
-            if(!(parameters.campo in campos)){
-                throw new Error('invalid')
-            }
-            const campoDef = campos[parameters.campo];
             context.informProgress({message:be.messages.fileUploaded});
             let file = files![0]
             let originalFilename = file.originalFilename;
             let filename=originalFilename;
             var createResponse = function createResponse(adjuntoRow:any){
                 let resultado = {
-                    message: `el archivo ${adjuntoRow[campoDef.nombre]} se subió correctamente.`,
-                    nombre: adjuntoRow[campoDef.nombre],
+                    message: `el archivo ${adjuntoRow.archivo} se subió correctamente.`,
+                    nombre: adjuntoRow.archivo,
                 }
                 return resultado
             }
@@ -48,13 +34,13 @@ export const ProceduresGestik:ProcedureDef[] = [
             }
             var {row} = await client.query(`
                 update anotaciones 
-                    set ${campoDef.sqlset}
-                    where anotacion = $2 and ticket = $3 and proyecto = $4 returning *
+                    set archivo = $1
+                    where proyecto = $2 and ticket = $3 and anotacion = $4 returning *
             `,
-                [filename, parameters.anotacion, parameters.ticket, parameters.proyecto]
+                [filename, parameters.proyecto, parameters.ticket, parameters.anotacion]
             ).fetchUniqueRow();
             var resultado = createResponse(row);
-            await moveFile(file, row.proyecto, row.ticket, row[campoDef.nombre]);
+            await moveFile(file, row.proyecto, row.ticket, row.archivo);
             return resultado;
         }
     }

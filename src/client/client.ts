@@ -16,7 +16,6 @@ myOwn.clientSides.subirAdjunto = {
                 };
                 var ajaxPath = ['archivo_subir'];
                 var params = {
-                    campo:'archivo',
                     proyecto:depot.row.proyecto,
                     ticket:depot.row.ticket,
                     anotacion:depot.row.anotacion,

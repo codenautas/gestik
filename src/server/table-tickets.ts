@@ -10,10 +10,10 @@ export function tickets(context: TableContext):TableDefinition{
         name: 'tickets',
         elementName: 'ticket',
         fields: [
-            {name:'cant_anotaciones', typeName: "bigint", inTable:false, editable:false, title:'CA', description: 'cantidad anotaciones'}, 
             {name:'proyecto', typeName:'text' },
             {name:'ticket', typeName:'bigint', nullable:true, editable:false, defaultDbValue:'0'},
             {name:'tipo_ticket', typeName:'text', title:'tipo ticket'},
+            {name:'cant_anotaciones', typeName: 'bigint', inTable:false, editable:false, title:'c.a.', description: 'cantidad anotaciones'}, 
             {name:'asunto', typeName:'text', title:'asunto', nullable:false},
             {name:'descripcion', typeName:'text', title:'descripción' },
             {name:'modulo', typeName:'text', title:'módulo' },
