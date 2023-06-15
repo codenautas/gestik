@@ -10,6 +10,7 @@ export function estados():TableDefinition{
             {name:'estado', typeName:'text' },
             {name:'descripcion', typeName:'text' },
             {name:'solapa', typeName:'text' },
+            {name:'registrar_fecha', typeName:'text' },
             {name:'todos_pueden_modificar', typeName:'boolean', defaultValue:false},
             {name:'cant_tickets', typeName: "bigint", inTable:false, editable:false}, 
             {name:'orden', typeName: "integer"}, 
