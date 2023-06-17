@@ -29,10 +29,14 @@ client-setup:
   menu: true
   lang: es
   user-scalable: no
+  cursors: true
+  title: gestik
 install:
   dump:
     db:
       owner: gestik_owner
+    enances: inline
+    skip-content: true
     scripts:
       post-adapt:
       - ../node_modules/pg-triggers/lib/recreate-his.sql
