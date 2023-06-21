@@ -47,6 +47,7 @@ install:
       - ../install/anotacion_pk_trg.sql
       - ../install/set_ticket_default_estado.sql
       - ../install/set_ticket_default_tipo.sql
+      - ../install/tickets_actualizar_fecha_trg.sql
 logo: 
   path: client/img
 `;
