@@ -11,7 +11,8 @@ export function proyectos(context: TableContext):TableDefinition{
         elementName: 'proyecto',
         fields: [
             {name:'proyecto', typeName: 'text'},
-            {name:'cant_tickets', typeName: 'bigint', inTable:false, editable:false}
+            {name:'cant_tickets', typeName: 'bigint', inTable:false, editable:false},
+            {name:'solapas', typeName: 'text', clientSide:'solapas', inTable:false, editable:false}
         ],
         primaryKey: ['proyecto'],
         detailTables: [

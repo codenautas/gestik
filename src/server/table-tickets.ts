@@ -30,12 +30,9 @@ export function tickets(context: TableContext):TableDefinition{
             {name:'f_instalacion', typeName:'date', title:'fecha instalación'},
             {name:'tema', typeName:'text'},
             {name:'observaciones', typeName:'text'},
-            {name:'sugerencias_pei', typeName:'text'}
+            {name:'sugerencias_pei', typeName:'text'},
+            {name:'asignado_pendiente', typeName:'text', inTable:false}
         ],
-        detailTables: [
-            {table: "anotaciones", fields: ["proyecto", "ticket"], abr: "A"},
-        ],
-        hiddenColumns:['estados__solapa'],
         primaryKey: ['proyecto', 'ticket'],
         foreignKeys: [
             {references: "estados", fields: ['estado'], displayFields:['solapa']},
@@ -47,8 +44,14 @@ export function tickets(context: TableContext):TableDefinition{
             {references: "equipos", fields: [{source:'equipo_requirente' , target:'equipo'}], alias:'equipo_requirente'},
             {references: "equipos", fields: [{source:'equipo_asignado' , target:'equipo'}], alias: 'equipo_asignado'},
         ],
+        detailTables: [
+            {table: "anotaciones", fields: ["proyecto", "ticket"], abr: "A"},
+        ],
         sql:{
-            fields:{ cant_anotaciones:{ expr: `(SELECT count(*) FROM anotaciones a WHERE a.proyecto = tickets.proyecto and a.ticket = tickets.ticket)` }},
+            fields:{ 
+                cant_anotaciones:{ expr: `(SELECT count(*) FROM anotaciones a WHERE a.proyecto = tickets.proyecto and a.ticket = tickets.ticket)` },
+                asignado_pendiente:{ expr:`(CASE WHEN estados.esta_pendiente THEN tickets.asignado ELSE null END)`}
+            },
             where: admin ? 'true' : `(
                 EXISTS (
                     SELECT true FROM equipos_usuarios eu WHERE usuario = ${q(context.user.usuario)}
@@ -57,7 +60,9 @@ export function tickets(context: TableContext):TableDefinition{
                 OR requirente = ${q(context.user.usuario)}
                 OR asignado = ${q(context.user.usuario)}
             )`
-        }
+        },
+        hiddenColumns:['asignado_pendiente','estados__solapa']
     }
     return td
 }
+

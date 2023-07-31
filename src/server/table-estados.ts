@@ -12,8 +12,9 @@ export function estados():TableDefinition{
             {name:'solapa', typeName:'text' },
             {name:'registrar_fechas', typeName:'text' },
             {name:'todos_pueden_modificar', typeName:'boolean', defaultValue:false},
-            {name:'cant_tickets', typeName: "bigint", inTable:false, editable:false}, 
-            {name:'orden', typeName: "integer"}, 
+            {name:'cant_tickets', typeName: 'bigint', inTable:false, editable:false}, 
+            {name:'orden', typeName: 'integer'}, 
+            {name:'esta_pendiente', typeName: 'boolean', defaultValue:true, nullable:false}
         ],
         sortColumns: [
             {column:'orden'}, {column:'estado'}
