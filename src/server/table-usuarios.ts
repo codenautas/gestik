@@ -19,11 +19,6 @@ export function usuarios(context:TableContext):TableDefinition{
             {name:'interno'          , typeName:'text'                      },
             {name:'mail'             , typeName:'text'                      },
             {name:'mail_alternativo' , typeName:'text'                      },
-            /* defaults
-            {name:'equipo_requirente', typeName:'text'                      },
-            {name:'equipo_asignado'  , typeName:'text'                      },
-            {name:'proyecto'         , typeName:'text'                      },
-            */
             {name:'clave_nueva'      , typeName:'text', clientSide:'newPass', allow:{select:admin, update:true, insert:false}},
         ],
         primaryKey:['usuario'],

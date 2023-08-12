@@ -17,8 +17,8 @@ export function equipos(context: TableContext):TableDefinition{
                 {table: 'equipos_usuarios' , fields:['equipo'], abr:'U', label:'usuarios' },
                 {table: 'equipos_proyectos', fields:['equipo'], abr:'P', label:'proyectos'},
             ]:[]),
-            {table: 'tickets', fields: [{source:'equipo', target:'equipo_requirente'}], label: 'tickets requeridos', abr: 'TR'},
-            {table: 'tickets', fields: [{source:'equipo', target:'equipo_asignado'  }], label: 'tickets asginados' , abr: 'TA'}
+            {table: 'equipo_requirente_tickets', fields: ['equipo'], label: 'tickets requeridos', abr: 'TR'},
+            {table: 'equipo_asignado_tickets'  , fields: ['equipo'], label: 'tickets asginados' , abr: 'TA'}
         ],
     }
     return td

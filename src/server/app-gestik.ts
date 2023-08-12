@@ -24,6 +24,7 @@ import { parametros } from './table-parametros';
 import { anotaciones } from './table-anotaciones';
 import { equipos_proyectos } from './table-equipos_proyectos';
 import { equipos_usuarios } from './table-equipos_usuarios';
+import { equipo_asignado_tickets, equipo_requirente_tickets } from "./table-equipo_tickets";
 import * as  MiniTools from "mini-tools";
 import * as backendPlus from "backend-plus";
 
@@ -115,7 +116,9 @@ export class AppGestik extends AppBackend{
             usuarios,
             anotaciones,
             equipos_proyectos,
-            equipos_usuarios
+            equipos_usuarios,
+            equipo_asignado_tickets, 
+            equipo_requirente_tickets
         }
         for(var table in this.getTableDefinition){
             be.appendToTableDefinition(table, function(tableDef){
