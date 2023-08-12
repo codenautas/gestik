@@ -27,7 +27,7 @@ export function estados():TableDefinition{
             { table: "proyectos_estados", fields: [ "estado"], abr: "P", label: "proyectos"},
             { table: "tickets", fields: [ "estado"], abr: "T" },
         ],
-        sql:{fields:{ cant_tickets:{ expr: `(SELECT count(*) FROM tickets t WHERE t.estado = estados.estado)` }}}
+        sql:{fields:{ cant_tickets:{ expr: `nullif((SELECT count(*) FROM tickets t WHERE t.estado = estados.estado),0)` }}}
     }
     return td
 }
