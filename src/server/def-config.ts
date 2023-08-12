@@ -32,6 +32,7 @@ client-setup:
   cursors: true
   title: gestik
   grid-row-retain-moved-or-deleted: true
+  grid-smart-caption: alone
 install:
   dump:
     db:
