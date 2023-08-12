@@ -21,6 +21,8 @@ myOwn.clientSides.solapas = {
             var ff = {estados__solapa: solapa, proyecto}
             control.appendChild(myOwn.createForkeableButton({w:'table', table:'tickets', ff}, {
                 label:solapa, onclick: function(event){
+                    // @ts-ignore
+                    if (event.ctrlKey) return
                     var div = document.getElementById('sub-ticket-solapas') 
                     if (!div) {
                         div = html.div({id:'sub-ticket-solapas'}).create();
@@ -28,6 +30,17 @@ myOwn.clientSides.solapas = {
                         main_layout.appendChild(div);
                     }
                     my.tableGrid('tickets', div, {fixedFields: [{fieldName:'estados__solapa', value:solapa}, {fieldName:'proyecto', value:proyecto}]});
+                    var grid = depot.manager;
+                    if (grid.depots.length > 1) {
+                        if (!grid.view.filter?.length) {
+                            grid.view.filter=[grid.createRowFilter(0,[{column:'proyecto', operator:'=', value:proyecto}])];
+                        } else {
+                            grid.view.filter[0].row.proyecto = proyecto
+                            grid.view.filter[0].rowControls.proyecto.setTypedValue(proyecto, false);
+                        }
+                        grid.updateFilterInfo(' (F) ');
+                        grid.displayBody();
+                    }
                     event?.preventDefault();
                 }
             }));
