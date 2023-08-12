@@ -1,8 +1,10 @@
 "use strict"
 
-import { TableDefinition } from "backend-plus";
+import { TableContext, TableDefinition } from "./types-gestik";
 
-export function estados():TableDefinition{
+import { sqlExprCantTickets } from "./table-tickets"
+
+export function estados(context:TableContext):TableDefinition{
     const td:TableDefinition = {
         editable: true,
         name: 'estados',
@@ -27,7 +29,7 @@ export function estados():TableDefinition{
             { table: "proyectos_estados", fields: [ "estado"], abr: "P", label: "proyectos"},
             { table: "tickets", fields: [ "estado"], abr: "T" },
         ],
-        sql:{fields:{ cant_tickets:{ expr: `nullif((SELECT count(*) FROM tickets t WHERE t.estado = estados.estado),0)` }}}
+        sql:{fields:{ cant_tickets:{ expr: sqlExprCantTickets(context, `t.estado = estados.estado`) }}}
     }
     return td
 }

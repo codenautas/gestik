@@ -1,6 +1,7 @@
 "use strict"
 
-import { TableDefinition, TableContext } from "types-gestik";
+import { sqlExprCantTickets } from "./table-tickets";
+import { TableDefinition, TableContext } from "./types-gestik";
 
 export function proyectos(context: TableContext):TableDefinition{
     var admin = context.user.rol == 'admin';
@@ -22,7 +23,7 @@ export function proyectos(context: TableContext):TableDefinition{
             { table: 'tickets', fields: [ 'proyecto' ], abr: 'T' },
         ],
         sql:{
-            fields:{ cant_tickets:{ expr: `(SELECT count(*) FROM tickets t WHERE t.proyecto = proyectos.proyecto)` }},
+            fields:{ cant_tickets:{ expr: sqlExprCantTickets(context, `t.proyecto = proyectos.proyecto`) }},
             where: admin ? 'true' : `EXISTS (SELECT true FROM equipos_usuarios eu INNER JOIN equipos_proyectos ep USING (equipo) WHERE usuario = ${q(context.user.usuario)} and ep.proyecto = proyectos.proyecto)`
         }
     }

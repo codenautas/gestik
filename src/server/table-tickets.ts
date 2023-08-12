@@ -1,10 +1,28 @@
 "use strict"
 
-import { TableContext, TableDefinition } from "backend-plus";
+import { TableContext, TableDefinition } from "./types-gestik";
 
-export function tickets(context: TableContext):TableDefinition{
+export function whereTickets(context: TableContext){
     var admin = context.user.rol == 'admin';
     var q = context.be.db.quoteLiteral;
+    return admin ? 'true' : `(
+        EXISTS (
+            SELECT true FROM equipos_usuarios eu WHERE usuario = ${q(context.user.usuario)}
+                AND (eu.equipo = tickets.equipo_requirente OR eu.equipo = tickets.equipo_asignado)
+        )
+        OR requirente = ${q(context.user.usuario)}
+        OR asignado = ${q(context.user.usuario)}
+    )`
+}
+
+export function sqlExprCantTickets(context: TableContext, filter: string, joinEstados?:boolean){
+    return `(SELECT nullif(count(*), 0) FROM tickets t 
+        ${joinEstados ? `INNER JOIN estados e ON t.estado = e.estado` : ``}
+        WHERE (${whereTickets(context)})
+            AND (${filter}))`;
+}
+
+export function tickets(context: TableContext):TableDefinition{
     const td:TableDefinition = {
         editable: true,
         name: 'tickets',
@@ -52,14 +70,7 @@ export function tickets(context: TableContext):TableDefinition{
                 cant_anotaciones:{ expr: `(SELECT count(*) FROM anotaciones a WHERE a.proyecto = tickets.proyecto and a.ticket = tickets.ticket)` },
                 asignado_pendiente:{ expr:`(CASE WHEN estados.esta_pendiente THEN tickets.asignado ELSE null END)`}
             },
-            where: admin ? 'true' : `(
-                EXISTS (
-                    SELECT true FROM equipos_usuarios eu WHERE usuario = ${q(context.user.usuario)}
-                        AND (eu.equipo = tickets.equipo_requirente OR eu.equipo = tickets.equipo_asignado)
-                )
-                OR requirente = ${q(context.user.usuario)}
-                OR asignado = ${q(context.user.usuario)}
-            )`
+            where: whereTickets(context)
         },
         hiddenColumns:['asignado_pendiente','estados__solapa']
     }

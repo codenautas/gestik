@@ -1,8 +1,9 @@
 "use strict"
 
-import { TableDefinition } from "backend-plus";
+import { sqlExprCantTickets } from "./table-tickets";
+import { TableContext, TableDefinition } from "./types-gestik";
 
-export function proyectos_estados_solapas():TableDefinition{
+export function proyectos_estados_solapas(context:TableContext):TableDefinition{
 
     const td:TableDefinition = {
         editable: false,
@@ -27,10 +28,9 @@ export function proyectos_estados_solapas():TableDefinition{
                             ) as sub_proyectos_estados 
                             LEFT JOIN solapas s on s.solapa = sub_proyectos_estados.solapa_pe
                         ) AS pes
-                        LEFT JOIN LATERAL (
-                            SELECT count(*) AS cant_tickets FROM tickets t 
-                            WHERE t.estado = pes.estado and t.proyecto = pes.proyecto
-                        ) AS t ON true
+                        LEFT JOIN LATERAL 
+                            ${sqlExprCantTickets(context,`t.estado = pes.estado and t.proyecto = pes.proyecto`)}
+                        AS t ON true
                     )`,
         },
         detailTables: [

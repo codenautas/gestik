@@ -1,8 +1,9 @@
 "use strict"
 
-import { TableDefinition } from "backend-plus";
+import { TableContext, TableDefinition } from "./types-gestik";
+import { sqlExprCantTickets } from "./table-tickets";
 
-export function solapas():TableDefinition{
+export function solapas(context: TableContext):TableDefinition{
     const td:TableDefinition = {
         editable: true,
         name: 'solapas',
@@ -21,7 +22,7 @@ export function solapas():TableDefinition{
             {table: "tickets", fields: [{source:'solapa' , target:'estados__solapa'}], abr: "T"},
         ],
         sql:{
-            fields:{ cant_tickets:{ expr: `(SELECT count(*) FROM estados e inner join tickets t on t.estado = e.estado WHERE e.solapa = solapas.solapa)` }},
+            fields:{ cant_tickets:{ expr: sqlExprCantTickets(context, `e.solapa = solapas.solapa`, true) }},
             orderBy: ['orden']
         }
     }
