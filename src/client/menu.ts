@@ -1,7 +1,5 @@
 "use strict";
 
-import {html} from "js-to-html";
-
 function pretty(number:number):string{
     if (number == null) return '  0 '
     if (number < 10 ) return '  ' + number + ' '
@@ -11,6 +9,11 @@ function pretty(number:number):string{
 
 function labelSolapa(solapa:string, cant:number){
     return `${solapa}${pretty(cant)}`
+}
+
+myOwn.clientSides.nothing = {
+    update: function(){},
+    prepare: async function(){}
 }
 
 myOwn.clientSides.solapas = {
@@ -32,27 +35,22 @@ myOwn.clientSides.solapas = {
             var ff = {estados__solapa: solapa, proyecto}
             var button = myOwn.createForkeableButton({w:'table', table:'tickets', ff}, {
                 label: labelSolapa(solapa, cant), 
-                onclick: function(event){
+                onclick: (event)=>{
                     // @ts-ignore
                     if (event.ctrlKey) return
-                    var div = document.getElementById('sub-ticket-solapas') 
-                    if (!div) {
-                        div = html.div({id:'sub-ticket-solapas'}).create();
-                        var main_layout = document.getElementById('main_layout')!;
-                        main_layout.appendChild(div);
+                    depot.row.solapa = solapa;
+                    if (depot.detailControls.tickets.show) {
+                        depot.detailControls.tickets.refreshAllRowsInGrid(true)
+                    } else {
+                        depot.detailControls.tickets.displayDetailGrid({})
                     }
-                    my.tableGrid('tickets', div, {fixedFields: [{fieldName:'estados__solapa', value:solapa}, {fieldName:'proyecto', value:proyecto}]});
-                    var grid = depot.manager;
-                    if (grid.depots.length > 1) {
-                        if (!grid.view.filter?.length) {
-                            grid.view.filter=[grid.createRowFilter(0,[{column:'proyecto', operator:'=', value:proyecto}])];
+                    solapas_cant.forEach(s => {
+                        if (s.solapa == solapa) { 
+                            buttons[s.solapa].setAttribute('is-selected','yes')
                         } else {
-                            grid.view.filter[0].row.proyecto = proyecto
-                            grid.view.filter[0].rowControls.proyecto.setTypedValue(proyecto, false);
+                            buttons[s.solapa].removeAttribute('is-selected')
                         }
-                        grid.updateFilterInfo(' (F) ');
-                        grid.displayBody();
-                    }
+                    })
                     event?.preventDefault();
                 }
             });

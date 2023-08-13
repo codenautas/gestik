@@ -14,14 +14,18 @@ export function proyectos(context: TableContext):TableDefinition{
             {name:'proyecto', typeName: 'text'},
             {name:'cant_tickets', typeName: 'bigint', inTable:false, editable:false},
             {name:'solapas', typeName: 'text', clientSide:'solapas', inTable:false, editable:false},
-            {name:'solapas_cant', typeName: 'jsonb', inTable:false}
+            {name:'solapas_cant', typeName: 'jsonb', inTable:false},
+            {name:'solapa', typeName:'text', clientSide:'nothing', inTable:false, serverSide:false}
         ],
         primaryKey: ['proyecto'],
+        softForeignKeys:[
+            // {references:'solapas', fields:['solapa'], displayFields:[]}
+        ],
         detailTables: [
             ...(admin?[{ table: 'equipos_proyectos', fields: ['proyecto'], abr: 'Q', label: 'equipos' }]:[]),
             { table: 'proyectos_solapas', fields: ['proyecto'], abr: 'S', label: 'solapas' },
             { table: 'proyectos_estados', fields: ['proyecto'], abr: 'E', label: 'estados' },
-            { table: 'tickets', fields: [ 'proyecto' ], abr: 'T' },
+            { table: 'tickets', fields: [ 'proyecto', {source:'solapa', target:'estados__solapa', nullMeansAll:true} ], abr: 'T' },
         ],
         sql:{
             fields:{ 
@@ -34,7 +38,7 @@ export function proyectos(context: TableContext):TableDefinition{
             },
             where: admin ? 'true' : `EXISTS (SELECT true FROM equipos_usuarios eu INNER JOIN equipos_proyectos ep USING (equipo) WHERE usuario = ${q(context.user.usuario)} and ep.proyecto = proyectos.proyecto)`
         },
-        hiddenColumns:['solapas_cant']
+        hiddenColumns:['solapas_cant', 'solapa']
     }
     return td
 }
