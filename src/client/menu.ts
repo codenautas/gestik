@@ -42,7 +42,7 @@ myOwn.clientSides.solapas = {
                     if (depot.detailControls.tickets.show) {
                         depot.detailControls.tickets.refreshAllRowsInGrid(true)
                     } else {
-                        depot.detailControls.tickets.displayDetailGrid({})
+                        depot.detailControls.tickets.forceDisplayDetailGrid({})
                     }
                     solapas_cant.forEach(s => {
                         if (s.solapa == solapa) { 
