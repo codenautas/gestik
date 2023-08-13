@@ -13,7 +13,8 @@ export function proyectos(context: TableContext):TableDefinition{
         fields: [
             {name:'proyecto', typeName: 'text'},
             {name:'cant_tickets', typeName: 'bigint', inTable:false, editable:false},
-            {name:'solapas', typeName: 'text', clientSide:'solapas', inTable:false, editable:false}
+            {name:'solapas', typeName: 'text', clientSide:'solapas', inTable:false, editable:false},
+            {name:'solapas_cant', typeName: 'jsonb', inTable:false}
         ],
         primaryKey: ['proyecto'],
         detailTables: [
@@ -23,9 +24,17 @@ export function proyectos(context: TableContext):TableDefinition{
             { table: 'tickets', fields: [ 'proyecto' ], abr: 'T' },
         ],
         sql:{
-            fields:{ cant_tickets:{ expr: sqlExprCantTickets(context, `t.proyecto = proyectos.proyecto`) }},
+            fields:{ 
+                cant_tickets:{ expr: sqlExprCantTickets(context, `t.proyecto = proyectos.proyecto`) },
+                solapas_cant:{ expr: `(
+                    SELECT jsonb_agg(jsonb_build_object('solapa', s.solapa, 'cant', cant_tickets, 'orden', s.orden) order by s.orden) 
+                        from solapas s  
+                            inner join lateral ${sqlExprCantTickets(context, `t.proyecto = proyectos.proyecto and e.solapa = s.solapa`, true)} as x on true
+                )`}
+            },
             where: admin ? 'true' : `EXISTS (SELECT true FROM equipos_usuarios eu INNER JOIN equipos_proyectos ep USING (equipo) WHERE usuario = ${q(context.user.usuario)} and ep.proyecto = proyectos.proyecto)`
-        }
+        },
+        hiddenColumns:['solapas_cant']
     }
     return td
 }

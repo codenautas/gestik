@@ -18,7 +18,7 @@ export function whereTickets(context: TableContext, aliasTickets: string = 'tick
 }
 
 export function sqlExprCantTickets(context: TableContext, filter: string, joinEstados?:boolean){
-    return `(SELECT nullif(count(*), 0) FROM tickets t
+    return `(SELECT nullif(count(*), 0) as cant_tickets FROM tickets t
         ${joinEstados ? `INNER JOIN estados e ON t.estado = e.estado` : ``}
         WHERE (${whereTickets(context, 't')})
             AND (${filter}))`;
