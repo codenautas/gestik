@@ -1,5 +1,8 @@
 "use strict";
 
+import {DateTime, date} from "best-globals";
+import {html} from "js-to-html"
+
 function pretty(number:number):string{
     if (number == null) return '  0 '
     if (number < 10 ) return '  ' + number + ' '
@@ -60,3 +63,45 @@ myOwn.clientSides.solapas = {
         control.buttons = buttons;
     }
 }
+
+function timeStampHtml(timestamp: DateTime){
+    var today = date.today()
+    if (timestamp.toDmy() == today.toDmy()) {
+        return html.span({class:'ts-time', title:timestamp.toLocaleString()}, [timestamp.toHm()])
+    } else if (timestamp.getFullYear() == today.getFullYear()) {
+        return html.span({class:'ts-sameyear', title:timestamp.toLocaleString()}, [timestamp.toDmy().replace(/[-\/]\d+$/,'')])
+    } else {
+        return html.span({class:'ts-otheryear', title:timestamp.toLocaleString()}, [timestamp.toDmy()])
+    }
+}
+
+myOwn.clientSides.timestamp = {
+    prepare: function(depot, fieldName){
+        var control = depot.rowControls[fieldName];
+        if (control.disabled) {
+            var timestamp = depot.row[fieldName];
+            control.innerHTML = "";
+            if (timestamp) {
+                control.appendChild(timeStampHtml(timestamp).create())
+            }
+        }
+    }
+}
+
+myOwn.clientSides.timestamp.update = myOwn.clientSides.timestamp.prepare;
+
+myOwn.clientSides.anotaciones = {
+    prepare: function(depot){
+        var control = depot.rowControls.detalle;
+        var img = control.getElementsByClassName('anot-img');
+        if (depot.row.anotacion === 0) {
+            depot.rowControls.detalle.style.fontWeight = 'bold';
+            depot.rowControls.detalle.disable(true);
+        }
+        if (!img[0] && depot.row.archivo && /\.(jpg|jpeg|png|svg)$/.test(depot.row.archivo)) {
+            control.appendChild(html.img({class:'anot-img', src:`./download/file?proyecto=${depot.row.proyecto}&ticket=${depot.row.ticket}&anotacion=${depot.row.anotacion}`}).create())
+        }
+    }
+}
+
+myOwn.clientSides.anotaciones.update = myOwn.clientSides.anotaciones.prepare;

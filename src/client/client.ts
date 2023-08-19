@@ -5,7 +5,7 @@ import "dialog-promise";
 myOwn.clientSides.subirAdjunto = {
     prepare: function(depot:myOwn.Depot, fieldName:string){
         var botonCargarExcel = html.button('archivo').create();
-        if (depot.row.archivo == null) {
+        if (depot.row.archivo == null && depot.row.anotacion !== 0) {
             depot.rowControls[fieldName].appendChild(botonCargarExcel);
             if (depot.row.anotacion == null) botonCargarExcel.disabled = true;
             botonCargarExcel.addEventListener('click', async function(){
