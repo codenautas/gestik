@@ -30,3 +30,27 @@ td[class^="ts-"]
 .anot-img  
   text-align center
   max-width 95%
+
+.w-ticket
+  padding 6px
+
+table.my-grid 
+  td, th
+    white-space nowrap
+    &[my-colname=solapas]
+      white-space pre
+
+.w-ticket
+  table
+    min-width 900px
+  caption, .head-info-row, tfoot, .grid-th-actions
+    display none
+  [my-colname=asunto]
+    min-width 600px
+    font-size 110%
+    white-space pre-wrap
+  [my-colname=descripcion]
+    white-space pre-wrap
+  [my-table^="tickets1"]
+    [inherited-pk-column=yes]
+      display: table-cell

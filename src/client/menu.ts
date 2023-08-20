@@ -105,3 +105,27 @@ myOwn.clientSides.anotaciones = {
 }
 
 myOwn.clientSides.anotaciones.update = myOwn.clientSides.anotaciones.prepare;
+
+myOwn.wScreens.ticket = {
+    parameters:[
+        {name: "proyecto", typeName:"text"  , references:"proyectos"},
+        {name: "ticket"  , typeName:"bigint"},
+    ],
+    mainAction: async function(params:{proyecto:string, ticket:number}, divResult){
+        var fixedFields = [
+            {fieldName:"proyecto", value:params.proyecto},
+            {fieldName:"ticket", value:params.ticket}
+        ];
+        var nuevoDiv = function(elemento:HTMLDivElement, className?:string){
+            var nuevo = html.div({class:className??"w-ticket"}).create();
+            elemento.appendChild(nuevo);
+            return nuevo;
+        }
+        if (window.location.hash.includes('autoproced')) {
+            myOwn.tableGrid("tickets1", nuevoDiv(divResult), {fixedFields})
+            myOwn.tableGrid("tickets3", nuevoDiv(divResult), {fixedFields})
+        }
+        myOwn.tableGrid("tickets2", nuevoDiv(divResult), {fixedFields})
+        myOwn.tableGrid("anotaciones", nuevoDiv(divResult,"w-aclaraciones"), {fixedFields})
+    }
+}

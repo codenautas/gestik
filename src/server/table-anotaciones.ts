@@ -26,11 +26,6 @@ export function anotaciones(context:TableContext):TableDefinition{
         constraints:[
             {constraintType:'unique', fields:['proyecto','ticket','archivo']},
         ],
-        sql:{
-            isTable: true,
-            from:`(select proyecto, ticket, anotacion, usuario   , detalle    , timestamp, archivo from anotaciones
-            union  select proyecto, ticket, 0        , requirente, descripcion, f_ticket , null    from tickets where descripcion is not null)`
-        },
         hiddenColumns: ['archivo'],
         clientSide:'anotaciones' 
     }

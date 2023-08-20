@@ -10,7 +10,7 @@ import { AppBackend, Context, Request,
 import {ProceduresGestik} from "./procedures-gestik";
 
 import { usuarios   } from './table-usuarios';
-import { tickets   } from './table-tickets';
+import { tickets, tickets1, tickets2, tickets3} from './table-tickets';
 import { solapas   } from './table-solapas';
 import { estados   } from './table-estados';
 import { equipos   } from './table-equipos';
@@ -103,7 +103,7 @@ export class AppGestik extends AppBackend{
         this.getTableDefinition={
             ... this.getTableDefinition,
             tipos_ticket,
-            tickets,
+            tickets,tickets1,tickets2,tickets3,
             proyectos,
             prioridades,
             solapas,
