@@ -129,3 +129,25 @@ myOwn.wScreens.ticket = {
         myOwn.tableGrid("anotaciones", nuevoDiv(divResult,"w-aclaraciones"), {fixedFields})
     }
 }
+
+myOwn.wScreens.mis_verificaciones = {
+    parameters:[
+        {name: "username", typeName:"text"},
+    ],
+    mainAction: async function(params:{username:string}, divResult){
+        let fixedFields = [
+            {fieldName:"requirente", value:params.username},
+            {fieldName:"estado", value:"a_verificar"},
+        ];
+        let fixedFields2 = [
+            {fieldName:"estado", value:"a_verificar"},
+        ];
+        let nuevoDiv = function(elemento:HTMLDivElement, className?:string){
+            var nuevo = html.div({class:className??"w-verificaciones"}).create();
+            elemento.appendChild(nuevo);
+            return nuevo;
+        }
+        myOwn.tableGrid("tickets", nuevoDiv(divResult), {fixedFields, tableDef: {title: "Tickets"}})
+        myOwn.tableGrid("tickets_equipos_usuarios", nuevoDiv(divResult), {fixedFields: fixedFields2, tableDef: {title: "Tickets de mis colegas"}})
+    }
+}

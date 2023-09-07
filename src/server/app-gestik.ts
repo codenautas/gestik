@@ -18,6 +18,7 @@ import { prioridades   } from './table-prioridades';
 import { proyectos   } from './table-proyectos';
 import { tipos_ticket   } from './table-tipos_ticket';
 import { proyectos_estados   } from './table-proyectos_estados';
+import { tickets_equipos_usuarios   } from './table-tickets_equipos_usuarios';
 import { proyectos_solapas } from './table-proyectos_solapas';
 import { proyectos_estados_solapas } from './table-proyectos_estados_solapas';
 import { parametros } from './table-parametros';
@@ -66,6 +67,7 @@ export class AppGestik extends AppBackend{
             {menuType:'table', name:'tickets'},
             {menuType:'table', name:'proyectos'},
             {menuType:'table', name:'mis_pendientes', table:'tickets', ff:{asignado_pendiente: context?.username}},
+            {menuType:'mis_verificaciones', autoproced: true, name:'mis_verificaciones', ff:{username: context?.username}},
         ];
         if(context.user && context.user.rol=="admin"){
             menuContent.push(
@@ -118,7 +120,8 @@ export class AppGestik extends AppBackend{
             equipos_proyectos,
             equipos_usuarios,
             equipo_asignado_tickets, 
-            equipo_requirente_tickets
+            equipo_requirente_tickets,
+            tickets_equipos_usuarios
         }
         for(var table in this.getTableDefinition){
             be.appendToTableDefinition(table, function(tableDef){
