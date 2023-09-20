@@ -5,7 +5,7 @@ import { sqlExprCantTickets } from "./table-tickets";
 
 export function solapas(context: TableContext):TableDefinition{
     const td:TableDefinition = {
-        editable: true,
+        editable: context.user.rol == 'admin',
         name: 'solapas',
         fields: [
             {name:'solapa', typeName:'text',},

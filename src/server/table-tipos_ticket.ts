@@ -1,10 +1,10 @@
 "use strict"
 
-import { TableDefinition } from "backend-plus";
+import { TableContext, TableDefinition } from "backend-plus";
 
-export function tipos_ticket():TableDefinition{
+export function tipos_ticket(context: TableContext):TableDefinition{
     const td:TableDefinition = {
-        editable: true,
+        editable: context.user.rol == 'admin',
         name: 'tipos_ticket',
         fields: [
             {name:'tipo_ticket', typeName:'text' }

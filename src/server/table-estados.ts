@@ -6,7 +6,7 @@ import { sqlExprCantTickets } from "./table-tickets"
 
 export function estados(context:TableContext):TableDefinition{
     const td:TableDefinition = {
-        editable: true,
+        editable: context.user.rol == 'admin',
         name: 'estados',
         fields: [
             {name:'estado', typeName:'text' },

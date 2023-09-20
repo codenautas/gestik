@@ -1,10 +1,10 @@
 "use strict"
 
-import { TableDefinition } from "backend-plus";
+import { TableContext, TableDefinition } from "backend-plus";
 
-export function prioridades():TableDefinition{
+export function prioridades(context: TableContext):TableDefinition{
     const td:TableDefinition = {
-        editable: true,
+        editable: context.user.rol == 'admin',
         name: 'prioridades',
         fields: [
             {name:'prioridad', typeName:'text',},
