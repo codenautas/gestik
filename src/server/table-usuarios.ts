@@ -27,9 +27,9 @@ export function usuarios(context:TableContext):TableDefinition{
         },
         detailTables: [
             {table: 'equipos_usuarios', abr: 'Q', label: 'equipos'  , fields: ['usuario'], refreshParent:true, refreshFromParent:true},
-            {table: 'tickets', abr: 'TA', label:'tickets asignados' , fields: [{source:'usuario', target:'asignado'}], refreshParent:true, refreshFromParent:true},
-            {table: 'tickets', abr: 'P' , label:'tickets pendientes', fields: [{source:'usuario', target:'asignado_pendiente'}], refreshParent:true, refreshFromParent:true},
-            {table: 'tickets', abr: 'TR', label:'tickets requeridos', fields: [{source:'usuario', target:'requirente'}], refreshParent:true, refreshFromParent:true}
+            {table: 'tickets', abr: '₳', label:'tickets asignados' , fields: [{source:'usuario', target:'asignado'}], refreshParent:true, refreshFromParent:true},
+            {table: 'tickets', abr: 'Ᵽ', label:'tickets pendientes', fields: [{source:'usuario', target:'asignado_pendiente'}], refreshParent:true, refreshFromParent:true},
+            {table: 'tickets', abr: 'Ɍ', label:'tickets requeridos', fields: [{source:'usuario', target:'requirente'}], refreshParent:true, refreshFromParent:true}
         ],
     };
 }
