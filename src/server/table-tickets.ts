@@ -36,7 +36,7 @@ export function tickets(context: TableContext, opts: Opts = {}):TableDefinition{
         {name:'asunto'             , typeName:'text'  , zona:'1' , title:'asunto', nullable:false},
         {name:'descripcion'        , typeName:'text'  , zona:'2' , title:'descripción' },
         {name:'requirente'         , typeName:'text'  , zona:'3' , defaultValue: context.user.usuario },
-        {name:'estado'             , typeName:'text'  , zona:'3' , },
+        {name:'estado'             , typeName:'text'  , zona:'3' , alwaysShow:true},
         {name:'asignado'           , typeName:'text'  , zona:'3' , },
         {name:'modulo'             , typeName:'text'  , zona:'3' , title:'módulo' },
         {name:'prioridad'          , typeName:'text'  , zona:'3' , },

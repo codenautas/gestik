@@ -136,11 +136,11 @@ myOwn.wScreens.mis_verificaciones = {
     ],
     mainAction: async function(params:{username:string}, divResult){
         let fixedFields = [
-            {fieldName:"requirente", value:params.username},
-            {fieldName:"estado", value:"a_verificar"},
+            {fieldName:"requirente", value:params.username, show:true},
+            {fieldName:"estado", value:"a_verificar", show:true},
         ];
         let fixedFields2 = [
-            {fieldName:"estado", value:"a_verificar"},
+            {fieldName:"estado", value:"a_verificar", show:true},
         ];
         let nuevoDiv = function(elemento:HTMLDivElement, className?:string){
             var nuevo = html.div({class:className??"w-verificaciones"}).create();
