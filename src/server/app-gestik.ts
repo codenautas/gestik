@@ -45,7 +45,7 @@ export class AppGestik extends AppBackend{
                     'SELECT proyecto, ticket, anotacion, archivo FROM anotaciones WHERE proyecto = $1 and ticket = $2 AND anotacion = $3',
                     [req.query.proyecto, req.query.ticket, req.query.anotacion]
                 ).fetchUniqueRow();
-                let path = `local-attachments/${result.row.proyecto}/${result.row.ticket}/${result.row.archivo}`;
+                let path = `local-attachments/${result.row.archivo}`;
                 MiniTools.serveFile(path, {})(req, res);
             })
         });

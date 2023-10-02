@@ -47,9 +47,12 @@ myOwn.clientSides.bajarAdjunto = {
     update:function(depot:myOwn.Depot, fieldName:string):void{
         let td=depot.rowControls[fieldName];
         td.innerHTML='';
-        let excelFileName=depot.row.archivo;
-        if(excelFileName){
-            td.appendChild(html.a({class:'link-descarga-archivo', href:`download/file?proyecto=${depot.row.proyecto}&ticket=${depot.row.ticket}&anotacion=${depot.row.anotacion}`, download:excelFileName},"archivo").create());            
+        if(depot.row.archivo){
+            let fileParts = depot.row.archivo.split('/');
+            let fileName = fileParts.pop();
+            if(fileName){
+                td.appendChild(html.a({class:'link-descarga-archivo', href:`download/file?proyecto=${depot.row.proyecto}&ticket=${depot.row.ticket}&anotacion=${depot.row.anotacion}`, download:fileName},"archivo").create());            
+            }
         }
     },
     prepare:function(_depot:myOwn.Depot, _fieldName:string):void{
