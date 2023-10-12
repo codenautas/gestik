@@ -18,7 +18,7 @@ login:
   unloggedLandPage: false
   plus:
     maxAge-5-sec: 5000    
-    maxAge: 864000000
+    maxAge: 8640000
     maxAge-10-day: 864000000
     allowHttpLogin: true
     fileStore: true
@@ -31,6 +31,8 @@ client-setup:
   user-scalable: no
   cursors: true
   title: gestik
+  grid-row-retain-moved-or-deleted: true
+  grid-smart-caption: alone
 install:
   dump:
     db:

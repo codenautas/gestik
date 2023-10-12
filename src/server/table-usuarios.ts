@@ -19,11 +19,6 @@ export function usuarios(context:TableContext):TableDefinition{
             {name:'interno'          , typeName:'text'                      },
             {name:'mail'             , typeName:'text'                      },
             {name:'mail_alternativo' , typeName:'text'                      },
-            /* defaults
-            {name:'equipo_requirente', typeName:'text'                      },
-            {name:'equipo_asignado'  , typeName:'text'                      },
-            {name:'proyecto'         , typeName:'text'                      },
-            */
             {name:'clave_nueva'      , typeName:'text', clientSide:'newPass', allow:{select:admin, update:true, insert:false}},
         ],
         primaryKey:['usuario'],
@@ -32,8 +27,9 @@ export function usuarios(context:TableContext):TableDefinition{
         },
         detailTables: [
             {table: 'equipos_usuarios', abr: 'Q', label: 'equipos'  , fields: ['usuario'], refreshParent:true, refreshFromParent:true},
-            {table: 'tickets', abr: 'TA', label:'tickets asignados' , fields: [{source:'usuario', target:'asignado'}], refreshParent:true, refreshFromParent:true},
-            {table: 'tickets', abr: 'TR', label:'tickets requeridos', fields: [{source:'usuario', target:'requirente'}], refreshParent:true, refreshFromParent:true}
+            {table: 'tickets', abr: '₳', label:'tickets asignados' , fields: [{source:'usuario', target:'asignado'}], refreshParent:true, refreshFromParent:true},
+            {table: 'tickets', abr: 'Ᵽ', label:'tickets pendientes', fields: [{source:'usuario', target:'asignado_pendiente'}], refreshParent:true, refreshFromParent:true},
+            {table: 'tickets', abr: 'Ɍ', label:'tickets requeridos', fields: [{source:'usuario', target:'requirente'}], refreshParent:true, refreshFromParent:true}
         ],
     };
 }

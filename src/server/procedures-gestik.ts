@@ -20,7 +20,7 @@ export const ProceduresGestik:ProcedureDef[] = [
             context.informProgress({message:be.messages.fileUploaded});
             let file = files![0]
             let originalFilename = file.originalFilename;
-            let filename=originalFilename;
+            let filename=`${parameters.proyecto}/${parameters.ticket}/${originalFilename}`;
             var createResponse = function createResponse(adjuntoRow:any){
                 let resultado = {
                     message: `el archivo ${adjuntoRow.archivo} se subió correctamente.`,
@@ -28,8 +28,8 @@ export const ProceduresGestik:ProcedureDef[] = [
                 }
                 return resultado
             }
-            var moveFile = async function moveFile(file:UploadedFileInfo, proyecto:string, ticket:string, fileName:string){
-                let newPath = `local-attachments/${proyecto}/${ticket}/${fileName}`;
+            var moveFile = async function moveFile(file:UploadedFileInfo, fileName:string){
+                let newPath = `local-attachments/${fileName}`;
                 return fs.move(file.path, newPath, { overwrite: true });
             }
             var {row} = await client.query(`
@@ -40,7 +40,7 @@ export const ProceduresGestik:ProcedureDef[] = [
                 [filename, parameters.proyecto, parameters.ticket, parameters.anotacion]
             ).fetchUniqueRow();
             var resultado = createResponse(row);
-            await moveFile(file, row.proyecto, row.ticket, row.archivo);
+            await moveFile(file, row.archivo);
             return resultado;
         }
     }

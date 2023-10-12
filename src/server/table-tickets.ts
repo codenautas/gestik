@@ -1,63 +1,106 @@
 "use strict"
 
-import { TableContext, TableDefinition } from "backend-plus";
+import { TableContext, TableDefinition, FieldDefinition } from "./types-gestik";
 
-export function tickets(context: TableContext):TableDefinition{
+export function whereTickets(context: TableContext, aliasTickets: string = 'tickets'){
     var admin = context.user.rol == 'admin';
     var q = context.be.db.quoteLiteral;
+    return admin ? 'true' : `(
+        requirente = ${q(context.user.usuario)} OR
+        asignado = ${q(context.user.usuario)} OR
+        EXISTS (
+            SELECT true 
+                FROM equipos_usuarios eu INNER JOIN equipos_usuarios et ON eu.equipo = et.equipo
+                WHERE eu.usuario = ${q(context.user.usuario)}
+                AND (et.usuario = ${aliasTickets}.requirente OR et.usuario = ${aliasTickets}.asignado)
+        )
+    )`
+}
+
+export function sinAsignar(){
+    return `(
+        asignado is null and estados.solapa <> 'cerrados'
+    )`
+}
+
+export function sqlExprCantTickets(context: TableContext, filter: string, joinEstados?:boolean){
+    return `(SELECT nullif(count(*), 0) as cant_tickets FROM tickets t
+        ${joinEstados ? `INNER JOIN estados e ON t.estado = e.estado` : ``}
+        WHERE (${whereTickets(context, 't')})
+            AND (${filter}))`;
+}
+type Opts = {
+    zona?:string,
+    sin_asignar?:boolean
+}
+
+export function tickets(context: TableContext, opts: Opts = {}):TableDefinition{
+    var fields: (FieldDefinition & {zona:string, siempre?:boolean})[] = [
+        {name:'proyecto'           , typeName:'text'  , zona:'1' ,siempre:true , },
+        {name:'ticket'             , typeName:'bigint', zona:'1' ,siempre:true , nullable:true, editable:false, defaultDbValue:'0'},
+        {name:'tipo_ticket'        , typeName:'text'  , zona:'1' , title:'tipo ticket'},
+        {name:'cant_anotaciones'   , typeName:'bigint', zona:'0' , inTable:false, editable:false, title:'c.a.', description: 'cantidad anotaciones'}, 
+        {name:'asunto'             , typeName:'text'  , zona:'1' , title:'asunto', nullable:false},
+        {name:'descripcion'        , typeName:'text'  , zona:'2' , title:'descripción' },
+        {name:'requirente'         , typeName:'text'  , zona:'3' , defaultValue: context.user.usuario },
+        {name:'estado'             , typeName:'text'  , zona:'3' , alwaysShow:true},
+        {name:'asignado'           , typeName:'text'  , zona:'3' , },
+        {name:'modulo'             , typeName:'text'  , zona:'3' , title:'módulo' },
+        {name:'prioridad'          , typeName:'text'  , zona:'3' , },
+        {name:'f_ticket'           , typeName:'date'  , zona:'3' , title:'fecha', defaultDbValue: 'current_date'},
+        {name:'version'            , typeName:'text'  , zona:'3' , title:'versión' },
+        {name:'esfuerzo_estimado'  , typeName:'text'  , zona:'3' , title:'esfuerzo estimado'},
+        {name:'f_realizacion'      , typeName:'date'  , zona:'3' , title:'realización'},
+        {name:'f_instalacion'      , typeName:'date'  , zona:'3' , title:'instalación'},
+        {name:'tema'               , typeName:'text'  , zona:'3' , },
+        {name:'asignado_pendiente' , typeName:'text'  , zona:'0' , inTable:false}
+    ]
     const td:TableDefinition = {
         editable: true,
-        name: 'tickets',
+        name: 'tickets'+(opts.zona ?? ''),
         elementName: 'ticket',
-        fields: [
-            {name:'proyecto', typeName:'text' },
-            {name:'ticket', typeName:'bigint', nullable:true, editable:false, defaultDbValue:'0'},
-            {name:'tipo_ticket', typeName:'text', title:'tipo ticket'},
-            {name:'cant_anotaciones', typeName: 'bigint', inTable:false, editable:false, title:'c.a.', description: 'cantidad anotaciones'}, 
-            {name:'asunto', typeName:'text', title:'asunto', nullable:false},
-            {name:'descripcion', typeName:'text', title:'descripción' },
-            {name:'modulo', typeName:'text', title:'módulo' },
-            {name:'prioridad', typeName:'text' },
-            {name:'f_ticket', typeName:'date', title:'fecha ticket', defaultDbValue: 'current_date'},
-            {name:'requirente', typeName:'text', defaultValue: context.user.usuario },
-            {name:'equipo_requirente', typeName:'text' },
-            {name:'estado', typeName:'text'},
-            {name:'equipo_asignado', typeName:'text' },
-            {name:'asignado', typeName:'text' },
-            {name:'version', typeName:'text', title:'versión' },
-            {name:'esfuerzo_estimado', typeName:'text', title:'esfuerzo estimado'},
-            {name:'f_realizacion', typeName:'date', title:'fecha realización'},
-            {name:'f_instalacion', typeName:'date', title:'fecha instalación'},
-            {name:'tema', typeName:'text'},
-            {name:'observaciones', typeName:'text'},
-            {name:'sugerencias_pei', typeName:'text'}
-        ],
-        detailTables: [
-            {table: "anotaciones", fields: ["proyecto", "ticket"], abr: "A"},
-        ],
-        hiddenColumns:['estados__solapa'],
+        tableName: 'tickets',
+        fields: fields.filter(def => opts.zona == null || def.siempre || def.zona == opts.zona).map(({zona, ...def})=>def),
         primaryKey: ['proyecto', 'ticket'],
         foreignKeys: [
-            {references: "estados", fields: ['estado'], displayFields:['solapa']},
             {references: "proyectos", fields: ['proyecto']},
-            {references: "usuarios", fields: [{source:'asignado' , target:'usuario'}], alias: 'usuario_asignado'},
-            {references: "usuarios", fields: [{source:'requirente' , target:'usuario'}], alias: 'usuario_requirente'},
-            {references: "prioridades", fields: ['prioridad']},
-            {references: "tipos_ticket", fields: ['tipo_ticket']},
-            {references: "equipos", fields: [{source:'equipo_requirente' , target:'equipo'}], alias:'equipo_requirente'},
-            {references: "equipos", fields: [{source:'equipo_asignado' , target:'equipo'}], alias: 'equipo_asignado'},
+            ...(opts.zona == null || opts.zona == '3' ? [
+                {references: "estados", fields: ['estado'], displayFields:['solapa']},
+                {references: "usuarios", fields: [{source:'asignado' , target:'usuario'}], alias: 'asignado'},
+                {references: "usuarios", fields: [{source:'requirente' , target:'usuario'}], alias: 'requirente'},
+                {references: "prioridades", fields: ['prioridad']},
+            ] : []),
+            ...(opts.zona == null || opts.zona == '1' ? [
+                    {references: "tipos_ticket", fields: ['tipo_ticket']},
+            ] : [])
+        ],
+        detailTables: opts.zona ? [] : [
+            // {table: "anotaciones", fields: ["proyecto", "ticket"], abr: "A"},
+            {wScreen: "ticket", fields: ["proyecto", "ticket"], abr:"A", label:"anotaciones"}
         ],
         sql:{
-            fields:{ cant_anotaciones:{ expr: `(SELECT count(*) FROM anotaciones a WHERE a.proyecto = tickets.proyecto and a.ticket = tickets.ticket)` }},
-            where: admin ? 'true' : `(
-                EXISTS (
-                    SELECT true FROM equipos_usuarios eu WHERE usuario = ${q(context.user.usuario)}
-                        AND (eu.equipo = tickets.equipo_requirente OR eu.equipo = tickets.equipo_asignado)
-                )
-                OR requirente = ${q(context.user.usuario)}
-                OR asignado = ${q(context.user.usuario)}
-            )`
-        }
+            isTable: opts.zona == null || opts.sin_asignar == null,
+            fields:{ 
+                cant_anotaciones:{ expr: `(SELECT nullif(count(*),0) FROM anotaciones a WHERE a.proyecto = tickets.proyecto and a.ticket = tickets.ticket)` },
+                asignado_pendiente:{ expr:`(CASE WHEN estados.esta_pendiente THEN tickets.asignado ELSE null END)`}
+            },
+            where: opts.sin_asignar ? sinAsignar() : whereTickets(context)
+        },
+        hiddenColumns:['asignado_pendiente','estados__solapa' /*,...(opts.zona == '1' || opts.zona == null ? [] : ['proyec'])*/]
     }
     return td
+}
+
+export function tickets1(context: TableContext){
+    return tickets(context, {zona: '1'});
+}
+export function tickets2(context: TableContext){
+    return tickets(context, {zona: '2'});
+}
+export function tickets3(context: TableContext){
+    return tickets(context, {zona: '3'});
+}
+
+export function tickets_pendientes(context:TableContext){
+    return tickets(context, {sin_asignar: true})
 }

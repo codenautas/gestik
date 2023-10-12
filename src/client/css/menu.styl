@@ -1,7 +1,59 @@
 
 [placeholder]:empty::before 
-    content attr(placeholder)
-    color #7bF
+  content attr(placeholder)
+  color #7bF
 
 td[my-colname=asunto]
-    max-width 600px
+  max-width 600px
+
+td[my-colname=solapas]
+  max-width 600px
+
+.w-verificaciones
+  margin-bottom 5px
+
+#main_layout [my-colname] .menu-item
+  margin-left 2px
+  margin-right 2px
+  margin-bottom 1px
+  padding 3px
+  border-radius 2px
+
+#main_layout [my-colname] .menu-item[is-selected]
+  background-color: #fff
+
+[my-table^=anotaciones] td[my-colname=detalle]
+  white-space pre-wrap
+  max-width 600px
+
+td[class^="ts-"]
+  width 95%
+  text-align center
+
+.anot-img  
+  text-align center
+  max-width 95%
+
+.w-ticket
+  padding 6px
+
+table.my-grid 
+  td, th
+    white-space nowrap
+    &[my-colname=solapas]
+      white-space pre
+
+.w-ticket
+  table
+    min-width 900px
+  caption, .head-info-row, tfoot, .grid-th-actions
+    display none
+  [my-colname=asunto]
+    min-width 600px
+    font-size 110%
+    white-space pre-wrap
+  [my-colname=descripcion]
+    white-space pre-wrap
+  [my-table^="tickets1"]
+    [inherited-pk-column=yes]
+      display: table-cell

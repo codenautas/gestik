@@ -1,8 +1,9 @@
 "use strict"
 
-import { TableDefinition } from "backend-plus";
+import { sqlExprCantTickets } from "./table-tickets";
+import { TableContext, TableDefinition } from "./types-gestik";
 
-export function proyectos_estados():TableDefinition{
+export function proyectos_estados(context:TableContext):TableDefinition{
 
     const td:TableDefinition = {
         editable: false,
@@ -12,9 +13,6 @@ export function proyectos_estados():TableDefinition{
             {name: 'proyecto', typeName: 'text'},
             {name: 'estado', typeName: 'text'},
             {name: 'cant_tickets', typeName: 'bigint'},
-            // equivale a:
-            // {name: 'estados__orden', typeName: 'integer', title:'orden'},
-            // {name: 'estados__solapa', typeName: 'integer', title:'solapa'},
         ],
         primaryKey: ['proyecto', 'estado'],
         softForeignKeys: [
@@ -28,9 +26,9 @@ export function proyectos_estados():TableDefinition{
             from: `(SELECT * 
                 FROM proyectos AS p 
                 CROSS JOIN estados AS e 
-                LEFT JOIN LATERAL (
-                    SELECT count(*) as cant_tickets FROM tickets t WHERE t.proyecto = p.proyecto AND t.estado = e.estado
-                ) AS t ON true
+                LEFT JOIN LATERAL 
+                    ${sqlExprCantTickets(context, `t.proyecto = p.proyecto AND t.estado = e.estado`)}
+                AS t ON true
             )`
         },
         sortColumns: [{column: 'estados__orden'}, {column: 'estado'}, {column: 'proyecto'}]

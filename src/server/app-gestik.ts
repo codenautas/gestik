@@ -10,7 +10,7 @@ import { AppBackend, Context, Request,
 import {ProceduresGestik} from "./procedures-gestik";
 
 import { usuarios   } from './table-usuarios';
-import { tickets   } from './table-tickets';
+import { tickets, tickets1, tickets2, tickets3, tickets_pendientes} from './table-tickets';
 import { solapas   } from './table-solapas';
 import { estados   } from './table-estados';
 import { equipos   } from './table-equipos';
@@ -18,12 +18,14 @@ import { prioridades   } from './table-prioridades';
 import { proyectos   } from './table-proyectos';
 import { tipos_ticket   } from './table-tipos_ticket';
 import { proyectos_estados   } from './table-proyectos_estados';
+import { tickets_equipos_usuarios   } from './table-tickets_equipos_usuarios';
 import { proyectos_solapas } from './table-proyectos_solapas';
 import { proyectos_estados_solapas } from './table-proyectos_estados_solapas';
 import { parametros } from './table-parametros';
 import { anotaciones } from './table-anotaciones';
 import { equipos_proyectos } from './table-equipos_proyectos';
 import { equipos_usuarios } from './table-equipos_usuarios';
+import { equipo_asignado_tickets, equipo_requirente_tickets } from "./table-equipo_tickets";
 import * as  MiniTools from "mini-tools";
 import * as backendPlus from "backend-plus";
 
@@ -43,7 +45,7 @@ export class AppGestik extends AppBackend{
                     'SELECT proyecto, ticket, anotacion, archivo FROM anotaciones WHERE proyecto = $1 and ticket = $2 AND anotacion = $3',
                     [req.query.proyecto, req.query.ticket, req.query.anotacion]
                 ).fetchUniqueRow();
-                let path = `local-attachments/${result.row.proyecto}/${result.row.ticket}/${result.row.archivo}`;
+                let path = `local-attachments/${result.row.archivo}`;
                 MiniTools.serveFile(path, {})(req, res);
             })
         });
@@ -64,6 +66,8 @@ export class AppGestik extends AppBackend{
         var menuContent:MenuInfoBase[]=[
             {menuType:'table', name:'tickets'},
             {menuType:'table', name:'proyectos'},
+            {menuType:'mis_pendientes', autoproced: true, name:'mis_pendientes', ff:{username: context?.username}},
+            {menuType:'mis_verificaciones', autoproced: true, name:'mis_verificaciones', ff:{username: context?.username}},
         ];
         if(context.user && context.user.rol=="admin"){
             menuContent.push(
@@ -101,7 +105,7 @@ export class AppGestik extends AppBackend{
         this.getTableDefinition={
             ... this.getTableDefinition,
             tipos_ticket,
-            tickets,
+            tickets,tickets1,tickets2,tickets3,tickets_pendientes,
             proyectos,
             prioridades,
             solapas,
@@ -114,7 +118,10 @@ export class AppGestik extends AppBackend{
             usuarios,
             anotaciones,
             equipos_proyectos,
-            equipos_usuarios
+            equipos_usuarios,
+            equipo_asignado_tickets, 
+            equipo_requirente_tickets,
+            tickets_equipos_usuarios
         }
         for(var table in this.getTableDefinition){
             be.appendToTableDefinition(table, function(tableDef){
