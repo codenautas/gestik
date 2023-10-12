@@ -10,7 +10,7 @@ import { AppBackend, Context, Request,
 import {ProceduresGestik} from "./procedures-gestik";
 
 import { usuarios   } from './table-usuarios';
-import { tickets, tickets1, tickets2, tickets3} from './table-tickets';
+import { tickets, tickets1, tickets2, tickets3, tickets_pendientes} from './table-tickets';
 import { solapas   } from './table-solapas';
 import { estados   } from './table-estados';
 import { equipos   } from './table-equipos';
@@ -66,7 +66,7 @@ export class AppGestik extends AppBackend{
         var menuContent:MenuInfoBase[]=[
             {menuType:'table', name:'tickets'},
             {menuType:'table', name:'proyectos'},
-            {menuType:'table', name:'mis_pendientes', table:'tickets', ff:{asignado_pendiente: context?.username}},
+            {menuType:'mis_pendientes', autoproced: true, name:'mis_pendientes', ff:{username: context?.username}},
             {menuType:'mis_verificaciones', autoproced: true, name:'mis_verificaciones', ff:{username: context?.username}},
         ];
         if(context.user && context.user.rol=="admin"){
@@ -105,7 +105,7 @@ export class AppGestik extends AppBackend{
         this.getTableDefinition={
             ... this.getTableDefinition,
             tipos_ticket,
-            tickets,tickets1,tickets2,tickets3,
+            tickets,tickets1,tickets2,tickets3,tickets_pendientes,
             proyectos,
             prioridades,
             solapas,
