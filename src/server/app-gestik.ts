@@ -23,6 +23,7 @@ import { proyectos_solapas } from './table-proyectos_solapas';
 import { proyectos_estados_solapas } from './table-proyectos_estados_solapas';
 import { parametros } from './table-parametros';
 import { anotaciones } from './table-anotaciones';
+import { roles } from './table-roles';
 import { equipos_proyectos } from './table-equipos_proyectos';
 import { equipos_usuarios } from './table-equipos_usuarios';
 import { equipo_asignado_tickets, equipo_requirente_tickets } from "./table-equipo_tickets";
@@ -79,6 +80,7 @@ export class AppGestik extends AppBackend{
                     {menuType:'table', name:'tipos_ticket'},
                     {menuType:'table', name:'parametros'},
                     {menuType:'table', name:'usuarios'},
+                    {menuType:'table', name:'roles'},
                 ]}
             )
         } else {
@@ -115,6 +117,7 @@ export class AppGestik extends AppBackend{
             proyectos_solapas,
             equipos,
             parametros,
+            roles,
             usuarios,
             anotaciones,
             equipos_proyectos,

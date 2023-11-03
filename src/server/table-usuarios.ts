@@ -25,6 +25,9 @@ export function usuarios(context:TableContext):TableDefinition{
         sql:{
             where:admin || context.forDump?'true':"usuario = "+context.be.db.quoteNullable(context.user.usuario)
         },
+        foreignKeys: [
+            {references: "roles", fields: ['rol']},
+        ],
         detailTables: [
             {table: 'equipos_usuarios', abr: 'Q', label: 'equipos'  , fields: ['usuario'], refreshParent:true, refreshFromParent:true},
             {table: 'tickets', abr: '₳', label:'tickets asignados' , fields: [{source:'usuario', target:'asignado'}], refreshParent:true, refreshFromParent:true},
