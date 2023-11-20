@@ -3,14 +3,38 @@
 import { TableDefinition, TableContext } from "backend-plus";
 import { tickets } from "./table-tickets";
 
-export function tickets_equipos_usuarios(context:TableContext):TableDefinition{
+type Opts = {
+    sin_asignar?:boolean
+}
+
+export function tickets_equipos_usuarios(context:TableContext, opts: Opts = {}):TableDefinition{
     const td = tickets(context);
-    var q = context.be.db.quoteLiteral(context.user.usuario);
+    const q = context.be.db.quoteLiteral(context.user.usuario);
     td.name = 'tickets_equipos_usuarios';
+    const where_requirente = `tickets.requirente <> ${q}`;
+    const where_sin_asignar = `asignado is null and estados.solapa <> 'cerrados'`;
     td.sql && (
         td.sql.isTable=false, 
-        td.sql.where = `tickets.requirente <> ${q} and exists (select * from equipos_usuarios eu where eu.usuario = tickets.requirente and 
-        eu.equipo in (select e.equipo from equipos_usuarios e where e.usuario = ${q}))`
+        td.sql.from=`(
+            select tickets.* 
+            from tickets
+            inner join estados on (estados.estado = tickets.estado)
+            inner join (
+                select eu.usuario, ep.proyecto
+                from equipos_proyectos ep
+                inner join equipos_usuarios eu on eu.equipo = ep.equipo
+                where eu.equipo in (
+                    select eu.equipo 
+                    from equipos_usuarios eu 
+                    where eu.usuario = ${q} 
+                )
+            ) up on (up.usuario = tickets.requirente and up.proyecto = tickets.proyecto)
+        )`,
+        td.sql.where = opts.sin_asignar ? where_sin_asignar : where_requirente
     );
     return td
+}
+
+export function tickets_pendientes(context:TableContext){
+    return tickets_equipos_usuarios(context, {sin_asignar: true})
 }
