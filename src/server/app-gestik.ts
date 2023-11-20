@@ -10,7 +10,7 @@ import { AppBackend, Context, Request,
 import {ProceduresGestik} from "./procedures-gestik";
 
 import { usuarios   } from './table-usuarios';
-import { tickets, tickets1, tickets2, tickets3, tickets_pendientes} from './table-tickets';
+import { tickets, tickets1, tickets2, tickets3} from './table-tickets';
 import { solapas   } from './table-solapas';
 import { estados   } from './table-estados';
 import { equipos   } from './table-equipos';
@@ -18,7 +18,7 @@ import { prioridades   } from './table-prioridades';
 import { proyectos   } from './table-proyectos';
 import { tipos_ticket   } from './table-tipos_ticket';
 import { proyectos_estados   } from './table-proyectos_estados';
-import { tickets_equipos_usuarios   } from './table-tickets_equipos_usuarios';
+import { tickets_equipos_usuarios, tickets_pendientes } from './table-tickets_equipos_usuarios';
 import { proyectos_solapas } from './table-proyectos_solapas';
 import { proyectos_estados_solapas } from './table-proyectos_estados_solapas';
 import { parametros } from './table-parametros';
@@ -107,7 +107,7 @@ export class AppGestik extends AppBackend{
         this.getTableDefinition={
             ... this.getTableDefinition,
             tipos_ticket,
-            tickets,tickets1,tickets2,tickets3,tickets_pendientes,
+            tickets,tickets1,tickets2,tickets3,
             proyectos,
             prioridades,
             solapas,
@@ -124,7 +124,7 @@ export class AppGestik extends AppBackend{
             equipos_usuarios,
             equipo_asignado_tickets, 
             equipo_requirente_tickets,
-            tickets_equipos_usuarios
+            tickets_equipos_usuarios,tickets_pendientes
         }
         for(var table in this.getTableDefinition){
             be.appendToTableDefinition(table, function(tableDef){
