@@ -17,12 +17,6 @@ export function whereTickets(context: TableContext, aliasTickets: string = 'tick
     )`
 }
 
-export function sinAsignar(){
-    return `(
-        asignado is null and estados.solapa <> 'cerrados'
-    )`
-}
-
 export function sqlExprCantTickets(context: TableContext, filter: string, joinEstados?:boolean){
     return `(SELECT nullif(count(*), 0) as cant_tickets FROM tickets t
         ${joinEstados ? `INNER JOIN estados e ON t.estado = e.estado` : ``}
@@ -31,7 +25,6 @@ export function sqlExprCantTickets(context: TableContext, filter: string, joinEs
 }
 type Opts = {
     zona?:string,
-    sin_asignar?:boolean
 }
 
 export function tickets(context: TableContext, opts: Opts = {}):TableDefinition{
@@ -79,12 +72,12 @@ export function tickets(context: TableContext, opts: Opts = {}):TableDefinition{
             {wScreen: "ticket", fields: ["proyecto", "ticket"], abr:"A", label:"anotaciones"}
         ],
         sql:{
-            isTable: opts.zona == null || opts.sin_asignar == null,
+            isTable: opts.zona == null,
             fields:{ 
                 cant_anotaciones:{ expr: `(SELECT nullif(count(*),0) FROM anotaciones a WHERE a.proyecto = tickets.proyecto and a.ticket = tickets.ticket)` },
                 asignado_pendiente:{ expr:`(CASE WHEN estados.esta_pendiente THEN tickets.asignado ELSE null END)`}
             },
-            where: opts.sin_asignar ? sinAsignar() : whereTickets(context)
+            where: whereTickets(context)
         },
         hiddenColumns:['asignado_pendiente','estados__solapa' /*,...(opts.zona == '1' || opts.zona == null ? [] : ['proyec'])*/]
     }
@@ -99,8 +92,4 @@ export function tickets2(context: TableContext){
 }
 export function tickets3(context: TableContext){
     return tickets(context, {zona: '3'});
-}
-
-export function tickets_pendientes(context:TableContext){
-    return tickets(context, {sin_asignar: true})
 }
