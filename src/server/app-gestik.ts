@@ -67,11 +67,13 @@ export class AppGestik extends AppBackend{
         var menuContent:MenuInfoBase[]=[
             {menuType:'table', name:'tickets'},
             {menuType:'table', name:'proyectos'},
-            {menuType:'mis_pendientes', autoproced: true, name:'mis_pendientes', ff:{username: context?.username}},
-            {menuType:'mis_verificaciones', autoproced: true, name:'mis_verificaciones', ff:{username: context?.username}},
         ];
+            
+        let mis_verificaciones = {menuType:'mis_verificaciones', autoproced: true, name:'mis_verificaciones', ff:{username: context?.username}};
         if(context.user && context.user.rol=="admin"){
             menuContent.push(
+                {menuType:'mis_pendientes', autoproced: true, name:'mis_pendientes', ff:{username: context?.username}},
+                mis_verificaciones,
                 {menuType:'menu', name:'config', label:'configurar', menuContent:[
                     {menuType:'table', name:'equipos'},
                     {menuType:'table', name:'estados'},
@@ -84,7 +86,10 @@ export class AppGestik extends AppBackend{
                 ]}
             )
         } else {
-            menuContent.push({menuType:'table', name:'usuarios', label:'mi usuario'})
+            menuContent.push(
+                mis_verificaciones,
+                {menuType:'table', name:'usuarios', label:'mi usuario'}
+            )
         };
         return {menu:menuContent};
     }
