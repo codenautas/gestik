@@ -58,3 +58,15 @@ myOwn.clientSides.bajarAdjunto = {
     prepare:function(_depot:myOwn.Depot, _fieldName:string):void{
     }
 }
+
+myOwn.clientSides.link_a_ticket = {
+    update:function(depot:myOwn.Depot, fieldName:string):void{
+        let td=depot.rowControls[fieldName];
+        td.innerHTML='';
+        if(depot.row.proyecto_relacionado && depot.row.ticket_relacionado){
+            td.appendChild(html.a({class:'link-descarga-archivo', href:`menu#w=ticket&autoproced=true&ff=,proyecto:${depot.row.proyecto_relacionado},ticket:${depot.row.ticket_relacionado}`},`${depot.row.proyecto_relacionado}#${depot.row.ticket_relacionado}`).create());            
+        }
+    },
+    prepare:function(_depot:myOwn.Depot, _fieldName:string):void{
+    }
+}
