@@ -70,3 +70,9 @@ myOwn.clientSides.link_a_ticket = {
     prepare:function(_depot:myOwn.Depot, _fieldName:string):void{
     }
 }
+
+myOwn.wScreens.proc.result.cambiar_proyecto_ticket=function(result, divResult:HTMLDivElement){ 
+    divResult.appendChild(
+        html.div({class: 'result-div', style: 'background-color: orange;'}, result.message).create()
+    )
+}

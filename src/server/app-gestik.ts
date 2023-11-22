@@ -74,6 +74,7 @@ export class AppGestik extends AppBackend{
             menuContent.push(
                 {menuType:'mis_pendientes', autoproced: true, name:'mis_pendientes', ff:{username: context?.username}},
                 mis_verificaciones,
+                {menuType:'proc' , name:'cambiar_proyecto', label:'cambiar proyecto'},
                 {menuType:'menu', name:'config', label:'configurar', menuContent:[
                     {menuType:'table', name:'equipos'},
                     {menuType:'table', name:'estados'},
