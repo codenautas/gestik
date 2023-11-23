@@ -1,0 +1,1 @@
+alter table if exists "anotaciones" add constraint "ticket_relacionado" check ((proyecto_relacionado is null and ticket_relacionado is null) or (proyecto_relacionado is not null and ticket_relacionado is not null));
