@@ -45,12 +45,12 @@ export const ProceduresGestik:ProcedureDef[] = [
                 return fs.move(file.path, newPath, { overwrite: true });
             }
             var {row} = await client.query(`
-                    update anotaciones 
-                        set archivo = $1
-                        where proyecto = $2 and ticket = $3 and anotacion = $4 returning *
-                `,
-                    [filename, parameters.proyecto, parameters.ticket, anotacion]
-                ).fetchUniqueRow();
+                update anotaciones 
+                    set archivo = $1
+                    where proyecto = $2 and ticket = $3 and anotacion = $4 returning *
+            `,
+                [filename, parameters.proyecto, parameters.ticket, anotacion]
+            ).fetchUniqueRow();
             var resultado = createResponse(row);
             await moveFile(file, row.archivo);
             return {...resultado, row};
