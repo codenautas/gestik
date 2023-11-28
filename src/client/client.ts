@@ -1,6 +1,18 @@
 import {html} from "js-to-html";
 
+import * as likeAr from "like-ar";
+
 import "dialog-promise";
+
+var getSubirArchivoPathAndParams = (depot:myOwn.Depot) =>
+    ({
+        ajaxPath: 'archivo_subir',
+        params: {
+            proyecto:depot.row.proyecto,
+            ticket:depot.row.ticket,
+            anotacion:depot.row.anotacion,
+        }
+    })
 
 myOwn.clientSides.subirAdjunto = {
     prepare: function(depot:myOwn.Depot, fieldName:string){
@@ -14,32 +26,69 @@ myOwn.clientSides.subirAdjunto = {
                     importDataFromFile: 'Seleccione un archivo',
                     import: 'Cargar'
                 };
-                var ajaxPath = ['archivo_subir'];
-                var params = {
-                    proyecto:depot.row.proyecto,
-                    ticket:depot.row.ticket,
-                    anotacion:depot.row.anotacion,
-                };
+                let {ajaxPath, params} = getSubirArchivoPathAndParams(depot);
                 my.dialogUpload(
-                    ajaxPath, 
+                    [ajaxPath], 
                     params,
                     function(result:any){
                         depot.rowControls.archivo.setTypedValue(result.nombre);
                         botonCargarExcel.disabled = true;
+                        let grid = depot.manager;
+                        grid.depotRefresh(depot,result.row);
                         return result.message;
                     },
                     showWithMiniMenu,
                     messages
-                )    
+                )
             });
         }
         // @ts-ignore
         depot.botonCargarExcel = botonCargarExcel;
     },
     update: function(depot:myOwn.Depot){
+        let grid = depot.manager;
         // @ts-ignore
         var botonCargarExcel:HTMLButtonElement = depot.botonCargarExcel;
         botonCargarExcel.disabled = depot.row.archivo != null || depot.row.anotacion == null;
+        likeAr(depot.rowControls).forEach((control, _i)=>{
+            control.onpaste = async function(e:ClipboardEvent){
+                if (e.clipboardData) {
+                    var items = e.clipboardData.items;
+                    if (!items) return;
+                    //access data directly
+                    var is_image = false;
+                    for (var i = 0; i < items.length; i++) {
+                        if (items[i].type.indexOf("image") !== -1) {
+                            //image
+                            var blob = items[i].getAsFile()!;
+                            var myImageDepot = depot;
+                            var promiseChain = Promise.resolve();
+                            if(depot.row.archivo){
+                                promiseChain = promiseChain.then(async ()=>{
+                                    await confirmPromise("la anotación ya contiene un adjunto, desea crear una nueva?")
+                                    myImageDepot=grid.createRowInsertElements(null,depot);
+                                    return
+                                })
+                            }
+                            await promiseChain;
+                            var {ajaxPath, params} = getSubirArchivoPathAndParams(myImageDepot);
+                            var newFile = new File([blob], `pasted-${params.anotacion || '$$anotacion'}.${blob.name.split('.').pop()}`, {type: blob.type});
+                            is_image = true;
+                            var {row} = await my.ajax[ajaxPath]({
+                                ...params,
+                                anotacion: params.anotacion || null
+                                files: [newFile]
+                            })
+                            grid.depotRefresh(myImageDepot,{updatedRow:row, sendedForUpdate:{}},{noDispatchEvents:true});
+                        }
+                    }
+                    if(is_image == true){
+                        e.preventDefault();
+                    }
+                }
+            }
+        })
+     
     }
 }
 

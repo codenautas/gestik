@@ -2,6 +2,7 @@ export const staticConfigYaml=`
 server:
   port: 3021
   session-store: memory-saved
+  base-url: /gestik
 db:
   motor: postgresql
   host: localhost
