@@ -1,6 +1,6 @@
 "use strict";
 
-import { UploadedFileInfo } from "backend-plus";
+import { CoreFunctionParameters, ProcedureContext, UploadedFileInfo } from "backend-plus";
 import * as fs from "fs-extra";
 import { ProcedureDef } from './types-gestik';
 
@@ -43,5 +43,58 @@ export const ProceduresGestik:ProcedureDef[] = [
             await moveFile(file, row.archivo);
             return resultado;
         }
-    }
+    },
+    {
+        action: 'cambiar_proyecto',
+        parameters:[
+            {name:'proyecto'  , typeName:'text' },
+            {name:'ticket'    , typeName:'integer' },
+            {name:'proyecto_cambio'    , typeName:'text'},
+        ],
+        resultOk:'cambiar_proyecto_ticket',
+        roles:['admin'],
+        coreFunction:async function(context:ProcedureContext, params:CoreFunctionParameters){
+            try{
+                const {rows:proyects} = await context.client.query(`
+                    select tickets.proyecto, max(tickets.ticket) as value_max
+                        from tickets
+                        inner join estados on (estados.estado = tickets.estado)
+                        inner join (
+                            select ep.proyecto
+                                from equipos_proyectos ep
+                                inner join equipos_usuarios eu on eu.equipo = ep.equipo
+                                where eu.usuario = $1 and (ep.proyecto = $2 or ep.proyecto = $3)
+                        ) up on (up.proyecto = tickets.proyecto)                                                                        
+                        group by tickets.proyecto
+                    `,
+                    [context.user.usuario, params.proyecto_cambio, params.proyecto]
+                ).fetchAll()
+                if(proyects.length > 1){
+                    let numTicket:number = 0
+                    const result = proyects.find(e => e.proyecto === params.proyecto_cambio)?.value_max;
+                    result && (numTicket = result + 1)
+                    
+                    if(numTicket>0){
+                        const {row} = await context.client.query(`
+                            update tickets 
+                                set proyecto = $3, ticket = $4
+                                where proyecto = $1 and ticket = $2
+                                returning *
+                            `, 
+                            [params.proyecto, params.ticket, params.proyecto_cambio, numTicket]
+                        ).fetchUniqueRow()
+                        
+                        return {data: row, message:`Se cambió el proyecto ${params.proyecto} y ticket ${params.ticket} al proyecto ${params.proyecto_cambio} y ticket ${row.ticket}`}
+                    }else{
+                        return {data: {}, message:`No se encuentra el proyecto ${params.proyecto} y ticket ${params.ticket}`}
+                    }
+                }else{
+                    return {data: {}, message:`No tiene permisos para cambiar un proyecto al que no pertenece`}
+                }
+                
+            }catch(message){
+                throw Error(`${message}`)
+            }
+        }
+    },
 ];
