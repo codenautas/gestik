@@ -15,7 +15,7 @@ export function anotaciones(context:TableContext):TableDefinition{
             {name:'detalle', typeName:'text'},
             {name:'proyecto_relacionado', typeName:'text', title:'link_proyecto'},
             {name:'ticket_relacionado', typeName:'bigint', title:'link_ticket'},
-            {name:'link_a_ticket', typeName:'text', clientSide:'link_a_ticket', editable:false, title:'depende de'},
+            {name:'link_a_ticket', typeName:'text', clientSide:'link_a_ticket', editable:false, title:'link'},
             {name:'timestamp', typeName:'timestamp', defaultDbValue:'current_timestamp', editable:false, inTable:true, clientSide:'timestamp', title:'📅'},
             {name:'subir', editable:false, clientSide:'subirAdjunto', typeName:'text'},
             {name:'archivo', title:'archivo', editable:false , typeName:'text'},
