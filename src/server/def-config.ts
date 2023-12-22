@@ -51,6 +51,7 @@ install:
       - ../install/set_ticket_default_estado.sql
       - ../install/set_ticket_default_tipo.sql
       - ../install/tickets_actualizar_fecha_trg.sql
+      - ../install/anotacion_constraint.sql
 logo: 
   path: client/img
 `;
