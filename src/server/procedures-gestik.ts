@@ -59,7 +59,7 @@ export const ProceduresGestik:ProcedureDef[] = [
                     select tickets.proyecto, max(tickets.ticket) as value_max
                         from tickets
                         inner join estados on (estados.estado = tickets.estado)
-                        inner join (
+                        right join (
                             select ep.proyecto
                                 from equipos_proyectos ep
                                 inner join equipos_usuarios eu on eu.equipo = ep.equipo
@@ -71,8 +71,9 @@ export const ProceduresGestik:ProcedureDef[] = [
                 ).fetchAll()
                 if(proyects.length > 1){
                     let numTicket:number = 0
-                    const result = proyects.find(e => e.proyecto === params.proyecto_cambio)?.value_max;
-                    result && (numTicket = result + 1)
+                    const result = proyects.find(e => e.proyecto === params.proyecto_cambio);
+                    
+                    result ? (numTicket = result.value_max + 1) : (numTicket = 1) 
                     
                     if(numTicket>0){
                         const {row} = await context.client.query(`
