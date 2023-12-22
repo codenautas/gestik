@@ -34,6 +34,7 @@ myOwn.clientSides.subirAdjunto = {
                         depot.rowControls.archivo.setTypedValue(result.nombre);
                         botonCargarExcel.disabled = true;
                         let grid = depot.manager;
+                        //@ts-ignore falta tipo en BP
                         grid.depotRefresh(depot,result.row);
                         return result.message;
                     },
@@ -66,6 +67,7 @@ myOwn.clientSides.subirAdjunto = {
                             if(depot.row.archivo){
                                 promiseChain = promiseChain.then(async ()=>{
                                     await confirmPromise("la anotación ya contiene un adjunto, desea crear una nueva?")
+                                    //@ts-ignore falta tipo en BP
                                     myImageDepot=grid.createRowInsertElements(null,depot);
                                     return
                                 })
@@ -76,9 +78,10 @@ myOwn.clientSides.subirAdjunto = {
                             is_image = true;
                             var {row} = await my.ajax[ajaxPath]({
                                 ...params,
-                                anotacion: params.anotacion || null
+                                anotacion: params.anotacion || null,
                                 files: [newFile]
                             })
+                            //@ts-ignore //falta tipo en BP
                             grid.depotRefresh(myImageDepot,{updatedRow:row, sendedForUpdate:{}},{noDispatchEvents:true});
                         }
                     }
