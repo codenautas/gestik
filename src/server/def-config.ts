@@ -40,6 +40,7 @@ install:
       owner: gestik_owner
     enances: inline
     skip-content: true
+    drop-his: true
     scripts:
       post-adapt:
       - ../node_modules/pg-triggers/lib/recreate-his.sql

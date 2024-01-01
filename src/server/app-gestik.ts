@@ -58,7 +58,21 @@ export class AppGestik extends AppBackend{
         super.configStaticConfig();
         this.setStaticConfig(staticConfigYaml);
     }
-
+    override async getDataDumpTransformations(rawData:string){
+        const result = await super.getDataDumpTransformations(rawData);
+        const columnas = ['observaciones', 'sugerencias_pei'];
+        for (const columna of columnas){
+            if (new RegExp(`COPY \\w+\\.tickets \\((\\w|\\s|,)+${columna}(,|\\))`).test(rawData)) {
+                result.prepareTransformationSql.push(
+                    `alter table tickets add column ${columna} text;`
+                )
+                result.endTransformationSql.push(
+                    `alter table tickets drop column ${columna};`
+                )
+            }
+        }
+        return result;
+    }
     async getProcedures(){
         var parentProc = await super.getProcedures();
         return parentProc.concat(ProceduresGestik);
