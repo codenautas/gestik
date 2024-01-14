@@ -63,7 +63,6 @@ export const ProceduresGestik:ProcedureDef[] = [
             {name:'ticket'    , typeName:'integer' },
             {name:'proyecto_cambio'    , typeName:'text'},
         ],
-        resultOk:'cambiar_proyecto_ticket',
         roles:['admin'],
         coreFunction:async function(context:ProcedureContext, params:CoreFunctionParameters){
             try{
@@ -108,6 +107,17 @@ export const ProceduresGestik:ProcedureDef[] = [
             }catch(message){
                 throw Error(`${message}`)
             }
+        }
+    },
+    {
+        action: 'buscar_ticket',
+        parameters:[
+            {name:'buscar'    , typeName:'text'},
+        ],
+        roles:['admin'],
+        resultOk:'showGrid',
+        coreFunction:async function(_context:ProcedureContext, params:CoreFunctionParameters){
+            return {tableName:'tickets', pick:params.buscar};
         }
     },
 ];

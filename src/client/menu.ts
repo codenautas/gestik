@@ -4,14 +4,14 @@ import {DateTime, date} from "best-globals";
 import {html} from "js-to-html"
 
 function pretty(number:number):string{
-    if (number == null) return '  0 '
-    if (number < 10 ) return '  ' + number + ' '
-    if (number < 100 ) return ' ' + number
-    return ''+number
-}
-
-function labelSolapa(solapa:string, cant:number){
-    return `${solapa}${pretty(cant)}`
+    if(number>9999){
+        if(number>999999){
+            return Math.floor(number/1000000+0.5)+'M'
+        }else{
+            return Math.floor(number/1000+0.5)+'k'
+        }
+    }
+    return ''+(number||0)
 }
 
 myOwn.clientSides.nothing = {
@@ -24,9 +24,9 @@ myOwn.clientSides.solapas = {
         var control = depot.rowControls[fieldName];
         var solapas_cant = depot.row.solapas_cant as {solapa:string, cant:number}[]
         solapas_cant.forEach(({solapa, cant}) => {
-            var label = labelSolapa(solapa, cant)
             var button = control.buttons[solapa] as HTMLButtonElement
-            button.textContent = label
+            button.textContent = solapa;
+            button.appendChild(html.span({class:'numero-centrado'}, pretty(cant)).create());
         });
     },
     prepare: async function(depot, fieldName){
@@ -34,10 +34,10 @@ myOwn.clientSides.solapas = {
         var proyecto = depot.row.proyecto;
         var solapas_cant = depot.row.solapas_cant as {solapa:string, cant:number}[]
         var buttons: Record<string, HTMLButtonElement> = {}
-        solapas_cant.forEach(({solapa, cant}) => {
+        solapas_cant.forEach(({solapa}) => {
             var ff = {estados__solapa: solapa, proyecto}
             var button = myOwn.createForkeableButton({w:'table', table:'tickets', ff}, {
-                label: labelSolapa(solapa, cant), 
+                label: solapa, 
                 onclick: (event)=>{
                     // @ts-ignore
                     if (event.ctrlKey) return

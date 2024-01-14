@@ -79,7 +79,10 @@ export class AppGestik extends AppBackend{
     }
     getMenu(context:Context):MenuDefinition{
         var menuContent:MenuInfoBase[]=[
-            {menuType:'table', name:'tickets'},
+            {menuType:'menu', name:'tickets', menuContent:[
+                {menuType:'proc', name:'buscar_ticket', label:'buscar'},
+                {menuType:'table', name:'nuevo', table:'tickets', td:{forInsertOnlyMode:true, gridAlias:'nuevo_ticket'}},
+            ]},
             {menuType:'table', name:'proyectos'},
         ];
             

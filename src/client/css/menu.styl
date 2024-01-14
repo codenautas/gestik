@@ -57,3 +57,17 @@ table.my-grid
   [my-table^="tickets1"]
     [inherited-pk-column=yes]
       display: table-cell
+
+#main_layout [my-colname=solapas] a.menu-item 
+  padding-right 0
+  padding-left 5px
+
+.numero-centrado
+  display inline-block
+  min-width 2.2em
+  text-align center  
+
+[my-table=nuevo_ticket] [my-colname=descripcion]
+  display none
+[my-table=nuevo_ticket] [my-table] [my-colname=descripcion]
+  display table-cell
