@@ -59,53 +59,47 @@ export const ProceduresGestik:ProcedureDef[] = [
     {
         action: 'cambiar_proyecto',
         parameters:[
-            {name:'proyecto'  , typeName:'text' },
-            {name:'ticket'    , typeName:'integer' },
-            {name:'proyecto_cambio'    , typeName:'text'},
+            {name:'del_proyecto'   , typeName:'text'   , references: 'proyectos'},
+            {name:'el_ticket'      , typeName:'integer' },
+            {name:'al_proyecto'    , typeName:'text', references: 'proyectos'},
         ],
+        proceedLabel:'cambiar',
         roles:['admin'],
         coreFunction:async function(context:ProcedureContext, params:CoreFunctionParameters){
-            try{
-                const {rows:proyects} = await context.client.query(`
-                    select tickets.proyecto, max(tickets.ticket) as value_max
-                        from tickets
-                        inner join estados on (estados.estado = tickets.estado)
+            if (params.del_proyecto == params.al_proyecto) {
+                throw new Error("Tiene que espeficar dos proyectos distintos.");
+            }
+            const {row:last_ticket} = await context.client.query(`
+                select tickets.ticket as max_value
+                    from tickets
                         right join (
                             select ep.proyecto
                                 from equipos_proyectos ep
                                 inner join equipos_usuarios eu on eu.equipo = ep.equipo
-                                where eu.usuario = $1 and (ep.proyecto = $2 or ep.proyecto = $3)
+                                where eu.usuario = $1 and ep.proyecto = $2 and ep.es_requirente
+                                limit 1
                         ) up on (up.proyecto = tickets.proyecto)                                                                        
-                        group by tickets.proyecto
-                    `,
-                    [context.user.usuario, params.proyecto_cambio, params.proyecto]
-                ).fetchAll()
-                if(proyects.length > 1){
-                    let numTicket:number = 0
-                    const result = proyects.find(e => e.proyecto === params.proyecto_cambio);
-                    
-                    result ? (numTicket = result.value_max + 1) : (numTicket = 1) 
-                    
-                    if(numTicket>0){
-                        const {row} = await context.client.query(`
-                            update tickets 
-                                set proyecto = $3, ticket = $4
-                                where proyecto = $1 and ticket = $2
-                                returning *
-                            `, 
-                            [params.proyecto, params.ticket, params.proyecto_cambio, numTicket]
-                        ).fetchUniqueRow()
-                        
-                        return {data: row, message:`Se cambió el proyecto ${params.proyecto} y ticket ${params.ticket} al proyecto ${params.proyecto_cambio} y ticket ${row.ticket}`}
-                    }else{
-                        return {data: {}, message:`No se encuentra el proyecto ${params.proyecto} y ticket ${params.ticket}`}
-                    }
-                }else{
-                    return {data: {}, message:`No tiene permisos para cambiar un proyecto al que no pertenece`}
-                }
-                
-            }catch(message){
-                throw Error(`${message}`)
+                    order by tickets.ticket desc
+                    limit 1
+                `,
+                [context.user.usuario, params.al_proyecto]
+            ).fetchOneRowIfExists();
+            if (!last_ticket) {
+                throw new Error(`El usuario no esta en un equipo que pueda hacer requerimientos en el proyecto "${params.al_proyecto}" o bien el proyecto no existe.`);
+            }
+            let numTicket:number = (last_ticket.max_value ?? 0) + 1;
+            const {row:updated_ticket} = await context.client.query(`
+                update tickets 
+                    set proyecto = $3, ticket = $4
+                    where proyecto = $1 and ticket = $2
+                    returning *
+                `, 
+                [params.del_proyecto, params.el_ticket, params.al_proyecto, numTicket]
+            ).fetchOneRowIfExists();
+            if (updated_ticket) {
+                return `El ticket "${params.del_proyecto}-${params.el_ticket}" se cambió a "${params.al_proyecto}-${updated_ticket.ticket}"`;
+            } else {
+                throw new Error(`No se encuentra el ticket "${params.del_proyecto}-${params.el_ticket}" en el proyecto `)
             }
         }
     },

@@ -82,6 +82,7 @@ export class AppGestik extends AppBackend{
             {menuType:'menu', name:'tickets', menuContent:[
                 {menuType:'proc', name:'buscar_ticket', label:'buscar'},
                 {menuType:'table', name:'nuevo', table:'tickets', td:{forInsertOnlyMode:true, gridAlias:'nuevo_ticket'}},
+                {menuType:'proc' , name:'cambiar_proyecto', label:'cambiar de proyecto'},
             ]},
             {menuType:'table', name:'proyectos'},
         ];
@@ -91,7 +92,6 @@ export class AppGestik extends AppBackend{
             menuContent.push(
                 {menuType:'mis_pendientes', autoproced: true, name:'mis_pendientes', ff:{username: context?.username}},
                 mis_verificaciones,
-                {menuType:'proc' , name:'cambiar_proyecto', label:'cambiar proyecto'},
                 {menuType:'menu', name:'config', label:'configurar', menuContent:[
                     {menuType:'table', name:'equipos'},
                     {menuType:'table', name:'estados'},
