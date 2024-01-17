@@ -64,7 +64,6 @@ export const ProceduresGestik:ProcedureDef[] = [
             {name:'al_proyecto'    , typeName:'text', references: 'proyectos'},
         ],
         proceedLabel:'cambiar',
-        roles:['admin'],
         coreFunction:async function(context:ProcedureContext, params:CoreFunctionParameters){
             if (params.del_proyecto == params.al_proyecto) {
                 throw new Error("Tiene que espeficar dos proyectos distintos.");
@@ -108,7 +107,6 @@ export const ProceduresGestik:ProcedureDef[] = [
         parameters:[
             {name:'buscar'    , typeName:'text'},
         ],
-        roles:['admin'],
         resultOk:'showGrid',
         coreFunction:async function(_context:ProcedureContext, params:CoreFunctionParameters){
             return {tableName:'tickets', pick:params.buscar};
