@@ -1,6 +1,11 @@
 server:
   port: 3000
   base-url: /gestik
+  bin-win: # renombrar a bin para activar esta configuración durante el desarrollo
+    zip: c:\Program Files\7-Zip\7z.exe # 7zip debe estar instalado o hay que modificar la configuración zip*:
+    zip-fixed-parameters: [a]
+    zip-password-parameter-flag: false
+    zip-password-prefix: -p
 db:
   description: base de prueba
   host: localhost
@@ -9,6 +14,7 @@ db:
   schema: gestik
   user: gestik_admin
   password: cambiar_esta_clave
+  downloadable-backup-path: c:\temp\backup.sql # lugar donde un cron deja el backup periodicamente (no es reponsabilidad de bp)
 install:
   dump:
     db:
