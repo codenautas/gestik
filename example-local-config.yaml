@@ -6,6 +6,10 @@ server:
     zip-fixed-parameters: [a]
     zip-password-parameter-flag: false
     zip-password-prefix: -p
+  bin-linux:
+    zip: zip  # instalar zip con sudo apt-get intall zip
+    zip-fixed-parameters:
+      - --junk-paths  # para que no ponga la ruta dentro del zip
 db:
   description: base de prueba
   host: localhost
