@@ -4,18 +4,18 @@ CREATE OR REPLACE FUNCTION insertar_equipo_trg()
     LANGUAGE 'plpgsql' 
 AS $BODY$
 DECLARE
+  proyecto RECORD;
   equipo TEXT = new.equipo;
-  proyecto TEXT = (select proyecto from gestik.proyectos where proyecto = 'GENERAL');
 begin
-  if (proyecto = 'GENERAL')then
-  	INSERT INTO gestik.equipos_proyectos (equipo, proyecto)
-  	VALUES (equipo, 'GENERAL');
-  end if;
+  FOR proyecto IN SELECT * FROM gestik.proyectos where es_general = true LOOP
+    INSERT INTO gestik.equipos_proyectos (equipo, proyecto)
+    VALUES (equipo, proyecto.proyecto);
+  END LOOP;
   return new;
 end;
 $BODY$;
 
-DROP TRIGGER IF EXISTS insertar_equipo_trg ON equipos;
+DROP TRIGGER IF EXISTS insertar_equipo_trg ON equipos CASCADE;
 CREATE TRIGGER insertar_equipo_trg
   AFTER INSERT 
   ON equipos

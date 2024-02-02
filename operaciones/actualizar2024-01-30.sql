@@ -1,0 +1,1 @@
+alter table gestik.proyectos add column "es_general" boolean default 'false';

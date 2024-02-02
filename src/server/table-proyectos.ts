@@ -15,7 +15,8 @@ export function proyectos(context: TableContext):TableDefinition{
             {name:'cant_tickets', typeName: 'bigint', inTable:false, editable:false},
             {name:'solapas', typeName: 'text', clientSide:'solapas', inTable:false, editable:false},
             {name:'solapas_cant', typeName: 'jsonb', inTable:false},
-            {name:'solapa', typeName:'text', clientSide:'nothing', inTable:false, serverSide:false}
+            {name:'solapa', typeName:'text', clientSide:'nothing', inTable:false, serverSide:false},
+            {name:'es_general', typeName:'boolean', defaultValue:false }
         ],
         primaryKey: ['proyecto'],
         softForeignKeys:[
