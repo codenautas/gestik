@@ -127,6 +127,7 @@ myOwn.wScreens.ticket = {
         }
         myOwn.tableGrid("tickets2", nuevoDiv(divResult), {fixedFields})
         myOwn.tableGrid("anotaciones", nuevoDiv(divResult,"w-aclaraciones"), {fixedFields})
+        return 'ok'
     }
 }
 
@@ -149,6 +150,7 @@ myOwn.wScreens.mis_verificaciones = {
         }
         myOwn.tableGrid("tickets", nuevoDiv(divResult), {fixedFields, tableDef: {title: "Tickets"}})
         myOwn.tableGrid("tickets_equipos_usuarios", nuevoDiv(divResult), {fixedFields: fixedFields2, tableDef: {title: "Tickets de mis colegas"}})
+        return 'ok';
     }
 }
 
@@ -167,5 +169,6 @@ myOwn.wScreens.mis_pendientes = {
         }
         myOwn.tableGrid("tickets", nuevoDiv(divResult), {fixedFields, tableDef: {title: "Tickets"}})
         myOwn.tableGrid("tickets_pendientes", nuevoDiv(divResult), {tableDef: {title: "Tickets sin asignar"}})
+        return 'ok'
     }
 }
