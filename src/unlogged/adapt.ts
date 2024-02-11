@@ -1,6 +1,6 @@
-// @ts-ignore 
+// @ts-expect-error No declaramos react por ahora
 window.require.definedModules["react-dom"] = window.ReactDOM;
-// @ts-ignore 
+// @ts-expect-error No declaramos react por ahora
 window.require.definedModules["@mui/material"] = window.MaterialUI;
-// @ts-ignore 
+// @ts-expect-error No declaramos react por ahora
 window.require.definedModules["@material-ui/core/styles"] = window.MaterialStyles;

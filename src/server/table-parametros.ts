@@ -2,8 +2,9 @@
 
 import { TableContext, TableDefinition } from "backend-plus";
 
+
 export function parametros(context: TableContext): TableDefinition {
-    var admin = context.user.rol === 'admin';
+    const admin = context.user.rol === 'admin';
     return {
         name: 'parametros',
         elementName: 'parametro',

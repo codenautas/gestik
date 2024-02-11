@@ -1,8 +1,8 @@
 "use strict";
-
 import { CoreFunctionParameters, ProcedureContext, UploadedFileInfo } from "backend-plus";
 import * as fs from "fs-extra";
 import { ProcedureDef } from './types-gestik';
+import { guarantee, DefinedType, is } from "guarantee-type"
 
 export const ProceduresGestik:ProcedureDef[] = [
     {
@@ -18,11 +18,11 @@ export const ProceduresGestik:ProcedureDef[] = [
             const be=context.be;
             const client=context.client;
             context.informProgress({message:be.messages.fileUploaded});
-            let file = files![0]
+            const file = files![0]
             let originalFilename = file.originalFilename;
             let anotacion = parameters.anotacion
             if(!anotacion){
-                let {row:insertedRow} = await client.query(`
+                const {row:insertedRow} = await client.query(`
                     insert into anotaciones 
                         (proyecto, ticket, usuario) values ($1, $2, $3) 
                     returning *
@@ -32,26 +32,30 @@ export const ProceduresGestik:ProcedureDef[] = [
                 originalFilename = originalFilename.replace('pasted-$$anotacion',`pasted-${insertedRow.anotacion}`)
                 anotacion = insertedRow.anotacion;
             }
-            let filename=`${parameters.proyecto}/${parameters.ticket}/${originalFilename}`;
-            var createResponse = function createResponse(adjuntoRow:any){
-                let resultado = {
+            const filename=`${parameters.proyecto}/${parameters.ticket}/${originalFilename}`;
+            const tipoAdjunto = is.object({
+                archivo: is.string
+            })
+            type TipoAdjunto = DefinedType<typeof tipoAdjunto>;
+            const createResponse = function createResponse(adjuntoRow: TipoAdjunto){
+                const resultado = {
                     message: `el archivo ${adjuntoRow.archivo} se subió correctamente.`,
                     nombre: adjuntoRow.archivo,
                 }
                 return resultado
             }
-            var moveFile = async function moveFile(file:UploadedFileInfo, fileName:string){
-                let newPath = `local-attachments/${fileName}`;
+            const moveFile = async function moveFile(file:UploadedFileInfo, fileName:string){
+                const newPath = `local-attachments/${fileName}`;
                 return fs.move(file.path, newPath, { overwrite: true });
             }
-            var {row} = await client.query(`
+            const row = guarantee(tipoAdjunto, (await client.query(`
                 update anotaciones 
                     set archivo = $1
                     where proyecto = $2 and ticket = $3 and anotacion = $4 returning *
             `,
                 [filename, parameters.proyecto, parameters.ticket, anotacion]
-            ).fetchUniqueRow();
-            var resultado = createResponse(row);
+            ).fetchUniqueRow()).row);
+            const resultado = createResponse(row);
             await moveFile(file, row.archivo);
             return {...resultado, row};
         }
@@ -68,7 +72,7 @@ export const ProceduresGestik:ProcedureDef[] = [
             if (params.del_proyecto == params.al_proyecto) {
                 throw new Error("Tiene que espeficar dos proyectos distintos.");
             }
-            const {row:last_ticket} = await context.client.query(`
+            const rowLastTikect = await context.client.query(`
                 select tickets.ticket as max_value
                     from tickets
                         right join (
@@ -83,11 +87,11 @@ export const ProceduresGestik:ProcedureDef[] = [
                 `,
                 [context.user.usuario, params.al_proyecto]
             ).fetchOneRowIfExists();
-            if (!last_ticket) {
+            if (!rowLastTikect) {
                 throw new Error(`El usuario no esta en un equipo que pueda hacer requerimientos en el proyecto "${params.al_proyecto}" o bien el proyecto no existe.`);
             }
-            let numTicket:number = (last_ticket.max_value ?? 0) + 1;
-            const {row:updated_ticket} = await context.client.query(`
+            const numTicket:number = (guarantee(is.object({max_value: is.number}),rowLastTikect).max_value ?? 0) + 1;
+            const rowUpdatedTicket = await context.client.query(`
                 update tickets 
                     set proyecto = $3, ticket = $4
                     where proyecto = $1 and ticket = $2
@@ -95,8 +99,9 @@ export const ProceduresGestik:ProcedureDef[] = [
                 `, 
                 [params.del_proyecto, params.el_ticket, params.al_proyecto, numTicket]
             ).fetchOneRowIfExists();
-            if (updated_ticket) {
-                return `El ticket "${params.del_proyecto}-${params.el_ticket}" se cambió a "${params.al_proyecto}-${updated_ticket.ticket}"`;
+            if (rowUpdatedTicket) {
+                const ticket = guarantee(is.object({ticket: is.number}),rowUpdatedTicket)
+                return `El ticket "${params.del_proyecto}-${params.el_ticket}" se cambió a "${params.al_proyecto}-${ticket}"`;
             } else {
                 throw new Error(`No se encuentra el ticket "${params.del_proyecto}-${params.el_ticket}" en el proyecto `)
             }

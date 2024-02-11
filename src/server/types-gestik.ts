@@ -9,4 +9,4 @@ export interface User extends backendPlus.User{
     rol:string
 }
 
-export type Constructor<T> = new(...args: any[]) => T;
+export type Constructor<T> = new(...args: any[]) => T; // eslint-disable-line @typescript-eslint/no-explicit-any, no-unused-vars

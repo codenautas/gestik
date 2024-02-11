@@ -3,7 +3,7 @@
 import {TableDefinition, TableContext} from "./types-gestik";
 
 export function usuarios(context:TableContext):TableDefinition{
-    var admin = context.user.rol==='admin';
+    const admin = context.user.rol==='admin';
     return {
         name:'usuarios',
         title:'Usuarios de la Aplicación',

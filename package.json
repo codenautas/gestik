@@ -10,15 +10,19 @@
     "install"
   ],
   "dependencies": {
-    "backend-plus": "^2.0.0-beta.18",
-    "pg-triggers": "^0.3.2",
-    "fs-extra": "^11.2.0"
+    "backend-plus": "^2.0.0-rc.3",
+    "fs-extra": "^11.2.0",
+    "pg-triggers": "^0.3.2"
   },
   "devDependencies": {
-    "typescript": "^5.3.3",
-    "types.d.ts": "^0.6.21",
+    "@types/fs-extra": "^11.0.4",
+    "@typescript-eslint/eslint-plugin": "~6.21.0",
+    "@typescript-eslint/parser": "~6.21.0",
+    "eslint": "~8.56.0",
+    "guarantee-type": "^0.1.0",
     "mixin-patch": "^0.4.1",
-    "@types/fs-extra": "^11.0.4"
+    "types.d.ts": "^0.6.21",
+    "typescript": "^5.3.3"
   },
   "mixin-patch": {},
   "scripts": {

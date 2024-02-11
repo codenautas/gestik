@@ -37,16 +37,17 @@ export class AppGestik extends AppBackend{
         super();
     }
     addSchrödingerServices(mainApp:backendPlus.Express, baseUrl:string){
-        var be=this;
+        const be = this;
         super.addSchrödingerServices(mainApp, baseUrl);
         mainApp.get(baseUrl+'/download/file', async function (req, res) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            be.inDbClient(req,async (client)=>{
-                var result = await client.query(
+            be.inDbClient(req, async (client)=>{
+                const result = await client.query(
                     'SELECT proyecto, ticket, anotacion, archivo FROM anotaciones WHERE proyecto = $1 and ticket = $2 AND anotacion = $3',
                     [req.query.proyecto, req.query.ticket, req.query.anotacion]
                 ).fetchUniqueRow();
-                let path = `local-attachments/${result.row.archivo}`;
+                const path = `local-attachments/${result.row.archivo}`;
                 MiniTools.serveFile(path, {})(req, res);
             })
         });
@@ -74,11 +75,11 @@ export class AppGestik extends AppBackend{
         return result;
     }
     async getProcedures(){
-        var parentProc = await super.getProcedures();
+        const parentProc = await super.getProcedures();
         return parentProc.concat(ProceduresGestik);
     }
     getMenu(context:Context):MenuDefinition{
-        var menuContent:MenuInfoBase[]=[
+        const menuContent:MenuInfoBase[]=[
             {menuType:'menu', name:'tickets', menuContent:[
                 {menuType:'proc', name:'buscar_ticket', label:'buscar'},
                 {menuType:'table', name:'nuevo', table:'tickets', td:{forInsertOnlyMode:true, gridAlias:'nuevo_ticket'}},
@@ -86,8 +87,7 @@ export class AppGestik extends AppBackend{
             ]},
             {menuType:'table', name:'proyectos'},
         ];
-            
-        let mis_verificaciones = {menuType:'mis_verificaciones', autoproced: true, name:'mis_verificaciones', ff:{username: context?.username}};
+        const mis_verificaciones = {menuType:'mis_verificaciones', autoproced: true, name:'mis_verificaciones', ff:{username: context?.username}};
         if(context.user && context.user.rol=="admin"){
             menuContent.push(
                 {menuType:'mis_pendientes', autoproced: true, name:'mis_pendientes', ff:{username: context?.username}},
@@ -108,16 +108,16 @@ export class AppGestik extends AppBackend{
                 mis_verificaciones,
                 {menuType:'table', name:'usuarios', label:'mi usuario'}
             )
-        };
+        }
         return {menu:menuContent};
     }
     clientIncludes(req:Request|null, opts:OptsClientPage):ClientModuleDefinition[]{
-        var menuedResources:ClientModuleDefinition[]=req && opts && !opts.skipMenu ? [
+        const menuedResources:ClientModuleDefinition[]=req && opts && !opts.skipMenu ? [
             { type:'js' , src:'client.js' },
         ]:[
             {type:'js' , src:'unlogged.js' },
         ];
-        var list: ClientModuleDefinition[] = [
+        const list: ClientModuleDefinition[] = [
             ...super.clientIncludes(req, opts),
             { type: 'css', file: 'menu.css' },
             ... menuedResources
@@ -125,7 +125,7 @@ export class AppGestik extends AppBackend{
         return list;
     }
     prepareGetTables(){
-        var be = this;
+        const be = this;
         super.prepareGetTables();
         this.getTableDefinition={
             ... this.getTableDefinition,
@@ -149,7 +149,7 @@ export class AppGestik extends AppBackend{
             equipo_requirente_tickets,
             tickets_equipos_usuarios,tickets_pendientes
         }
-        for(var table in this.getTableDefinition){
+        for(const table in this.getTableDefinition){
             be.appendToTableDefinition(table, function(tableDef){
                 tableDef.selfRefresh = true;
                 tableDef.refrescable = true;

@@ -3,7 +3,7 @@
 import { TableDefinition, TableContext } from "types-gestik";
 
 export function equipos(context: TableContext):TableDefinition{
-    var admin = context.user.rol == 'admin';
+    const admin = context.user.rol == 'admin';
     const td:TableDefinition = {
         editable: admin,
         name: 'equipos',

@@ -21,24 +21,25 @@ myOwn.clientSides.nothing = {
 
 myOwn.clientSides.solapas = {
     update: function(depot, fieldName){
-        var control = depot.rowControls[fieldName];
-        var solapas_cant = depot.row.solapas_cant as {solapa:string, cant:number}[]
+        const control = depot.rowControls[fieldName];
+        const solapas_cant = depot.row.solapas_cant as {solapa:string, cant:number}[]
         solapas_cant.forEach(({solapa, cant}) => {
-            var button = control.buttons[solapa] as HTMLButtonElement
+            const button = control.buttons[solapa] as HTMLButtonElement
             button.textContent = solapa;
             button.appendChild(html.span({class:'numero-centrado'}, pretty(cant)).create());
         });
     },
     prepare: async function(depot, fieldName){
-        var control = depot.rowControls[fieldName];
-        var proyecto = depot.row.proyecto;
-        var solapas_cant = depot.row.solapas_cant as {solapa:string, cant:number}[]
-        var buttons: Record<string, HTMLButtonElement> = {}
+        const control = depot.rowControls[fieldName];
+        const proyecto = depot.row.proyecto;
+        const solapas_cant = depot.row.solapas_cant as {solapa:string, cant:number}[]
+        const buttons: Record<string, HTMLButtonElement> = {}
         solapas_cant.forEach(({solapa}) => {
-            var ff = {estados__solapa: solapa, proyecto}
-            var button = myOwn.createForkeableButton({w:'table', table:'tickets', ff}, {
+            const ff = {estados__solapa: solapa, proyecto}
+            const button = myOwn.createForkeableButton({w:'table', table:'tickets', ff}, {
                 label: solapa, 
                 onclick: (event)=>{
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     // @ts-ignore
                     if (event.ctrlKey) return
                     depot.row.solapa = solapa;
@@ -65,11 +66,11 @@ myOwn.clientSides.solapas = {
 }
 
 function timeStampHtml(timestamp: DateTime){
-    var today = date.today()
+    const today = date.today()
     if (timestamp.toDmy() == today.toDmy()) {
         return html.span({class:'ts-time', title:timestamp.toLocaleString()}, [timestamp.toHm()])
     } else if (timestamp.getFullYear() == today.getFullYear()) {
-        return html.span({class:'ts-sameyear', title:timestamp.toLocaleString()}, [timestamp.toDmy().replace(/[-\/]\d+$/,'')])
+        return html.span({class:'ts-sameyear', title:timestamp.toLocaleString()}, [timestamp.toDmy().replace(/[-/]\d+$/,'')])
     } else {
         return html.span({class:'ts-otheryear', title:timestamp.toLocaleString()}, [timestamp.toDmy()])
     }
@@ -77,9 +78,9 @@ function timeStampHtml(timestamp: DateTime){
 
 myOwn.clientSides.timestamp = {
     prepare: function(depot, fieldName){
-        var control = depot.rowControls[fieldName];
+        const control = depot.rowControls[fieldName];
         if (control.disabled) {
-            var timestamp = depot.row[fieldName];
+            const timestamp = depot.row[fieldName];
             control.innerHTML = "";
             if (timestamp) {
                 control.appendChild(timeStampHtml(timestamp).create())
@@ -92,8 +93,8 @@ myOwn.clientSides.timestamp.update = myOwn.clientSides.timestamp.prepare;
 
 myOwn.clientSides.anotaciones = {
     prepare: function(depot){
-        var control = depot.rowControls.detalle;
-        var img = control.getElementsByClassName('anot-img');
+        const control = depot.rowControls.detalle;
+        const img = control.getElementsByClassName('anot-img');
         if (depot.row.anotacion === 0) {
             depot.rowControls.detalle.style.fontWeight = 'bold';
             depot.rowControls.detalle.disable(true);
@@ -112,12 +113,12 @@ myOwn.wScreens.ticket = {
         {name: "ticket"  , typeName:"bigint"},
     ],
     mainAction: async function(params:{proyecto:string, ticket:number}, divResult){
-        var fixedFields = [
+        const fixedFields = [
             {fieldName:"proyecto", value:params.proyecto},
             {fieldName:"ticket", value:params.ticket}
         ];
-        var nuevoDiv = function(elemento:HTMLDivElement, className?:string){
-            var nuevo = html.div({class:className??"w-ticket"}).create();
+        const nuevoDiv = function(elemento:HTMLDivElement, className?:string){
+            const nuevo = html.div({class:className??"w-ticket"}).create();
             elemento.appendChild(nuevo);
             return nuevo;
         }
@@ -136,15 +137,15 @@ myOwn.wScreens.mis_verificaciones = {
         {name: "username", typeName:"text"},
     ],
     mainAction: async function(params:{username:string}, divResult){
-        let fixedFields = [
+        const fixedFields = [
             {fieldName:"requirente", value:params.username, show:true},
             {fieldName:"estado", value:"a_verificar", show:true},
         ];
-        let fixedFields2 = [
+        const fixedFields2 = [
             {fieldName:"estado", value:"a_verificar", show:true},
         ];
-        let nuevoDiv = function(elemento:HTMLDivElement, className?:string){
-            var nuevo = html.div({class:className??"w-verificaciones"}).create();
+        const nuevoDiv = function(elemento:HTMLDivElement, className?:string){
+            const nuevo = html.div({class:className??"w-verificaciones"}).create();
             elemento.appendChild(nuevo);
             return nuevo;
         }
@@ -159,11 +160,11 @@ myOwn.wScreens.mis_pendientes = {
         {name: "username", typeName:"text"},
     ],
     mainAction: async function(params:{username:string}, divResult){
-        let fixedFields = [
+        const fixedFields = [
             {fieldName:"asignado_pendiente", value:params.username, show:true},
         ];
-        let nuevoDiv = function(elemento:HTMLDivElement, className?:string){
-            var nuevo = html.div({class:className??"w-verificaciones"}).create();
+        const nuevoDiv = function(elemento:HTMLDivElement, className?:string){
+            const nuevo = html.div({class:className??"w-verificaciones"}).create();
             elemento.appendChild(nuevo);
             return nuevo;
         }

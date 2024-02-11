@@ -4,8 +4,8 @@ import { sqlExprCantTickets } from "./table-tickets";
 import { TableDefinition, TableContext } from "./types-gestik";
 
 export function proyectos(context: TableContext):TableDefinition{
-    var admin = context.user.rol == 'admin';
-    var q = context.be.db.quoteLiteral;
+    const admin = context.user.rol == 'admin';
+    const q = context.be.db.quoteLiteral;
     const td:TableDefinition = {
         editable: admin,
         name: 'proyectos',

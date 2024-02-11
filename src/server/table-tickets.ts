@@ -3,8 +3,8 @@
 import { TableContext, TableDefinition, FieldDefinition } from "./types-gestik";
 
 export function whereTickets(context: TableContext, aliasTickets: string = 'tickets'){
-    var admin = context.user.rol == 'admin';
-    var q = context.be.db.quoteLiteral;
+    const admin = context.user.rol == 'admin';
+    const q = context.be.db.quoteLiteral;
     return admin ? 'true' : `(
         requirente = ${q(context.user.usuario)} OR
         asignado = ${q(context.user.usuario)} OR
@@ -28,7 +28,7 @@ type Opts = {
 }
 
 export function tickets(context: TableContext, opts: Opts = {}):TableDefinition{
-    var fields: (FieldDefinition & {zona:string, siempre?:boolean})[] = [
+    const fields: (FieldDefinition & {zona:string, siempre?:boolean})[] = [
         {name:'proyecto'           , typeName:'text'  , zona:'1' ,siempre:true , },
         {name:'ticket'             , typeName:'bigint', zona:'1' ,siempre:true , nullable:true, editable:false, defaultDbValue:'0'},
         {name:'tipo_ticket'        , typeName:'text'  , zona:'1' , title:'tipo ticket'},
@@ -53,7 +53,9 @@ export function tickets(context: TableContext, opts: Opts = {}):TableDefinition{
         name: 'tickets'+(opts.zona ?? ''),
         elementName: 'ticket',
         tableName: 'tickets',
-        fields: fields.filter(def => opts.zona == null || def.siempre || def.zona == opts.zona).map(({zona, ...def})=>def),
+        fields: fields.filter(def => opts.zona == null || def.siempre || def.zona == opts.zona).map(
+            ({zona, ...def}) => def // eslint-disable-line @typescript-eslint/no-unused-vars, no-unused-vars
+        ),
         primaryKey: ['proyecto', 'ticket'],
         foreignKeys: [
             {references: "proyectos", fields: ['proyecto']},

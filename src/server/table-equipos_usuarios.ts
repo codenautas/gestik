@@ -5,7 +5,7 @@ import { TableDefinition, TableContext } from "types-gestik";
 import { usuarios } from "./table-usuarios";
 
 export function equipos_usuarios(context: TableContext):TableDefinition{
-    var admin = context.user.rol == 'admin';
+    const admin = context.user.rol == 'admin';
     const td:TableDefinition = {
         editable: admin,
         allow: {"vertical-edit": false},
