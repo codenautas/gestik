@@ -1,0 +1,9 @@
+server:
+  port: 3333
+db:
+  database: gestik_autotest_db
+install:
+  dump:
+    folders: 
+      - install
+      - src/test

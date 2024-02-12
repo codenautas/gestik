@@ -1,6 +1,6 @@
 "use strict"
 
-import { TableDefinition, TableContext } from "types-gestik";
+import { TableDefinition, TableContext } from "./types-gestik";
 
 export function equipos_proyectos(context: TableContext):TableDefinition{
     const admin = context.user.rol == 'admin';

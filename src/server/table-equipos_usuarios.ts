@@ -1,6 +1,6 @@
 "use strict"
 
-import { TableDefinition, TableContext } from "types-gestik";
+import { TableDefinition, TableContext } from "./types-gestik";
 
 import { usuarios } from "./table-usuarios";
 
@@ -16,7 +16,7 @@ export function equipos_usuarios(context: TableContext):TableDefinition{
         ],
         primaryKey: ['equipo', 'usuario'],
         foreignKeys: [
-            {references: "usuarios", fields: ['usuario'] , displayFields:['nombre', 'apellido', 'mail', 'interno']},
+            {references: "usuarios", fields: ['usuario'] , displayFields:['nombre', 'apellido', 'mail', 'interno'], onDelete:'cascade'},
             {references: "equipos" , fields: ['equipo']  , displayAllFields:true},
         ],
         detailTables: usuarios(context).detailTables,

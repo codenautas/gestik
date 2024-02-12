@@ -1,6 +1,6 @@
 "use strict"
 
-import { TableDefinition, TableContext } from "types-gestik";
+import { TableDefinition, TableContext } from "./types-gestik";
 
 export function anotaciones(context:TableContext):TableDefinition{
     const td:TableDefinition = {
