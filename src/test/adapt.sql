@@ -2,7 +2,7 @@
 -- /*
 set search_path = gestik;
 
-delete from tickets where requirente like '%autotest%'
+delete from tickets where requirente like '%autotest%';
 delete from usuarios where usuario like '%autotest%';
 delete from equipos where equipo like '%autotest%';
 delete from equipos_proyectos where equipo like '%autotest%';
@@ -16,11 +16,12 @@ insert into equipos (equipo) values
 insert into usuarios (usuario, rol, interno) values 
   ('autotest-desarrollador', 'admin'  , 'autotest-desarrollo'   ),
   ('autotest-usuario'      , 'usuario', 'autotest-usuarios'     ),
+  ('autotest-inactivo'     , 'usuario', 'autotest-usuarios'     ),
   ('autotest-procesador'   , 'usuario', 'autotest-procesamiento');
 
 update usuarios 
   set md5clave = md5('clave1234'||usuario),
-      activo = true
+      activo = usuario not like '%inactivo%'
   where usuario like '%autotest%';
 
 insert into equipos_usuarios (usuario, equipo)

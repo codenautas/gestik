@@ -7,3 +7,5 @@ install:
     folders: 
       - install
       - src/test
+devel:
+  delay: 10
