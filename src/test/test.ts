@@ -81,33 +81,17 @@ describe("gestik tests", function(){
         equipo: is.string
     })
 
-    describe("connected", function(){
+    describe("usuario administrador", function(){
         var session: Session<AppGestik>;        // eslint-disable-line no-var
-        var today = date.today(); // eslint-disable-line no-var
+        // var today = date.today(); // eslint-disable-line no-var
         before(async function(){
             session = new Session(server);
             await session.login({
-                username: 'autotest-desarrollador',
+                username: 'autotest-administrador',
                 password: 'clave1234',
             });
-            // await wrap.menu();
-        })
-        it("carga el ticket número 1", async function(){
-            const row = await session.saveRecord('tickets', {proyecto: 'INTERNO-autotest', asunto:'terminar de escribir los tests'}, tipoTicket);
-            // verifica el número de ticket y otros valores por defecto
-            discrepances.showAndThrow(row, {
-                proyecto: 'INTERNO-autotest', 
-                ticket: 1, 
-                tipo_ticket: 'tarea',
-                asunto: 'terminar de escribir los tests',
-                requirente: 'autotest-desarrollador',
-                estado: 'nuevo',
-                f_ticket: today,
-                estados__solapa: 'nuevos'
-            }, {notMemberAsUndefined: true, autoTypeCast: true});
         })
         it("determina es_general en el proyecto general agrega un equipo y verifica la asignación", async function(){
-            this.timeout(6000);
             // quita es_general
             await session.saveRecord('proyectos', {proyecto: 'GENERAL-autotest', es_general:false}, tipoProyecto, 'update');
             // agrega un equipo 
@@ -123,6 +107,56 @@ describe("gestik tests", function(){
             await session.tableData("equipos_proyectos", [
                 {proyecto: 'GENERAL-autotest', equipo: 'autotest-nuevo'}
             ],'all',{fixedFields:{proyecto: 'GENERAL-autotest', equipo: 'autotest-nuevo'}})
+        })
+    });
+
+    describe("usuario desarrollador", function(){
+        var session: Session<AppGestik>;        // eslint-disable-line no-var
+        var today = date.today(); // eslint-disable-line no-var
+        before(async function(){
+            session = new Session(server);
+            await session.login({
+                username: 'autotest-desarrollador',
+                password: 'clave1234',
+            });
+        })
+        it("carga el ticket número 1", async function(){
+            const row = await session.saveRecord('tickets', {proyecto: 'INTERNO-autotest', asunto:'terminar de escribir los tests'}, tipoTicket);
+            // verifica el número de ticket y otros valores por defecto
+            discrepances.showAndThrow(row, {
+                proyecto: 'INTERNO-autotest', 
+                ticket: 1, 
+                tipo_ticket: 'tarea',
+                asunto: 'terminar de escribir los tests',
+                requirente: 'autotest-desarrollador',
+                estado: 'nuevo',
+                f_ticket: today,
+                estados__solapa: 'nuevos'
+            }, {notMemberAsUndefined: true, autoTypeCast: true});
+        })
+        it("la visibilidad de tickets depende pertenecer a un equipo asignado", async function(){
+            await session.tableData("tickets", [
+                {ticket: 1},
+                {ticket: 2},
+                {ticket: 3},
+                {ticket: 4},
+            ],'all',{fixedFields:{proyecto: 'PROYECTO1-autotest', tema:'prueba visibilidad'}});
+        })
+    })
+    describe("usuario usuario", function(){
+        var session: Session<AppGestik>;        // eslint-disable-line no-var
+        before(async function(){
+            session = new Session(server);
+            await session.login({
+                username: 'autotest-usuario',
+                password: 'clave1234',
+            });
+        })
+        it("la visibilidad de tickets depende de ser requirente o compartir equipo con él", async function(){
+            await session.tableData("tickets", [
+                {ticket: 1},
+                {ticket: 3},
+            ],'all',{fixedFields:{proyecto: 'PROYECTO1-autotest', tema:'prueba visibilidad'}});
         })
     })
 })

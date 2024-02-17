@@ -13,6 +13,13 @@ export function whereTickets(context: TableContext, aliasTickets: string = 'tick
                 FROM equipos_usuarios eu INNER JOIN equipos_usuarios et ON eu.equipo = et.equipo
                 WHERE eu.usuario = ${q(context.user.usuario)}
                 AND (et.usuario = ${aliasTickets}.requirente OR et.usuario = ${aliasTickets}.asignado)
+        ) OR
+        EXISTS (
+            SELECT true 
+                FROM equipos_usuarios eu INNER JOIN equipos_proyectos ep ON eu.equipo = ep.equipo
+                WHERE eu.usuario = ${q(context.user.usuario)}
+                AND ep.proyecto = ${aliasTickets}.proyecto
+                AND ep.es_asignado
         )
     )`
 }
