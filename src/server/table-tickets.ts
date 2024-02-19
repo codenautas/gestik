@@ -2,39 +2,17 @@
 
 import { TableContext, TableDefinition, FieldDefinition } from "./types-gestik";
 
-export function whereTickets(context: TableContext, aliasTickets: string = 'tickets'){
-    const admin = context.user.rol == 'admin';
-    const q = context.be.db.quoteLiteral;
-    return admin ? 'true' : `(
-        requirente = ${q(context.user.usuario)} OR
-        asignado = ${q(context.user.usuario)} OR
-        EXISTS (
-            SELECT true 
-                FROM equipos_usuarios eu INNER JOIN equipos_usuarios et ON eu.equipo = et.equipo
-                WHERE eu.usuario = ${q(context.user.usuario)}
-                AND (et.usuario = ${aliasTickets}.requirente OR et.usuario = ${aliasTickets}.asignado)
-        ) OR
-        EXISTS (
-            SELECT true 
-                FROM equipos_usuarios eu INNER JOIN equipos_proyectos ep ON eu.equipo = ep.equipo
-                WHERE eu.usuario = ${q(context.user.usuario)}
-                AND ep.proyecto = ${aliasTickets}.proyecto
-                AND ep.es_asignado
-        )
-    )`
-}
-
-export function sqlExprCantTickets(context: TableContext, filter: string, joinEstados?:boolean){
+export function sqlExprCantTickets(_context: TableContext, filter: string, joinEstados?:boolean){
     return `(SELECT nullif(count(*), 0) as cant_tickets FROM tickets t
         ${joinEstados ? `INNER JOIN estados e ON t.estado = e.estado` : ``}
-        WHERE (${whereTickets(context, 't')})
-            AND (${filter}))`;
+        WHERE (${filter}))`;
 }
 type Opts = {
     zona?:string,
 }
 
 export function tickets(context: TableContext, opts: Opts = {}):TableDefinition{
+    const isTable = opts.zona == null; // zona se usa para dividir en partes la pantalla de carga de tickets
     const fields: (FieldDefinition & {zona:string, siempre?:boolean})[] = [
         {name:'proyecto'           , typeName:'text'  , zona:'1' ,siempre:true , },
         {name:'ticket'             , typeName:'bigint', zona:'1' ,siempre:true , nullable:true, editable:false, defaultDbValue:'0'},
@@ -81,14 +59,51 @@ export function tickets(context: TableContext, opts: Opts = {}):TableDefinition{
             {wScreen: "ticket", fields: ["proyecto", "ticket"], abr:"A", label:"anotaciones"}
         ],
         sql:{
-            isTable: opts.zona == null,
+            isTable,
             fields:{ 
                 cant_anotaciones:{ expr: `(SELECT nullif(count(*),0) FROM anotaciones a WHERE a.proyecto = tickets.proyecto and a.ticket = tickets.ticket)` },
                 asignado_pendiente:{ expr:`(CASE WHEN estados.esta_pendiente THEN tickets.asignado ELSE null END)`}
             },
-            where: whereTickets(context)
-        },
-        hiddenColumns:['asignado_pendiente','estados__solapa' /*,...(opts.zona == '1' || opts.zona == null ? [] : ['proyec'])*/]
+            ...(isTable ? {
+                policies: {
+                    all: {
+                        using: `( 
+                            requirente = get_app_user()
+                        ) OR ( 
+                            asignado = get_app_user()
+                        ) OR (
+                            SELECT rol='admin' FROM usuarios WHERE usuario = get_app_user()
+                        ) OR (
+                            SELECT true 
+                                FROM equipos_usuarios eu INNER JOIN equipos_usuarios et ON eu.equipo = et.equipo
+                                WHERE eu.usuario = get_app_user()
+                                    AND (et.usuario = tickets.requirente OR et.usuario = tickets.asignado)
+                        ) OR (
+                            SELECT true 
+                                FROM equipos_usuarios eu INNER JOIN equipos_proyectos ep ON eu.equipo = ep.equipo
+                                WHERE eu.usuario = get_app_user()
+                                    AND ep.proyecto = tickets.proyecto
+                                    AND ep.es_asignado
+                        )
+                    `    
+                    },
+                    insert:{
+                        name:`debe ser del equipo requirente`,
+                        check:`(
+                            SELECT rol='admin' FROM usuarios WHERE usuario = get_app_user()
+                        ) OR (
+                            SELECT true 
+                                FROM equipos_usuarios eu INNER JOIN equipos_proyectos ep ON eu.equipo = ep.equipo
+                                WHERE eu.usuario = get_app_user()
+                                    AND ep.proyecto = tickets.proyecto
+                                    AND ep.es_requirente
+                        )
+                    `
+                    }
+                },
+            } : {})
+            },
+        hiddenColumns:['asignado_pendiente','estados__solapa' /*,...(opts.zona == '1' || opts.zona == null ? [] : ['proyec'])*/],
     }
     return td
 }

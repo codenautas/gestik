@@ -35,7 +35,8 @@ insert into proyectos (proyecto) values
 
 insert into equipos_proyectos (proyecto, equipo, es_asignado, es_requirente) values
   ('PROYECTO1-autotest', 'autotest-usuarios'     , false, true),
-  ('PROYECTO1-autotest', 'autotest-desarrollo'   , true , true);
+  ('PROYECTO1-autotest', 'autotest-desarrollo'   , true , true),
+  ('INTERNO-autotest'  , 'autotest-desarrollo'   , true , true);
 
 insert into tickets (proyecto, ticket, tema, requirente, estado, asignado, asunto) values 
   ('PROYECTO1-autotest', 1, 'prueba visibilidad', 'autotest-usuario'      , 'nuevo'       , null                    , 'ticket nuevo'     ),

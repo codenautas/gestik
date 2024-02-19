@@ -1,9 +1,8 @@
 "use strict"
 
-import { whereTickets } from "./table-tickets";
 import { TableContext, TableDefinition } from "./types-gestik";
 
-export function equipo_tickets(context:TableContext, modo?:string):TableDefinition{
+export function equipo_tickets(_context:TableContext, modo?:string):TableDefinition{
     modo = modo ?? ''
     const td:TableDefinition = {
         editable: false,
@@ -19,7 +18,6 @@ export function equipo_tickets(context:TableContext, modo?:string):TableDefiniti
             isTable: false,
             from: `(SELECT equipo, proyecto, ticket
                     FROM tickets t INNER JOIN equipos_usuarios u ON ${modo ? `u.usuario = t.${modo}` : `u.usuario = t.requirente OR t.usuario = t.asignado`}
-                    WHERE ${whereTickets(context, 't')}
                     GROUP BY equipo, proyecto, ticket
                     )`,
         },

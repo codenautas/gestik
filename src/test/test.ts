@@ -10,7 +10,7 @@ import { date } from "best-globals";
 
 import { startServer, Session } from "backend-tester";
 
-// import { expected } from "cast-error";
+import { expected } from "cast-error";
 // import { unexpected } from 'cast-error';
 
 describe("gestik tests", function(){
@@ -60,6 +60,18 @@ describe("gestik tests", function(){
         });
     });
 
+    var today = date.today(); // eslint-disable-line no-var
+
+    const dolarFieldsDescription = {
+        "$allow.update": is.boolean,
+        "$allow.delete": is.boolean
+    }
+
+    const dolarFieldsTrue = {
+        "$allow.update": true,
+        "$allow.delete": true,
+    }
+    
     const tipoTicket = is.object({
         proyecto: is.string,
         ticket: is.number,
@@ -68,7 +80,8 @@ describe("gestik tests", function(){
         requirente: is.string,
         estado: is.string,
         f_ticket: is.Date,
-        estados__solapa: is.string
+        estados__solapa: is.string,
+        ...dolarFieldsDescription
     });
 
     const tipoProyecto = is.object({
@@ -83,7 +96,6 @@ describe("gestik tests", function(){
 
     describe("usuario administrador", function(){
         var session: Session<AppGestik>;        // eslint-disable-line no-var
-        // var today = date.today(); // eslint-disable-line no-var
         before(async function(){
             session = new Session(server);
             await session.login({
@@ -112,7 +124,6 @@ describe("gestik tests", function(){
 
     describe("usuario desarrollador", function(){
         var session: Session<AppGestik>;        // eslint-disable-line no-var
-        var today = date.today(); // eslint-disable-line no-var
         before(async function(){
             session = new Session(server);
             await session.login({
@@ -131,7 +142,8 @@ describe("gestik tests", function(){
                 requirente: 'autotest-desarrollador',
                 estado: 'nuevo',
                 f_ticket: today,
-                estados__solapa: 'nuevos'
+                estados__solapa: 'nuevos',
+                ...dolarFieldsTrue
             }, {notMemberAsUndefined: true, autoTypeCast: true});
         })
         it("la visibilidad de tickets depende pertenecer a un equipo asignado", async function(){
@@ -157,6 +169,16 @@ describe("gestik tests", function(){
                 {ticket: 1},
                 {ticket: 3},
             ],'all',{fixedFields:{proyecto: 'PROYECTO1-autotest', tema:'prueba visibilidad'}});
+        })
+        it("no puede cargar tickets si no es_requirente ni es_asignado", async function(){
+            let error: Error|null = null;
+            try {
+                await session.saveRecord('tickets', {proyecto: 'INTERNO-autotest', asunto:'no debería poder'}, tipoTicket);
+            } catch (err) {
+                error = expected(err);
+            }
+            // verifica que se lance un error
+            discrepances.showAndThrow(error, new Error("Backend error: el nuevo registro viola la política de seguridad de registros «debe ser del equipo requirente» para la tabla «tickets»"));
         })
     })
 })

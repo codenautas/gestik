@@ -1,7 +1,18 @@
--- set role to gestik_owner; 
--- set search_path = gestik;
+/* PARA CORRERLO VARIAS VECES. No COMMITEAR descomentado
+  set role to gestik_owner; 
+  set search_path = gestik;
+  DROP TRIGGER IF EXISTS ticket_pk_trg ON tickets;
+  DROP FUNCTION IF EXISTS ticket_pk_trg();
+  DROP FUNCTION IF EXISTS get_next_ticket_number(p_proyecto text);
+-- */
 
-DROP FUNCTION if exists ticket_pk_trg();
+CREATE or REPLACE FUNCTION get_next_ticket_number(p_proyecto text) RETURNS bigint
+  LANGUAGE SQL SECURITY DEFINER
+AS
+$SQL$
+  SELECT coalesce((SELECT max(ticket + 1) FROM tickets WHERE proyecto = p_proyecto), 1)
+$SQL$;
+
 CREATE OR REPLACE FUNCTION ticket_pk_trg()
     RETURNS trigger
     LANGUAGE 'plpgsql' 
@@ -12,17 +23,12 @@ begin
   if new.ticket <> 0 then
     null;
   else
-    select max(ticket) 
-	  into v_ultimo
-	  from tickets
-	  where proyecto = new.proyecto;
-	new.ticket := coalesce(v_ultimo, 0) + 1;
+   	new.ticket := get_next_ticket_number(new.proyecto);
   end if;
   return new;
 end;
 $BODY$;
 
-DROP TRIGGER IF EXISTS ticket_pk_trg ON tickets;
 CREATE TRIGGER ticket_pk_trg
    before INSERT 
    ON tickets

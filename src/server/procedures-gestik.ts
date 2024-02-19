@@ -73,16 +73,10 @@ export const ProceduresGestik:ProcedureDef[] = [
                 throw new Error("Tiene que espeficar dos proyectos distintos.");
             }
             const rowLastTikect = await context.client.query(`
-                select tickets.ticket as max_value
-                    from tickets
-                        right join (
-                            select ep.proyecto
-                                from equipos_proyectos ep
-                                inner join equipos_usuarios eu on eu.equipo = ep.equipo
-                                where eu.usuario = $1 and ep.proyecto = $2 and ep.es_requirente
-                                limit 1
-                        ) up on (up.proyecto = tickets.proyecto)                                                                        
-                    order by tickets.ticket desc
+                select get_next_ticket_number(proyecto) as next_value
+                    from equipos_proyectos ep
+                        inner join equipos_usuarios eu on eu.equipo = ep.equipo
+                    where eu.usuario = $1 and ep.proyecto = $2 and ep.es_requirente
                     limit 1
                 `,
                 [context.user.usuario, params.al_proyecto]
@@ -90,7 +84,7 @@ export const ProceduresGestik:ProcedureDef[] = [
             if (!rowLastTikect) {
                 throw new Error(`El usuario no esta en un equipo que pueda hacer requerimientos en el proyecto "${params.al_proyecto}" o bien el proyecto no existe.`);
             }
-            const numTicket:number = (guarantee(is.object({max_value: is.number}),rowLastTikect).max_value ?? 0) + 1;
+            const numTicket:number = guarantee(is.object({next_value: is.number}),rowLastTikect).next_value;
             const rowUpdatedTicket = await context.client.query(`
                 update tickets 
                     set proyecto = $3, ticket = $4
