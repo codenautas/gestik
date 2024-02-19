@@ -170,7 +170,7 @@ describe("gestik tests", function(){
                 {ticket: 3},
             ],'all',{fixedFields:{proyecto: 'PROYECTO1-autotest', tema:'prueba visibilidad'}});
         })
-        it("no puede cargar tickets si no es_requirente ni es_asignado", async function(){
+        it("no puede cargar tickets si no es_requirente", async function(){
             let error: Error|null = null;
             try {
                 await session.saveRecord('tickets', {proyecto: 'INTERNO-autotest', asunto:'no debería poder'}, tipoTicket);
@@ -179,6 +179,21 @@ describe("gestik tests", function(){
             }
             // verifica que se lance un error
             discrepances.showAndThrow(error, new Error("Backend error: el nuevo registro viola la política de seguridad de registros «debe ser del equipo requirente» para la tabla «tickets»"));
+        })
+        it("puede cargar tickets si es_requirente", async function(){
+            const row = await session.saveRecord('tickets', {proyecto: 'PROYECTO1-autotest', asunto:'ticket nuevo de usuario'}, tipoTicket);
+            // verifica el número de ticket y otros valores por defecto
+            discrepances.showAndThrow(row, {
+                proyecto: 'PROYECTO1-autotest', 
+                ticket: 5, 
+                tipo_ticket: 'tarea',
+                asunto: 'ticket nuevo de usuario',
+                requirente: 'autotest-usuario',
+                estado: 'nuevo',
+                f_ticket: today,
+                estados__solapa: 'nuevos',
+                ...dolarFieldsTrue
+            }, {notMemberAsUndefined: true, autoTypeCast: true});
         })
     })
 })
