@@ -68,11 +68,11 @@ export function tickets(context: TableContext, opts: Opts = {}):TableDefinition{
                 policies: {
                     all: {
                         using: `( 
+                            SELECT rol='admin' FROM usuarios WHERE usuario = get_app_user()
+                        ) OR (
                             requirente = get_app_user()
                         ) OR ( 
                             asignado = get_app_user()
-                        ) OR (
-                            SELECT rol='admin' FROM usuarios WHERE usuario = get_app_user()
                         ) OR (
                             SELECT true 
                                 FROM equipos_usuarios eu INNER JOIN equipos_usuarios et ON eu.equipo = et.equipo

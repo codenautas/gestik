@@ -195,5 +195,10 @@ describe("gestik tests", function(){
                 ...dolarFieldsTrue
             }, {notMemberAsUndefined: true, autoTypeCast: true});
         })
+        it("ve solo los proyectos relacionados", async function(){
+            await session.tableData('proyectos', [
+                {proyecto: 'PROYECTO1-autotest'}
+            ], 'all');
+        })
     })
 })

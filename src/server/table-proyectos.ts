@@ -5,7 +5,6 @@ import { TableDefinition, TableContext } from "./types-gestik";
 
 export function proyectos(context: TableContext):TableDefinition{
     const admin = context.user.rol == 'admin';
-    const q = context.be.db.quoteLiteral;
     const td:TableDefinition = {
         editable: admin,
         name: 'proyectos',
@@ -37,7 +36,15 @@ export function proyectos(context: TableContext):TableDefinition{
                             inner join lateral ${sqlExprCantTickets(context, `t.proyecto = proyectos.proyecto and e.solapa = s.solapa`, true)} as x on true
                 )`}
             },
-            where: admin ? 'true' : `EXISTS (SELECT true FROM equipos_usuarios eu INNER JOIN equipos_proyectos ep USING (equipo) WHERE usuario = ${q(context.user.usuario)} and ep.proyecto = proyectos.proyecto)`
+            policies: {
+                all: {
+                    using: `(
+                        SELECT rol='admin' FROM usuarios WHERE usuario = get_app_user()
+                    ) OR (
+                        SELECT true FROM equipos_usuarios eu INNER JOIN equipos_proyectos ep USING (equipo) WHERE usuario = get_app_user() and ep.proyecto = proyectos.proyecto
+                    )`
+                }
+            }
         },
         hiddenColumns:['solapas_cant', 'solapa']
     }
