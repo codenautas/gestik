@@ -1,5 +1,4 @@
 ALTER TABLE IF EXISTS anotaciones alter COLUMN anotacion set DEFAULT 0;
-DROP FUNCTION if exists anotacion_pk_trg();
 CREATE OR REPLACE FUNCTION anotacion_pk_trg()
     RETURNS trigger
     LANGUAGE 'plpgsql' 
@@ -20,7 +19,6 @@ begin
 end;
 $BODY$;
 
-DROP TRIGGER IF EXISTS anotacion_pk_trg ON anotaciones;
 CREATE TRIGGER anotacion_pk_trg
   before INSERT 
   ON anotaciones

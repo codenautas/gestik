@@ -72,7 +72,7 @@ export const ProceduresGestik:ProcedureDef[] = [
             if (params.del_proyecto == params.al_proyecto) {
                 throw new Error("Tiene que espeficar dos proyectos distintos.");
             }
-            const rowLastTikect = await context.client.query(`
+            const {row: rowLastTikect} = await context.client.query(`
                 select get_next_ticket_number(proyecto) as next_value
                     from equipos_proyectos ep
                         inner join equipos_usuarios eu on eu.equipo = ep.equipo
@@ -84,8 +84,9 @@ export const ProceduresGestik:ProcedureDef[] = [
             if (!rowLastTikect) {
                 throw new Error(`El usuario no esta en un equipo que pueda hacer requerimientos en el proyecto "${params.al_proyecto}" o bien el proyecto no existe.`);
             }
+            
             const numTicket:number = guarantee(is.object({next_value: is.number}),rowLastTikect).next_value;
-            const rowUpdatedTicket = await context.client.query(`
+            const {row: rowUpdatedTicket} = await context.client.query(`
                 update tickets 
                     set proyecto = $3, ticket = $4
                     where proyecto = $1 and ticket = $2
@@ -94,7 +95,7 @@ export const ProceduresGestik:ProcedureDef[] = [
                 [params.del_proyecto, params.el_ticket, params.al_proyecto, numTicket]
             ).fetchOneRowIfExists();
             if (rowUpdatedTicket) {
-                const ticket = guarantee(is.object({ticket: is.number}),rowUpdatedTicket)
+                const ticket:number = guarantee(is.object({ticket: is.number}),rowUpdatedTicket).ticket;
                 return `El ticket "${params.del_proyecto}-${params.el_ticket}" se cambió a "${params.al_proyecto}-${ticket}"`;
             } else {
                 throw new Error(`No se encuentra el ticket "${params.del_proyecto}-${params.el_ticket}" en el proyecto `)
