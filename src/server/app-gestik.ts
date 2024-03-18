@@ -8,6 +8,7 @@ import { AppBackend, Context, Request,
 // import {changing} from 'best-globals';
 
 import {ProceduresGestik} from "./procedures-gestik";
+import {promises as fs, existsSync } from "fs";
 
 import { usuarios   } from './table-usuarios';
 import { tickets, tickets1, tickets2, tickets3} from './table-tickets';
@@ -23,6 +24,7 @@ import { proyectos_solapas } from './table-proyectos_solapas';
 import { proyectos_estados_solapas } from './table-proyectos_estados_solapas';
 import { parametros } from './table-parametros';
 import { anotaciones } from './table-anotaciones';
+import { archivos_borrar } from "./table-archivos_borrar";
 import { roles } from './table-roles';
 import { equipos_proyectos } from './table-equipos_proyectos';
 import { equipos_usuarios } from './table-equipos_usuarios';
@@ -32,17 +34,43 @@ import * as backendPlus from "backend-plus";
 
 import {staticConfigYaml} from './def-config';
 
+const cronMantenimiento = (be:AppBackend) => {
+    setInterval(async ()=>{
+        try{
+            const d = new Date();
+            const date = `${d.getDate()}/${d.getMonth()}/${d.getFullYear()}, ${d.getHours()}:${d.getMinutes()}`;
+            if(d.getHours() == 23 && d.getMinutes() == 58){
+                const result = await be.inTransaction(null, async (client)=>{
+                    const {rows} = await client.query("select ruta_archivo from archivos_borrar").fetchAll();
+                    if(rows.length>0){
+                        rows.forEach(async (element) => {
+                            const path = `local-attachments/${element.ruta_archivo}`;
+                            await client.query(`delete from archivos_borrar where ruta_archivo = $1`, [element.ruta_archivo]).execute();
+                            if (existsSync(element.ruta_archivo)) {
+                                await fs.rm(path);
+                            }
+                        });
+                        return `Se borraron archivos adjuntos en la fecha y hora: ${date}`;
+                    }else{
+                        return `No hay archivos adjuntos para borrar en la fecha y hora: ${date}`;
+                    }
+                })
+                console.log("Resultado de cron: ", result);
+            }
+        }catch(err){
+            console.log(`Error en cron. ${err}`);
+        }
+    },60000)
+}
 export class AppGestik extends AppBackend{
-    constructor(){
-        super();
-    }
+    
     addSchrödingerServices(mainApp:backendPlus.Express, baseUrl:string){
         const be = this;
         super.addSchrödingerServices(mainApp, baseUrl);
         mainApp.get(baseUrl+'/download/file', async function (req, res) {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            be.inDbClient(req, async (client)=>{
+            await be.inDbClient(req, async (client)=>{
                 const result = await client.query(
                     'SELECT proyecto, ticket, anotacion, archivo FROM anotaciones WHERE proyecto = $1 and ticket = $2 AND anotacion = $3',
                     [req.query.proyecto, req.query.ticket, req.query.anotacion]
@@ -53,6 +81,8 @@ export class AppGestik extends AppBackend{
         });
     }
     async postConfig(){
+        const be = this;
+        cronMantenimiento(be);
         await super.postConfig();
     }
     configStaticConfig(){
@@ -76,7 +106,7 @@ export class AppGestik extends AppBackend{
     }
     async getProcedures(){
         const parentProc = await super.getProcedures();
-        return parentProc.concat(ProceduresGestik);
+                return parentProc.concat(ProceduresGestik);
     }
     getMenu(context:Context):MenuDefinition{
         const menuContent:MenuInfoBase[]=[
@@ -147,7 +177,8 @@ export class AppGestik extends AppBackend{
             equipos_usuarios,
             equipo_asignado_tickets, 
             equipo_requirente_tickets,
-            tickets_equipos_usuarios,tickets_pendientes
+            tickets_equipos_usuarios,tickets_pendientes,
+            archivos_borrar
         }
         for(const table in this.getTableDefinition){
             be.appendToTableDefinition(table, function(tableDef){

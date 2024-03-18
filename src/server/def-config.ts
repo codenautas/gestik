@@ -54,6 +54,7 @@ install:
       - ../install/tickets_actualizar_fecha_trg.sql
       - ../install/anotacion_constraint.sql
       - ../install/insertar_equipo.sql
+      - ../install/archivo_borrar_trg.sql
 logo: 
   path: client/img
 `;
