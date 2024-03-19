@@ -29,7 +29,7 @@ begin
 end;
 $BODY$;
 
-CREATE TRIGGER ticket_pk_trg
+CREATE OR REPLACE TRIGGER ticket_pk_trg
    before INSERT 
    ON tickets
    FOR EACH ROW
