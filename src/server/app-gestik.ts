@@ -55,10 +55,10 @@ const cronMantenimiento = (be:AppBackend) => {
                         return `No hay archivos adjuntos para borrar en la fecha y hora: ${date}`;
                     }
                 })
-                console.log("Resultado de cron: ", result);
+                console.info("Resultado de cron: ", result);
             }
         }catch(err){
-            console.log(`Error en cron. ${err}`);
+            console.error(`Error en cron. ${err}`);
         }
     },60000)
 }
