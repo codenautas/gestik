@@ -35,7 +35,7 @@ import * as backendPlus from "backend-plus";
 import {staticConfigYaml} from './def-config';
 
 const cronMantenimiento = (be:AppBackend) => {
-    setInterval(async ()=>{
+    const interval = setInterval(async ()=>{
         try{
             const d = new Date();
             const date = `${d.getDate()}/${d.getMonth()}/${d.getFullYear()}, ${d.getHours()}:${d.getMinutes()}`;
@@ -60,7 +60,15 @@ const cronMantenimiento = (be:AppBackend) => {
         }catch(err){
             console.error(`Error en cron. ${err}`);
         }
-    },60000)
+    },60000);
+    be.shutdownCallbackListAdd({
+        message:'cron Mantenimiento',
+        fun:async function(){
+            clearInterval(interval);
+            return Promise.resolve();
+        }
+    });
+
 }
 export class AppGestik extends AppBackend{
     

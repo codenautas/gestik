@@ -22,14 +22,14 @@ describe("gestik tests", function(){
     });
 
     after(async function(){
-        this.timeout(3000);
-        await server.shootDownBackend()
+        this.timeout(10000);
+        await server.shutdownBackend()
         console.log('server down!');
         server = null as unknown as AppGestik;
-        setTimeout(()=>{
-            console.log('FORCE EXIT');
-            process.exit(0);
-        }, 1000);
+        // setTimeout(()=>{
+        //     console.log('FORCE EXIT');
+        //     process.exit(0);
+        // }, 1000);
     })
 
     describe("not connected", function(){
@@ -94,6 +94,10 @@ describe("gestik tests", function(){
         equipo: is.string
     })
 
+    const tipoArchivosBorrar = is.object({
+        ruta_archivo: is.string
+    })
+
     describe("usuario administrador", function(){
         var session: Session<AppGestik>;        // eslint-disable-line no-var
         before(async function(){
@@ -119,6 +123,15 @@ describe("gestik tests", function(){
             await session.tableData("equipos_proyectos", [
                 {proyecto: 'GENERAL-autotest', equipo: 'autotest-nuevo'}
             ],'all',{fixedFields:{proyecto: 'GENERAL-autotest', equipo: 'autotest-nuevo'}})
+        })
+        it("rechaza la edición de la tabla archivos_borrar", async function(){
+            try {
+                await session.saveRecord('archivos_borrar', {ruta_archivo: 'cualquier_dato'}, tipoArchivosBorrar, 'new');
+                throw new Error("debería fallar porque no tendría que tener permisos para agregar")
+            } catch (err) {
+                const error = expected(err);
+                if (!error.message.match(/insert not allowed|inserción no permitida/)) throw error;
+            }
         })
     });
 
