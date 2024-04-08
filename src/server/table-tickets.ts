@@ -77,13 +77,13 @@ export function tickets(context: TableContext, opts: Opts = {}):TableDefinition{
                             SELECT true 
                                 FROM equipos_usuarios eu INNER JOIN equipos_usuarios et ON eu.equipo = et.equipo
                                 WHERE eu.usuario = get_app_user()
-                                    AND (et.usuario = tickets.requirente OR et.usuario = tickets.asignado)
+                                    AND (et.usuario = tickets.requirente OR et.usuario = tickets.asignado) limit 1
                         ) OR (
                             SELECT true 
                                 FROM equipos_usuarios eu INNER JOIN equipos_proyectos ep ON eu.equipo = ep.equipo
                                 WHERE eu.usuario = get_app_user()
                                     AND ep.proyecto = tickets.proyecto
-                                    AND ep.es_asignado
+                                    AND ep.es_asignado limit 1
                         )
                     `    
                     },
