@@ -26,10 +26,10 @@ describe("gestik tests", function(){
         await server.shutdownBackend()
         console.log('server down!');
         server = null as unknown as AppGestik;
-        // setTimeout(()=>{
-        //     console.log('FORCE EXIT');
-        //     process.exit(0);
-        // }, 1000);
+        const pepe = setTimeout(function(){
+            console.log(100)
+        },100);
+        console.log(pepe);
     })
 
     describe("not connected", function(){
