@@ -10,13 +10,8 @@ export function tipos_ticket(context: TableContext):TableDefinition{
             {name:'tipo_ticket', typeName:'text' }
         ],
         primaryKey: ['tipo_ticket'],
-        detailTables: [{
-            "table": "tickets",
-            "fields": [
-                "tipo_ticket"
-            ],
-            "abr": "T"
-            }
+        detailTables: [
+            {table: "tickets", fields: ["tipo_ticket"], abr: "T"}
         ],
     }
     return td

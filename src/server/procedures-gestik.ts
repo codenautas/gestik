@@ -1,5 +1,5 @@
 "use strict";
-import { CoreFunctionParameters, ProcedureContext, UploadedFileInfo } from "backend-plus";
+import { ProcedureContext, UploadedFileInfo } from "backend-plus";
 import * as fs from "fs-extra";
 import { ProcedureDef } from './types-gestik';
 import { guarantee, DefinedType, is } from "guarantee-type"
@@ -68,7 +68,7 @@ export const ProceduresGestik:ProcedureDef[] = [
             {name:'al_proyecto'    , typeName:'text', references: 'proyectos'},
         ],
         proceedLabel:'cambiar',
-        coreFunction:async function(context:ProcedureContext, params:CoreFunctionParameters){
+        coreFunction:async function(context:ProcedureContext, params:{del_proyecto:string, el_ticket:number, al_proyecto:string}){
             if (params.del_proyecto == params.al_proyecto) {
                 throw new Error("Tiene que espeficar dos proyectos distintos.");
             }
@@ -108,7 +108,7 @@ export const ProceduresGestik:ProcedureDef[] = [
             {name:'buscar'    , typeName:'text'},
         ],
         resultOk:'showGrid',
-        coreFunction:async function(_context:ProcedureContext, params:CoreFunctionParameters){
+        coreFunction:async function(_context:ProcedureContext, params:{buscar:string}){
             return {tableName:'tickets', pick:params.buscar};
         }
     },

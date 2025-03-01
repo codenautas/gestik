@@ -75,12 +75,12 @@ describe("gestik tests", function(){
     const tipoTicket = is.object({
         proyecto: is.string,
         ticket: is.number,
-        tipo_ticket: is.string,
+        tipo_ticket: is.nullable.string,
         asunto: is.string,
         requirente: is.string,
-        estado: is.string,
+        estado: is.nullable.string,
         f_ticket: is.Date,
-        estados__solapa: is.string,
+        estados__solapa: is.nullable.string,
         ...dolarFieldsDescription
     });
 
