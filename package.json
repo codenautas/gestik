@@ -10,25 +10,27 @@
     "install"
   ],
   "dependencies": {
-    "backend-plus": "2.0.0-rc.13",
-    "fs-extra": "^11.2.0",
-    "pg-triggers": "^0.3.2"
+    "backend-plus": "2.2.0",
+    "fs-extra": "^11.3.0",
+    "pg-triggers": "^0.3.3"
   },
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
-    "@types/mocha": "^10.0.6",
-    "@typescript-eslint/eslint-plugin": "~7.6.0",
-    "@typescript-eslint/parser": "~7.6.0",
+    "@types/mocha": "^10.0.10",
+    "@typescript-eslint/eslint-plugin": "^8.25.0",
+    "@typescript-eslint/parser": "^8.25.0",
     "backend-tester": "^0.1.1",
-    "eslint": "~8.56.0",
-    "form-data": "^4.0.0",
-    "guarantee-type": "^0.1.2",
-    "mocha": "^10.4.0",
+    "eslint": "^9.21.0",
+    "form-data": "^4.0.2",
+    "guarantee-type": "^0.2.2",
+    "mocha": "^11.1.0",
     "mixin-patch": "^0.4.1",
     "node-fetch": "^3.3.2",
-    "types.d.ts": "^0.6.21",
-    "typescript": "^5.4",
-    "why-is-node-running": "^2.2.2"
+    "types.d.ts": "^0.6.22",
+    "typescript": "^5.7",
+    "why-is-node-running": "^3.2.2"
+  },
+  "devDependencies-with-problems":{
   },
   "mixin-patch": {},
   "scripts": {
@@ -42,7 +44,8 @@
     "dump": "npm start -- --dump-db",
     "dumpb": "(tsc -p tsconfig-server.json  || echo \"continue w/error\") && npm run dump",
     "mixin-patch": "mixin-patch",
-    "test": "set BACKEND_PLUS_LOCAL_CONFIG=autotest-config && call eslint && call tsc -p tsconfig-server.json && call npm start -- --dump-db && call run-sql create-schema gestik_autotest_db && call npm run test-only-run",
+    "con-eslint- test": "set BACKEND_PLUS_LOCAL_CONFIG=autotest-config && call eslint && call tsc -p tsconfig-server.json && call npm start -- --dump-db && call run-sql create-schema gestik_autotest_db && call npm run test-only-run",
+    "test": "set BACKEND_PLUS_LOCAL_CONFIG=autotest-config && call tsc -p tsconfig-server.json && call npm start -- --dump-db && call run-sql create-schema gestik_autotest_db && call npm run test-only-run",
     "test-only-run": "set BACKEND_PLUS_LOCAL_CONFIG=autotest-config && tsc -p tsconfig-test.json && mocha --reporter spec --bail --check-leaks dist/test/test/ --exit",
     "start": "node dist/server/server-gestik.js"
   }
