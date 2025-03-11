@@ -1,8 +1,8 @@
-proyecto|es_general
-BP|false
-DEMECU|false
-ETOI|false
-GESTIK|false
-IPC|false
-UT|false
-GENERAL|true
+proyecto|es_general|visualizar|activo|observaciones|descripcion
+BP|false|true|true||
+DEMECU|false|true|true||
+ETOI|false|true|true||
+GESTIK|false|true|true||
+IPC|false|true|true||
+UT|false|true|true||
+GENERAL|true|true|true||

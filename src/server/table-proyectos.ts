@@ -15,7 +15,13 @@ export function proyectos(context: TableContext):TableDefinition{
             {name:'solapas', typeName: 'text', clientSide:'solapas', inTable:false, editable:false},
             {name:'solapas_cant', typeName: 'jsonb', inTable:false},
             {name:'solapa', typeName:'text', clientSide:'nothing', inTable:false, serverSide:false},
-            {name:'es_general', typeName:'boolean', defaultDbValue: 'false' }
+            {name:'es_general', typeName:'boolean', defaultDbValue: 'false' },
+            {name:'visualizar', typeName:'boolean', defaultDbValue: 'true' },
+            {name:'activo', typeName:'boolean', defaultDbValue: 'true' },
+            {name:'observaciones', typeName:'text' },
+            {name:'descripcion', typeName:'text'},
+
+
         ],
         primaryKey: ['proyecto'],
         softForeignKeys:[
