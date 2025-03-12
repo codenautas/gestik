@@ -34,7 +34,7 @@ export function tickets(context: TableContext, opts: Opts = {}):TableDefinition{
         {name:'asignado_pendiente' , typeName:'text'  , zona:'0' , inTable:false}
     ]
     const td:TableDefinition = {
-        editable: true,
+        editable: context.user.rol != 'lectura',
         name: 'tickets'+(opts.zona ?? ''),
         elementName: 'ticket',
         tableName: 'tickets',
