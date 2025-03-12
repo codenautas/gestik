@@ -4,7 +4,7 @@ import { TableDefinition, TableContext } from "./types-gestik";
 
 export function anotaciones(context:TableContext):TableDefinition{
     const td:TableDefinition = {
-        editable: true,
+        editable: context.user.rol != 'lectura',
         name: 'anotaciones',
         elementName: 'anotación',
         fields: [
