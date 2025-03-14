@@ -117,6 +117,14 @@ export class AppGestik extends AppBackend{
                 return parentProc.concat(ProceduresGestik);
     }
     getMenu(context:Context):MenuDefinition{
+        if (context.user?.rol == "lectura") {
+            return {
+                menu: [
+                    { menuType: 'table', name: 'proyectos' },
+                ]
+            };
+        }
+
         const menuContent:MenuInfoBase[]=[
             {menuType:'menu', name:'tickets', menuContent:[
                 {menuType:'proc', name:'buscar_ticket', label:'buscar'},
