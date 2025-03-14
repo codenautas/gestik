@@ -34,6 +34,7 @@ export function proyectos(context: TableContext):TableDefinition{
             { table: 'tickets', fields: [ 'proyecto', {source:'solapa', target:'estados__solapa', nullMeansAll:true} ], abr: 'T' },
         ],
         sql:{
+            where: context.user.rol == 'lectura' ? 'visualizar' : 'true',
             fields:{ 
                 cant_tickets:{ expr: sqlExprCantTickets(context, `t.proyecto = proyectos.proyecto`) },
                 solapas_cant:{ expr: `(
