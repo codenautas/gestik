@@ -34,7 +34,6 @@ export function proyectos(context: TableContext):TableDefinition{
             { table: 'tickets', fields: [ 'proyecto', {source:'solapa', target:'estados__solapa', nullMeansAll:true} ], abr: 'T' },
         ],
         sql:{
-            where: context.user.rol == 'lectura' ? 'visualizar' : 'true',
             fields:{ 
                 cant_tickets:{ expr: sqlExprCantTickets(context, `t.proyecto = proyectos.proyecto`) },
                 solapas_cant:{ expr: `(
@@ -47,8 +46,10 @@ export function proyectos(context: TableContext):TableDefinition{
                 all: {
                     using: `(
                         SELECT rol='admin' FROM usuarios WHERE usuario = get_app_user()
-                    ) OR (
-                        SELECT true FROM equipos_usuarios eu INNER JOIN equipos_proyectos ep USING (equipo) WHERE usuario = get_app_user() and ep.proyecto = proyectos.proyecto limit 1
+                    ) OR ( (
+                            SELECT true FROM equipos_usuarios eu INNER JOIN equipos_proyectos ep USING (equipo) WHERE usuario = get_app_user() and ep.proyecto = proyectos.proyecto limit 1
+                        ) AND (
+                            (SELECT rol!='lectura' FROM usuarios WHERE usuario = get_app_user()) OR visualizar)
                     )`
                 }
             }
