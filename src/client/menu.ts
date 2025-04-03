@@ -22,7 +22,12 @@ myOwn.clientSides.nothing = {
 myOwn.clientSides.solapas = {
     update: function(depot, fieldName){
         const control = depot.rowControls[fieldName];
-        const solapas_cant = depot.row.solapas_cant as {solapa:string, cant:number}[]
+        const solapas_cant = depot.row.solapas_cant as {solapa:string, cant:number}[] ?? [
+            { cant: null, orden: 1, solapa: 'nuevos', },
+            { cant: null, orden: 2, solapa: 'activos', },
+            { cant: null, orden: 3, solapa: 'cerrados', }
+        ]
+
         solapas_cant.forEach(({solapa, cant}) => {
             const button = control.buttons[solapa] as HTMLButtonElement
             button.textContent = solapa;
@@ -32,8 +37,13 @@ myOwn.clientSides.solapas = {
     prepare: async function(depot, fieldName){
         const control = depot.rowControls[fieldName];
         const proyecto = depot.row.proyecto;
-        const solapas_cant = depot.row.solapas_cant as {solapa:string, cant:number}[]
         const buttons: Record<string, HTMLButtonElement> = {}
+        const solapas_cant = depot.row.solapas_cant as {solapa:string, cant:number}[] ?? [
+            { cant: null, orden: 1, solapa: 'nuevos', },
+            { cant: null, orden: 2, solapa: 'activos', },
+            { cant: null, orden: 3, solapa: 'cerrados', }
+        ]
+
         solapas_cant.forEach(({solapa}) => {
             const ff = {estados__solapa: solapa, proyecto}
             const button = myOwn.createForkeableButton({w:'table', table:'tickets', ff}, {
