@@ -8,7 +8,7 @@ import { AppBackend, Context, Request,
 // import {changing} from 'best-globals';
 
 import {ProceduresGestik} from "./procedures-gestik";
-import {promises as fs, existsSync } from "fs";
+import { rm } from "fs/promises";
 
 import { usuarios   } from './table-usuarios';
 import { tickets, tickets1, tickets2, tickets3} from './table-tickets';
@@ -46,9 +46,7 @@ const cronMantenimiento = (be:AppBackend) => {
                         rows.forEach(async (element) => {
                             const path = `local-attachments/${element.ruta_archivo}`;
                             await client.query(`delete from archivos_borrar where ruta_archivo = $1`, [element.ruta_archivo]).execute();
-                            if (existsSync(element.ruta_archivo)) {
-                                await fs.rm(path);
-                            }
+                            await rm(path, { force: true });                            
                         });
                         return `Se borraron archivos adjuntos en la fecha y hora: ${date}`;
                     }else{
@@ -68,7 +66,6 @@ const cronMantenimiento = (be:AppBackend) => {
             return Promise.resolve();
         }
     });
-
 }
 export class AppGestik extends AppBackend{
     
