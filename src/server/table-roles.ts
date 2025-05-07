@@ -9,6 +9,7 @@ export function roles(context: TableContext):TableDefinition{
         name: 'roles',
         fields: [
             {name:'rol', typeName:'text',},
+            {name: 'puede_ver_todo', typeName: 'boolean', defaultValue: false},
         ],
         primaryKey: ['rol'],
     }
