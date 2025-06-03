@@ -13,6 +13,7 @@ export function equipos_proyectos(context: TableContext):TableDefinition{
             {name: 'proyecto', typeName: 'text'},
             {name: 'es_requirente', typeName: 'boolean'},
             {name: 'es_asignado', typeName: 'boolean'},
+            {name: 'puede_ver', typeName: 'boolean'},
         ],
         primaryKey: ['equipo', 'proyecto'],
         foreignKeys: [
