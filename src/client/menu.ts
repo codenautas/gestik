@@ -173,3 +173,35 @@ myOwn.wScreens.mis_pendientes = {
         return 'ok'
     }
 }
+
+myOwn.wScreens.proyectos_inactivos = {
+    parameters: [
+        //{name: "username", typeName: "text"},
+        {name: "proyecto", typeName: "text"},  // Nuevo parámetro para filtrar por proyecto
+        {name: "ticket", typeName: "bigint"},  // Nuevo parámetro para filtrar por ticket
+    ],
+    mainAction: async function(params:{ proyecto: string, ticket: number}, divResult) {
+        const fixedFields = [
+            {fieldName: "proyectos_inactivos", value: params.proyecto, show: true},
+            {fieldName:"ticket", value:params.ticket}
+            
+            //{fieldName: "asignado", value: params.username, show: true}, // Filtra por usuario asignado
+        ];
+        
+     
+
+        const nuevoDiv = function(elemento: HTMLDivElement, className?: string) {
+            const nuevo = html.div({class: className ?? "w-proyectos-inactivos"}).create();
+            elemento.appendChild(nuevo);
+            return nuevo;
+        };
+
+        // Tabla de tickets de proyectos inactivos con los filtros aplicados
+        myOwn.tableGrid("tickets", nuevoDiv(divResult), {fixedFields, tableDef: {title: "Tickets de Proyectos Inactivos"}});
+        
+        // Otra tabla si se necesitan detalles adicionales
+        myOwn.tableGrid("tickets_proyectos_inactivos", nuevoDiv(divResult), {fixedFields});
+
+        return "ok";
+    }
+};

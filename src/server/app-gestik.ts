@@ -120,7 +120,9 @@ export class AppGestik extends AppBackend{
                 {menuType:'table', name:'nuevo', table:'tickets', td:{forInsertOnlyMode:true, gridAlias:'nuevo_ticket'}},
                 {menuType:'proc' , name:'cambiar_proyecto', label:'cambiar de proyecto'},
             ]},
-            {menuType:'table', name:'proyectos'},
+            {menuType:'table', name:'proyectos_abiertos', label:'proyectos abiertos', table: 'proyectos', ff:{activo:true},  toLabel:'proyectos abiertos'},
+            {menuType:'table', name:'proyectos_cerrados', label:'proyectos cerrados', table: 'proyectos', ff:{activo:false}},
+
         ];
         const mis_verificaciones = {menuType:'mis_verificaciones', autoproced: true, name:'mis_verificaciones', ff:{username: context?.username}};
         if(context.user && context.user.rol=="admin"){
