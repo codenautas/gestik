@@ -97,6 +97,7 @@ export function tickets(context: TableContext, opts: Opts = {}):TableDefinition{
                                 WHERE eu.usuario = get_app_user()
                                     AND ep.proyecto = tickets.proyecto
                                     AND ep.es_requirente
+                                    LIMIT 1
                         )
                     `
                     }
