@@ -3,6 +3,10 @@
 import { sqlExprCantTickets } from "./table-tickets";
 import { TableDefinition, TableContext } from "./types-gestik";
 
+const sqlExprEsAdmin = `SELECT rol='admin' FROM usuarios WHERE usuario = get_app_user()`;
+const sqlExprPuedeVer = `SELECT puede_ver = true FROM equipos_usuarios eu INNER JOIN equipos_proyectos ep USING (equipo) WHERE usuario = get_app_user() and ep.proyecto = proyectos.proyecto limit 1`;
+const sqlExprEsEquipoAsignado = `SELECT true FROM equipos_usuarios eu INNER JOIN equipos_proyectos ep USING (equipo) WHERE usuario = get_app_user() and ep.proyecto = proyectos.proyecto limit 1`;
+
 export function proyectos(context: TableContext):TableDefinition{
     const admin = context.user.rol == 'admin';
     const td:TableDefinition = {
@@ -43,13 +47,18 @@ export function proyectos(context: TableContext):TableDefinition{
                 )`}
             },
             policies: {
-                all: {
-                    using: `(
-                        SELECT rol='admin' FROM usuarios WHERE usuario = get_app_user()
-                    ) OR (
-                        SELECT true FROM equipos_usuarios eu INNER JOIN equipos_proyectos ep USING (equipo) WHERE usuario = get_app_user() and ep.proyecto = proyectos.proyecto limit 1
-                    )`
-                }
+                select: {
+                    using: `(${sqlExprEsAdmin}) OR (${sqlExprPuedeVer}) OR (${sqlExprEsEquipoAsignado})`,
+                },
+                update: {
+                    using: `(${sqlExprEsAdmin}) OR (${sqlExprEsEquipoAsignado})`
+                },
+                insert: {
+                    check: `(${sqlExprEsAdmin}) OR (${sqlExprEsEquipoAsignado})`
+                },
+                delete: {
+                    using: `(${sqlExprEsAdmin}) OR (${sqlExprEsEquipoAsignado})`
+                },
             }
         },
         hiddenColumns:['solapas_cant', 'solapa']

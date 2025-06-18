@@ -11,6 +11,18 @@ type Opts = {
     zona?:string,
 }
 
+const sqlExprEsAdmin = `SELECT rol='admin' FROM usuarios WHERE usuario = get_app_user()`;
+const sqlExprPuedeVer = `SELECT puede_ver = true FROM equipos_usuarios eu INNER JOIN equipos_proyectos ep USING (equipo) WHERE usuario = get_app_user() and ep.proyecto = proyectos.proyecto limit 1`;
+const sqlExprEsRequirenteOAsignado = `requirente = get_app_user() OR asignado = get_app_user()`;
+const sqlExprEquiposUsuarios = `
+    SELECT true FROM equipos_usuarios eu INNER JOIN equipos_usuarios et ON eu.equipo = et.equipo
+    WHERE eu.usuario = get_app_user() AND (et.usuario = tickets.requirente OR et.usuario = tickets.asignado) limit 1
+`;
+const sqlExprEquiposProyectos = `
+    SELECT true FROM equipos_usuarios eu INNER JOIN equipos_proyectos ep ON eu.equipo = ep.equipo
+    WHERE eu.usuario = get_app_user() AND ep.proyecto = tickets.proyecto AND ep.es_asignado limit 1
+`;
+
 export function tickets(context: TableContext, opts: Opts = {}):TableDefinition{
     const isTable = opts.zona == null; // zona se usa para dividir en partes la pantalla de carga de tickets
     const fields: (FieldDefinition & {zona:string, siempre?:boolean})[] = [
@@ -66,31 +78,45 @@ export function tickets(context: TableContext, opts: Opts = {}):TableDefinition{
             },
             ...(isTable ? {
                 policies: {
-                    all: {
+                    select: {
                         using: `( 
-                            SELECT rol='admin' FROM usuarios WHERE usuario = get_app_user()
+                            ${sqlExprEsAdmin}
                         ) OR (
-                            requirente = get_app_user()
-                        ) OR ( 
-                            asignado = get_app_user()
+                            ${sqlExprPuedeVer}
                         ) OR (
-                            SELECT true 
-                                FROM equipos_usuarios eu INNER JOIN equipos_usuarios et ON eu.equipo = et.equipo
-                                WHERE eu.usuario = get_app_user()
-                                    AND (et.usuario = tickets.requirente OR et.usuario = tickets.asignado) limit 1
+                            ${sqlExprEsRequirenteOAsignado}
                         ) OR (
-                            SELECT true 
-                                FROM equipos_usuarios eu INNER JOIN equipos_proyectos ep ON eu.equipo = ep.equipo
-                                WHERE eu.usuario = get_app_user()
-                                    AND ep.proyecto = tickets.proyecto
-                                    AND ep.es_asignado limit 1
-                        )
-                    `    
+                            ${sqlExprEquiposUsuarios}
+                        ) OR (
+                            ${sqlExprEquiposProyectos}
+                        )`,
+                    },
+                    update: {
+                        using: `( 
+                            ${sqlExprEsAdmin}
+                        ) OR (
+                            ${sqlExprEsRequirenteOAsignado}
+                        ) OR (
+                            ${sqlExprEquiposUsuarios}
+                        ) OR (
+                            ${sqlExprEquiposProyectos}
+                        )`,
+                    },
+                    delete: {
+                        using: `( 
+                            ${sqlExprEsAdmin}
+                        ) OR (
+                            ${sqlExprEsRequirenteOAsignado}
+                        ) OR (
+                            ${sqlExprEquiposUsuarios}
+                        ) OR (
+                            ${sqlExprEquiposProyectos}
+                        )`,
                     },
                     insert:{
                         name:`debe ser del equipo requirente`,
                         check:`(
-                            SELECT rol='admin' FROM usuarios WHERE usuario = get_app_user()
+                            ${sqlExprEsAdmin}
                         ) OR (
                             SELECT true 
                                 FROM equipos_usuarios eu INNER JOIN equipos_proyectos ep ON eu.equipo = ep.equipo
