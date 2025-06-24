@@ -20,8 +20,6 @@ export function proyectos(context: TableContext):TableDefinition{
             {name:'activo', typeName:'boolean', defaultDbValue: 'true' },
             {name:'observaciones', typeName:'text' },
             {name:'descripcion', typeName:'text'},
-
-
         ],
         primaryKey: ['proyecto'],
         softForeignKeys:[
@@ -34,11 +32,11 @@ export function proyectos(context: TableContext):TableDefinition{
             { table: 'tickets', fields: [ 'proyecto', {source:'solapa', target:'estados__solapa', nullMeansAll:true} ], abr: 'T' },
         ],
         sql:{
-            fields:{ 
+            fields:{
                 cant_tickets:{ expr: sqlExprCantTickets(context, `t.proyecto = proyectos.proyecto`) },
                 solapas_cant:{ expr: `(
-                    SELECT jsonb_agg(jsonb_build_object('solapa', s.solapa, 'cant', cant_tickets, 'orden', s.orden) order by s.orden) 
-                        from solapas s  
+                    SELECT jsonb_agg(jsonb_build_object('solapa', s.solapa, 'cant', cant_tickets, 'orden', s.orden) order by s.orden)
+                        from solapas s
                             inner join lateral ${sqlExprCantTickets(context, `t.proyecto = proyectos.proyecto and e.solapa = s.solapa`, true)} as x on true
                 )`}
             },

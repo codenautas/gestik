@@ -1,7 +1,7 @@
 "use strict";
 
 // import * as Path from 'path';
-import { AppBackend, Context, Request, 
+import { AppBackend, Context, Request,
     ClientModuleDefinition, OptsClientPage, MenuDefinition, MenuInfoBase
 } from "backend-plus";
 
@@ -46,7 +46,7 @@ const cronMantenimiento = (be:AppBackend) => {
                         rows.forEach(async (element) => {
                             const path = `local-attachments/${element.ruta_archivo}`;
                             await client.query(`delete from archivos_borrar where ruta_archivo = $1`, [element.ruta_archivo]).execute();
-                            await rm(path, { force: true });                            
+                            await rm(path, { force: true });
                         });
                         return `Se borraron archivos adjuntos en la fecha y hora: ${date}`;
                     }else{
@@ -68,7 +68,7 @@ const cronMantenimiento = (be:AppBackend) => {
     });
 }
 export class AppGestik extends AppBackend{
-    
+
     addSchrödingerServices(mainApp:backendPlus.Express, baseUrl:string){
         const be = this;
         super.addSchrödingerServices(mainApp, baseUrl);
@@ -120,8 +120,9 @@ export class AppGestik extends AppBackend{
                 {menuType:'table', name:'nuevo', table:'tickets', td:{forInsertOnlyMode:true, gridAlias:'nuevo_ticket'}},
                 {menuType:'proc' , name:'cambiar_proyecto', label:'cambiar de proyecto'},
             ]},
-            {menuType:'table', name:'proyectos_abiertos', label:'proyectos abiertos', table: 'proyectos', ff:{activo:true},  toLabel:'proyectos abiertos'},
-            {menuType:'table', name:'proyectos_cerrados', label:'proyectos cerrados', table: 'proyectos', ff:{activo:false}},
+            {menuType:'table', name:'proyectos'},//Esta opción se borra cuando se termine las de proyectos_abiertos y proyectos_cerrados
+            //{menuType:'table', name:'proyectos_abiertos', label:'proyectos abiertos', table: 'proyectos', ff:{activo:true},  toLabel:'proyectos abiertos'},
+            //{menuType:'table', name:'proyectos_cerrados', label:'proyectos cerrados', table: 'proyectos', ff:{activo:false}},
 
         ];
         const mis_verificaciones = {menuType:'mis_verificaciones', autoproced: true, name:'mis_verificaciones', ff:{username: context?.username}};
@@ -182,7 +183,7 @@ export class AppGestik extends AppBackend{
             anotaciones,
             equipos_proyectos,
             equipos_usuarios,
-            equipo_asignado_tickets, 
+            equipo_asignado_tickets,
             equipo_requirente_tickets,
             tickets_equipos_usuarios,tickets_pendientes,
             archivos_borrar
@@ -193,5 +194,5 @@ export class AppGestik extends AppBackend{
                 tableDef.refrescable = true;
             });
         }
-    }       
+    }
 }
