@@ -3,6 +3,19 @@
 import { sqlExprCantTickets } from "./table-tickets";
 import { TableDefinition, TableContext } from "./types-gestik";
 
+const sqlExprEdit = `(
+                        SELECT rol='admin' FROM usuarios WHERE usuario = get_app_user()
+                    ) OR (
+                        SELECT true FROM equipos_usuarios eu INNER JOIN equipos_proyectos ep USING (equipo)
+                            WHERE usuario = get_app_user() and ep.proyecto = proyectos.proyecto and ep.es_solo_lectura = FALSE limit 1
+                    )`
+const sqlExprView = `(
+                        SELECT rol='admin' FROM usuarios WHERE usuario = get_app_user()
+                    ) OR (
+                        SELECT true FROM equipos_usuarios eu INNER JOIN equipos_proyectos ep USING (equipo)
+                            WHERE usuario = get_app_user() and ep.proyecto = proyectos.proyecto limit 1
+                    )`
+
 export function proyectos(context: TableContext):TableDefinition{
     const admin = context.user.rol == 'admin';
     const td:TableDefinition = {
@@ -41,12 +54,17 @@ export function proyectos(context: TableContext):TableDefinition{
                 )`}
             },
             policies: {
-                all: {
-                    using: `(
-                        SELECT rol='admin' FROM usuarios WHERE usuario = get_app_user()
-                    ) OR (
-                        SELECT true FROM equipos_usuarios eu INNER JOIN equipos_proyectos ep USING (equipo) WHERE usuario = get_app_user() and ep.proyecto = proyectos.proyecto limit 1
-                    )`
+                update: {
+                    using: sqlExprEdit,
+                },
+                insert: {
+                    check: sqlExprEdit,
+                },
+                delete: {
+                    using: sqlExprEdit,
+                },
+                select: {
+                    using: sqlExprView,
                 }
             }
         },
