@@ -55,6 +55,7 @@ install:
       - ../install/anotacion_constraint.sql
       - ../install/insertar_equipo.sql
       - ../install/archivo_borrar_trg.sql
+      - ../install/no_editar_proyectos_cerrados_trg.sql
 logo: 
   path: client/img
 `;
