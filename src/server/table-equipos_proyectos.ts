@@ -13,12 +13,20 @@ export function equipos_proyectos(context: TableContext):TableDefinition{
             {name: 'proyecto', typeName: 'text'},
             {name: 'es_requirente', typeName: 'boolean'},
             {name: 'es_asignado', typeName: 'boolean'},
+            {name: 'puede_leer', typeName: 'boolean', inTable: true, editable: false},
         ],
         primaryKey: ['equipo', 'proyecto'],
         foreignKeys: [
             {references: 'proyectos', fields: ['proyecto'], displayAllFields:true},
             {references: 'equipos'  , fields: ['equipo'  ], displayAllFields:true},
         ],
+        sql: {
+            fields: {
+                puede_leer: {
+                    expr: `true`
+                }
+            }
+        }
     }
     return td
 }
