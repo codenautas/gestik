@@ -37,7 +37,7 @@ myOwn.clientSides.solapas = {
         solapas_cant.forEach(({solapa}) => {
             const ff = {estados__solapa: solapa, proyecto}
             const button = myOwn.createForkeableButton({w:'table', table:'tickets', ff}, {
-                label: solapa, 
+                label: solapa,
                 onclick: (event)=>{
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     // @ts-ignore
@@ -49,7 +49,7 @@ myOwn.clientSides.solapas = {
                         depot.detailControls.tickets.forceDisplayDetailGrid({})
                     }
                     solapas_cant.forEach(s => {
-                        if (s.solapa == solapa) { 
+                        if (s.solapa == solapa) {
                             buttons[s.solapa].setAttribute('is-selected','yes')
                         } else {
                             buttons[s.solapa].removeAttribute('is-selected')
@@ -174,34 +174,34 @@ myOwn.wScreens.mis_pendientes = {
     }
 }
 
-myOwn.wScreens.proyectos_inactivos = {
-    parameters: [
-        //{name: "username", typeName: "text"},
-        {name: "proyecto", typeName: "text"},  // Nuevo parámetro para filtrar por proyecto
-        {name: "ticket", typeName: "bigint"},  // Nuevo parámetro para filtrar por ticket
-    ],
-    mainAction: async function(params:{ proyecto: string, ticket: number}, divResult) {
+myOwn.wScreens.proyectos_abiertos = {
+    parameters:[],
+    mainAction: async function(_params:{}, divResult){
         const fixedFields = [
-            {fieldName: "proyectos_inactivos", value: params.proyecto, show: true},
-            {fieldName:"ticket", value:params.ticket}
-            
-            //{fieldName: "asignado", value: params.username, show: true}, // Filtra por usuario asignado
+            {fieldName:"abierto", value:true, show:true},
         ];
-        
-     
-
-        const nuevoDiv = function(elemento: HTMLDivElement, className?: string) {
-            const nuevo = html.div({class: className ?? "w-proyectos-inactivos"}).create();
+        const nuevoDiv = function(elemento:HTMLDivElement, className?:string){
+            const nuevo = html.div({class:className??"w-proyectos-abiertos"}).create();
             elemento.appendChild(nuevo);
             return nuevo;
         };
-
-        // Tabla de tickets de proyectos inactivos con los filtros aplicados
-        myOwn.tableGrid("tickets", nuevoDiv(divResult), {fixedFields, tableDef: {title: "Tickets de Proyectos Inactivos"}});
-        
-        // Otra tabla si se necesitan detalles adicionales
-        myOwn.tableGrid("tickets_proyectos_inactivos", nuevoDiv(divResult), {fixedFields});
-
-        return "ok";
+        myOwn.tableGrid("proyectos", nuevoDiv(divResult), {tableDef: {title: "Proyectos Abiertos"}, fixedFields});
+        return 'ok';
     }
-};
+}
+
+myOwn.wScreens.proyectos_cerrados = {
+    parameters:[],
+    mainAction: async function(_params:{}, divResult){
+        const fixedFields = [
+            {fieldName:"abierto", value:false, show:true},
+        ];
+        const nuevoDiv = function(elemento:HTMLDivElement, className?:string){
+            const nuevo = html.div({class:className??"w-proyectos-cerrados"}).create();
+            elemento.appendChild(nuevo);
+            return nuevo;
+        };
+        myOwn.tableGrid("proyectos", nuevoDiv(divResult), {tableDef: {title: "Proyectos Cerrados"}, fixedFields});
+        return 'ok';
+    }
+}
