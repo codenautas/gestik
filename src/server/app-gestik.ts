@@ -121,13 +121,13 @@ export class AppGestik extends AppBackend{
                 {menuType:'proc' , name:'cambiar_proyecto', label:'cambiar de proyecto'},
             ]},
             //{menuType:'table', name:'proyectos'},//Esta opción se borra cuando se termine las de proyectos_abiertos y proyectos_cerrados
-            {menuType:'proyectos_abiertos', autoproced: true, name:'proyectos_abiertos'},
-            {menuType:'proyectos_cerrados', autoproced: true, name:'proyectos_cerrados'},
+            {menuType:'proyectos_abiertos', autoproced: true, name:'proyectos'},
 
         ];
         const mis_verificaciones = {menuType:'mis_verificaciones', autoproced: true, name:'mis_verificaciones', ff:{username: context?.username}};
         if(context.user && context.user.rol=="admin"){
             menuContent.push(
+                {menuType:'proyectos_cerrados', autoproced: true, name:'proyectos_cerrados'},
                 {menuType:'mis_pendientes', autoproced: true, name:'mis_pendientes', ff:{username: context?.username}},
                 mis_verificaciones,
                 {menuType:'menu', name:'config', label:'configurar', menuContent:[
