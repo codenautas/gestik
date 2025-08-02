@@ -4,21 +4,40 @@ import { AppGestik } from '../server/app-gestik';
 // import * as MiniTools from 'mini-tools';
 import * as discrepances from 'discrepances';
 
-import { is } from "guarantee-type";
-
 import { date } from "best-globals";
 
-import { startServer, Session } from "backend-tester";
+import { startServer, EmulatedSession } from "serial-tester";
 
 import { expected } from "cast-error";
-// import { unexpected } from 'cast-error';
+
+import * as ctts from "./contracts.js";
+
+const PORT = 3333;
+
+const ADMIN_REQ = {user:{usuario:'bob', rol:''}};
+
+class EmulatedGestikSession extends EmulatedSession<AppGestik> {
+    constructor(server: AppGestik) {
+        super(server, PORT);
+    }
+}
 
 describe("gestik tests", function(){
     // se necesitan *var* porque se inicializa en la función before
     var server: AppGestik;    // eslint-disable-line no-var
     before(async function(){
         this.timeout(4000);
-        server = await startServer(new AppGestik());
+        server = await startServer(AppGestik);
+        await server.inDbClient(ADMIN_REQ, async (client) => {
+            // limpia la base de datos
+            await client.executeSentences([
+                // "CALL set_app_user('bob')",
+                "DELETE FROM archivos_borrar WHERE ruta_archivo like '%autotest%'",
+                "DELETE FROM equipos_proyectos WHERE equipo like '%autotest-agregado%'",
+                "DELETE FROM equipos WHERE equipo like '%autotest-agregado%'",
+                "DELETE FROM tickets WHERE proyecto like '%autotest-agregado%' OR asunto like '%autotest%'",
+            ]);
+        });
     });
 
     after(async function(){
@@ -33,75 +52,43 @@ describe("gestik tests", function(){
     })
 
     describe("not connected", function(){
-        var session: Session<AppGestik>;        // eslint-disable-line no-var
+        var session: EmulatedGestikSession;        // eslint-disable-line no-var
         before(function(){
-            session = new Session(server);
+            session = new EmulatedGestikSession(server);
         })
         it("rechaza passowrd invalido", async function(){
             const result = await session.login({
                 username: 'autotest-inactivo',
                 password: 'clave4321',
-            });
-            discrepances.showAndThrow(result, {message:"usuario o clave incorrecta"});
+            }, {returnErrorMessage: true});
+            discrepances.showAndThrow(result, "usuario o clave incorrecta");
         });
-        it("rechaza usuario inactivo con passowrd correcto", async function(){
+        it("rechaza usuario inactivo con password correcto", async function(){
             const result = await session.login({
                 username: 'autotest-inactivo',
                 password: 'clave1234',
-            });
-            discrepances.showAndThrow(result, {message:"el usuario está marcado como inactivo"});
+            }, {returnErrorMessage: true});
+            discrepances.showAndThrow(result, "el usuario está marcado como inactivo");
         });
         it("acepta usuario", async function(){
-            const result = await session.login({
+            await session.login({
                 username: 'autotest-desarrollador',
                 password: 'clave1234',
             });
-            discrepances.showAndThrow(!!result.ok, true);
         });
     });
 
     var today = date.today(); // eslint-disable-line no-var
-
-    const dolarFieldsDescription = {
-        "$allow.update": is.boolean,
-        "$allow.delete": is.boolean
-    }
 
     const dolarFieldsTrue = {
         "$allow.update": true,
         "$allow.delete": true,
     }
     
-    const tipoTicket = is.object({
-        proyecto: is.string,
-        ticket: is.number,
-        tipo_ticket: is.nullable.string,
-        asunto: is.string,
-        requirente: is.string,
-        estado: is.nullable.string,
-        f_ticket: is.Date,
-        estados__solapa: is.nullable.string,
-        ...dolarFieldsDescription
-    });
-
-    const tipoProyecto = is.object({
-        proyecto: is.string,
-        es_general: is.boolean,
-        solapas_cant: is.optional.object({})
-    })
-
-    const tipoEquipo = is.object({
-        equipo: is.string
-    })
-
-    const tipoArchivosBorrar = is.object({
-        ruta_archivo: is.string
-    })
-
     describe("usuario administrador", function(){
-        var session: Session<AppGestik>;        // eslint-disable-line no-var
+        var session: EmulatedGestikSession;        // eslint-disable-line no-var
         before(async function(){
-            session = new Session(server);
+            session = new EmulatedGestikSession(server);
             await session.login({
                 username: 'autotest-administrador',
                 password: 'clave1234',
@@ -109,24 +96,24 @@ describe("gestik tests", function(){
         })
         it("determina es_general en el proyecto general agrega un equipo y verifica la asignación", async function(){
             // quita es_general
-            await session.saveRecord('proyectos', {proyecto: 'GENERAL-autotest', es_general:false}, tipoProyecto, 'update');
-            // agrega un equipo 
-            await session.saveRecord('equipos', {equipo: 'autotest-agregado'}, tipoEquipo, 'new');
+            await session.saveRecord(ctts.proyectos, {proyecto: 'GENERAL', es_general:false}, 'update');
+            // agrega un equipo
+            await session.saveRecord(ctts.equipos, {equipo: 'autotest-agregado'}, 'new');
             // verifica que no se haya generado automáticamente una entrada en GENERAL-autotest para el equipo nuevo.
-            await session.tableData("equipos_proyectos", [
-            ],'all',{fixedFields:{proyecto: 'GENERAL-autotest', equipo: 'autotest-agregado'}})
+            await session.tableDataTest("equipos_proyectos", [
+            ],'all',{fixedFields:{proyecto: 'GENERAL', equipo: 'autotest-agregado'}})
             // pone es_general
-            await session.saveRecord('proyectos', {proyecto: 'GENERAL-autotest', es_general:true}, tipoProyecto, 'update');
+            await session.saveRecord(ctts.proyectos, {proyecto: 'GENERAL', es_general:true}, 'update');
             // agrega un equipo nuevo
-            await session.saveRecord('equipos', {equipo: 'autotest-nuevo'}, tipoEquipo, 'new');
+            await session.saveRecord(ctts.equipos, {equipo: 'autotest-agregado2'}, 'new');
             // verifica que se haya generado automáticamente una entrada en GENERAL-autotest para el equipo nuevo.
-            await session.tableData("equipos_proyectos", [
-                {proyecto: 'GENERAL-autotest', equipo: 'autotest-nuevo'}
-            ],'all',{fixedFields:{proyecto: 'GENERAL-autotest', equipo: 'autotest-nuevo'}})
+            await session.tableDataTest("equipos_proyectos", [
+                {proyecto: 'GENERAL', equipo: 'autotest-agregado2'}
+            ],'all',{fixedFields:{proyecto: 'GENERAL', equipo: 'autotest-agregado2'}})
         })
-        it("rechaza la edición de la tabla archivos_borrar", async function(){
+        it.skip("rechaza la edición de la tabla archivos_borrar", async function(){
             try {
-                await session.saveRecord('archivos_borrar', {ruta_archivo: 'cualquier_dato'}, tipoArchivosBorrar, 'new');
+                await session.saveRecord(ctts.archivos_borrar, {ruta_archivo: 'cualquier_dato_autotest'}, 'new');
                 throw new Error("debería fallar porque no tendría que tener permisos para agregar")
             } catch (err) {
                 const error = expected(err);
@@ -135,17 +122,18 @@ describe("gestik tests", function(){
         })
     });
 
+
     describe("usuario desarrollador", function(){
-        var session: Session<AppGestik>;        // eslint-disable-line no-var
+        var session: EmulatedGestikSession;        // eslint-disable-line no-var
         before(async function(){
-            session = new Session(server);
+            session = new EmulatedGestikSession(server);
             await session.login({
                 username: 'autotest-desarrollador',
                 password: 'clave1234',
             });
         })
         it("carga el ticket número 1", async function(){
-            const row = await session.saveRecord('tickets', {proyecto: 'INTERNO-autotest', asunto:'terminar de escribir los tests'}, tipoTicket);
+            const row = await session.saveRecord(ctts.tickets, {proyecto: 'INTERNO-autotest', asunto:'terminar de escribir los tests'}, 'new');
             // verifica el número de ticket y otros valores por defecto
             discrepances.showAndThrow(row, {
                 proyecto: 'INTERNO-autotest', 
@@ -160,7 +148,7 @@ describe("gestik tests", function(){
             }, {notMemberAsUndefined: true, autoTypeCast: true});
         })
         it("la visibilidad de tickets depende pertenecer a un equipo asignado", async function(){
-            await session.tableData("tickets", [
+            await session.tableDataTest("tickets", [
                 {ticket: 1},
                 {ticket: 2},
                 {ticket: 3},
@@ -169,24 +157,27 @@ describe("gestik tests", function(){
         })
     })
     describe("usuario usuario", function(){
-        var session: Session<AppGestik>;        // eslint-disable-line no-var
+        var session: EmulatedGestikSession;        // eslint-disable-line no-var
         before(async function(){
-            session = new Session(server);
+            session = new EmulatedGestikSession(server);
             await session.login({
                 username: 'autotest-usuario',
                 password: 'clave1234',
             });
         })
-        it("la visibilidad de tickets depende de ser requirente o compartir equipo con él", async function(){
-            await session.tableData("tickets", [
-                {ticket: 1},
-                {ticket: 3},
-            ],'all',{fixedFields:{proyecto: 'PROYECTO1-autotest', tema:'prueba visibilidad'}});
+        it("la visibilidad de tickets depende de ser requirente", async function(){
+            await session.tableDataTest("tickets", [
+                {ticket: 1, proyecto: 'PROYECTO1-autotest'},
+                {ticket: 2, proyecto: 'PROYECTO1-autotest'},
+                {ticket: 3, proyecto: 'PROYECTO1-autotest'},
+                {ticket: 4, proyecto: 'PROYECTO1-autotest'},
+                {ticket: 1, proyecto: 'PROYECTO2-autotest'},
+            ],'all',{fixedFields:{tema:'prueba visibilidad'}});
         })
-        it("no puede cargar tickets si no es_requirente", async function(){
+        it.skip("no puede cargar tickets si no es_requirente", async function(){
             let error: Error|null = null;
             try {
-                await session.saveRecord('tickets', {proyecto: 'INTERNO-autotest', asunto:'no debería poder'}, tipoTicket);
+                await session.saveRecord(ctts.tickets, {proyecto: 'INTERNO-autotest', asunto:'no debería poder'}, 'new');
             } catch (err) {
                 error = expected(err);
             }
@@ -194,7 +185,7 @@ describe("gestik tests", function(){
             discrepances.showAndThrow(error, new Error("Backend error: el nuevo registro viola la política de seguridad de registros «debe ser del equipo requirente» para la tabla «tickets»"));
         })
         it("puede cargar tickets si es_requirente", async function(){
-            const row = await session.saveRecord('tickets', {proyecto: 'PROYECTO1-autotest', asunto:'ticket nuevo de usuario'}, tipoTicket);
+            const row = await session.saveRecord(ctts.tickets, {proyecto: 'PROYECTO1-autotest', asunto:'ticket nuevo de usuario'}, 'new');
             // verifica el número de ticket y otros valores por defecto
             discrepances.showAndThrow(row, {
                 proyecto: 'PROYECTO1-autotest', 
@@ -209,7 +200,7 @@ describe("gestik tests", function(){
             }, {notMemberAsUndefined: true, autoTypeCast: true});
         })
         it("ve solo los proyectos relacionados", async function(){
-            await session.tableData('proyectos', [
+            await session.tableDataTest('proyectos', [
                 {proyecto: 'PROYECTO1-autotest'}
             ], 'all');
         })

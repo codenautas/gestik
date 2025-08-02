@@ -31,16 +31,19 @@ insert into equipos_usuarios (usuario, equipo)
     where interno like '%autotest%';
 
 insert into proyectos (proyecto) values
-  ('GENERAL-autotest'), ('INTERNO-autotest'), ('PROYECTO1-autotest');
+  ('GENERAL-autotest'), ('INTERNO-autotest'), ('PROYECTO1-autotest'), ('PROYECTO2-autotest');
 
 insert into equipos_proyectos (proyecto, equipo, es_asignado, es_requirente) values
   ('PROYECTO1-autotest', 'autotest-usuarios'     , false, true),
   ('PROYECTO1-autotest', 'autotest-desarrollo'   , true , true),
+  ('PROYECTO2-autotest', 'autotest-procesamiento', false, true),
   ('INTERNO-autotest'  , 'autotest-desarrollo'   , true , true);
 
 insert into tickets (proyecto, ticket, tema, requirente, estado, asignado, asunto) values 
   ('PROYECTO1-autotest', 1, 'prueba visibilidad', 'autotest-usuario'      , 'nuevo'       , null                    , 'ticket nuevo'     ),
-  ('PROYECTO1-autotest', 2, 'prueba visibilidad', 'autotest-desarrollador', 'nuevo'       , null                    , 'ticket nuevo'     ),
+  ('PROYECTO1-autotest', 2, 'prueba visibilidad', 'autotest-desarrollador', 'nuevo'       , null                    , 'ticket nuevo2 '   ),
   ('PROYECTO1-autotest', 3, 'prueba visibilidad', 'autotest-inactivo'     , 'en_proceso'  , 'autotest-desarrollador', 'ticket empezado'  ),
-  ('PROYECTO1-autotest', 4, 'prueba visibilidad', 'autotest-desarrollador', 'en_proceso'  , 'autotest-desarrollador', 'ticket empezado'  );
+  ('PROYECTO1-autotest', 4, 'prueba visibilidad', 'autotest-desarrollador', 'en_proceso'  , 'autotest-desarrollador', 'ticket empezado 2'),
+  ('PROYECTO2-autotest', 1, 'prueba visibilidad', 'autotest-usuario'      , 'en_proceso'  , 'autotest-desarrollador', 'ticket empezado 3'),
+  ('PROYECTO2-autotest', 2, 'prueba visibilidad', 'autotest-procesador'   , 'en_proceso'  , 'autotest-desarrollador', 'ticket empezado 4');
 --  */

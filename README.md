@@ -20,3 +20,18 @@ En ambiente de desarrollo se puede instalar usando los scripts de code-run.
    3. Cada vez que haya un cambio que **no** implique generar la base de datos:
       1. Compilar todo y arrancar el sistema (deteníendose en la primer falla): 
       `call npm run prepare && call npm start`
+
+## testing
+
+1. **Preparación**
+   1. Asegurarse de tener en el path la carpeta `code-run/devel`
+   2. Configurar las variables de ambiente 
+      ```bash
+      set PGPORT=54316
+      set PGUSER=postgres
+      set PGPASSWORD=********
+      ```
+   3. correr `npm install` y luego `npm test`, si es la primera vez va a fallar y hay que crear la base de datos corriendo: `run-sql create-db`
+2. **Correr los test**
+   1. ejecutar `npm test` se puede omitir si no hubo cambios en la estructura de la base de datos porque este paso vuelve a crear el esquema de cero
+   2. luego `npm run test-only` (para asegurarse que los test se puedan correr dos veces seguidas)

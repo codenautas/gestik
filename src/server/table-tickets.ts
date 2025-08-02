@@ -2,44 +2,36 @@
 
 import { TableContext, TableDefinition, FieldDefinition } from "./types-gestik";
 
-const createSqlExprEquipoUsuarioJoinEquipoProyecto = (conditional?: string) => (
-    `SELECT true 
-        FROM equipos_usuarios eu INNER JOIN equipos_proyectos ep ON eu.equipo = ep.equipo
-        WHERE eu.usuario = get_app_user()
-            AND ep.proyecto = tickets.proyecto ${conditional ? `AND ${conditional}` : ''}
-            limit 1
-    `
-)
-const sqlExprEsAdmin = `SELECT rol='admin' FROM usuarios WHERE usuario = get_app_user()`
-
-const sqlExprEsAdminReqOAsig = `( 
-                            ${sqlExprEsAdmin}
-                        ) OR (
-                            requirente = get_app_user()
-                        ) OR ( 
-                            asignado = get_app_user()
-                        )`
-
-const sqlExprUpdateOrDelete = `${sqlExprEsAdminReqOAsig} OR (
-                            SELECT true 
-                                FROM equipos_usuarios eu INNER JOIN equipos_usuarios et ON eu.equipo = et.equipo
-                                WHERE eu.usuario = get_app_user()
-                                    AND (et.usuario = tickets.requirente OR et.usuario = tickets.asignado) limit 1
-                        ) OR (
-                            ${createSqlExprEquipoUsuarioJoinEquipoProyecto('ep.es_asignado')}
-                        )
-                    `
+const sqlPoliticasTickets = (modo : 'edit' | 'view') => `( 
+        SELECT rol='admin' FROM usuarios WHERE usuario = get_app_user()
+    ) OR (
+        requirente = get_app_user()
+    ) OR ( 
+        asignado = get_app_user()
+    ) OR (
+        SELECT true 
+            FROM equipos_usuarios eu INNER JOIN equipos_usuarios et ON eu.equipo = et.equipo
+            WHERE eu.usuario = get_app_user()
+                AND (et.usuario = tickets.requirente OR et.usuario = tickets.asignado) limit 1
+    ) OR (
+        SELECT ${modo == 'view' ? 'true' : '(ep.es_requirente OR ep.es_asignado)'}
+            FROM equipos_usuarios eu INNER JOIN equipos_proyectos ep ON eu.equipo = ep.equipo
+            WHERE eu.usuario = get_app_user()
+                AND ep.proyecto = tickets.proyecto limit 1
+    )
+`;
 
 export function sqlExprCantTickets(_context: TableContext, filter: string, joinEstados?:boolean){
     return `(SELECT nullif(count(*), 0) as cant_tickets FROM tickets t
         ${joinEstados ? `INNER JOIN estados e ON t.estado = e.estado` : ``}
         WHERE (${filter}))`;
 }
+
 type Opts = {
     zona?:string,
 }
 
-export function tickets(context: TableContext, opts: Opts = {}):TableDefinition{
+export function tickets(_context: TableContext, opts: Opts = {}):TableDefinition{
     const isTable = opts.zona == null; // zona se usa para dividir en partes la pantalla de carga de tickets
     const fields: (FieldDefinition & {zona:string, siempre?:boolean})[] = [
         {name:'proyecto'           , typeName:'text'  , zona:'1' ,siempre:true , },
@@ -48,7 +40,7 @@ export function tickets(context: TableContext, opts: Opts = {}):TableDefinition{
         {name:'cant_anotaciones'   , typeName:'bigint', zona:'0' , inTable:false, editable:false, title:'c.a.', description: 'cantidad anotaciones'}, 
         {name:'asunto'             , typeName:'text'  , zona:'1' , title:'asunto', nullable:false},
         {name:'descripcion'        , typeName:'text'  , zona:'2' , title:'descripción' },
-        {name:'requirente'         , typeName:'text'  , zona:'3' , defaultValue: context.user.usuario },
+        {name:'requirente'         , typeName:'text'  , zona:'3' , specialDefaultValue: 'current_user'},
         {name:'estado'             , typeName:'text'  , zona:'3' , alwaysShow:true},
         {name:'asignado'           , typeName:'text'  , zona:'3' , },
         {name:'modulo'             , typeName:'text'  , zona:'3' , title:'módulo' },
@@ -95,21 +87,16 @@ export function tickets(context: TableContext, opts: Opts = {}):TableDefinition{
             ...(isTable ? {
                 policies: {
                     update: {
-                        using: sqlExprUpdateOrDelete,   
+                        using: sqlPoliticasTickets('edit'),
                     },
                     delete: {
-                        using: sqlExprUpdateOrDelete,
+                        using: sqlPoliticasTickets('edit'),
                     },
                     select: {
-                        using: `${sqlExprEsAdminReqOAsig} OR (${createSqlExprEquipoUsuarioJoinEquipoProyecto()})`,
+                        using: sqlPoliticasTickets('view'),
                     },
                     insert:{
-                        name:`debe ser del equipo requirente`,
-                        check:`(
-                            ${sqlExprEsAdmin}
-                        ) OR (
-                            ${createSqlExprEquipoUsuarioJoinEquipoProyecto('ep.es_requirente')}
-                        )`
+                        check: sqlPoliticasTickets('edit'),
                     }
                 },
             } : {})

@@ -7,5 +7,7 @@ install:
     folders: 
       - install
       - src/test
+test:
+  only-in-db: gestik_autotest_db      
 devel:
   delay: 10
