@@ -23,8 +23,8 @@ export const ProceduresGestik:ProcedureDef[] = [
             let anotacion = parameters.anotacion
             if(!anotacion){
                 const {row:insertedRow} = await client.query(`
-                    insert into anotaciones 
-                        (proyecto, ticket, usuario) values ($1, $2, $3) 
+                    insert into anotaciones
+                        (proyecto, ticket, usuario) values ($1, $2, $3)
                     returning *
                 `,
                     [parameters.proyecto, parameters.ticket, context.username]
@@ -49,7 +49,7 @@ export const ProceduresGestik:ProcedureDef[] = [
                 return fs.move(file.path, newPath, { overwrite: true });
             }
             const row = guarantee(tipoAdjunto, (await client.query(`
-                update anotaciones 
+                update anotaciones
                     set archivo = $1
                     where proyecto = $2 and ticket = $3 and anotacion = $4 returning *
             `,
@@ -72,26 +72,39 @@ export const ProceduresGestik:ProcedureDef[] = [
             if (params.del_proyecto == params.al_proyecto) {
                 throw new Error("Tiene que espeficar dos proyectos distintos.");
             }
-            const {row: rowLastTikect} = await context.client.query(`
-                select get_next_ticket_number(proyecto) as next_value
-                    from equipos_proyectos ep
-                        inner join equipos_usuarios eu on eu.equipo = ep.equipo
-                    where eu.usuario = $1 and ep.proyecto = $2 and ep.es_requirente
-                    limit 1
+            let rowLastTikectGlobal;
+            if(context.user.rol == 'admin'){
+                const {row: rowLastTikect} = await context.client.query(`
+                    select get_next_ticket_number($1) as next_value
                 `,
-                [context.user.usuario, params.al_proyecto]
-            ).fetchOneRowIfExists();
-            if (!rowLastTikect) {
-                throw new Error(`El usuario no esta en un equipo que pueda hacer requerimientos en el proyecto "${params.al_proyecto}" o bien el proyecto no existe.`);
+                [params.al_proyecto]
+                ).fetchOneRowIfExists();
+                if (!rowLastTikect) {
+                    throw new Error(`El proyecto "${params.al_proyecto}" no existe.`);
+                }
+                rowLastTikectGlobal = rowLastTikect;
+            }else{
+                const {row: rowLastTikect} = await context.client.query(`
+                    select get_next_ticket_number(proyecto) as next_value
+                        from equipos_proyectos ep
+                            inner join equipos_usuarios eu on eu.equipo = ep.equipo
+                        where eu.usuario = $1 and ep.proyecto = $2 and ep.es_requirente
+                        limit 1
+                    `,
+                    [context.user.usuario, params.al_proyecto]
+                ).fetchOneRowIfExists();
+                if (!rowLastTikect) {
+                    throw new Error(`El usuario no esta en un equipo que pueda hacer requerimientos en el proyecto "${params.al_proyecto}" o bien el proyecto no existe.`);
+                }
+                rowLastTikectGlobal = rowLastTikect;
             }
-            
-            const numTicket:number = guarantee(is.object({next_value: is.number}),rowLastTikect).next_value;
+            const numTicket:number = guarantee(is.object({next_value: is.number}),rowLastTikectGlobal).next_value;
             const {row: rowUpdatedTicket} = await context.client.query(`
-                update tickets 
+                update tickets
                     set proyecto = $3, ticket = $4
                     where proyecto = $1 and ticket = $2
                     returning *
-                `, 
+                `,
                 [params.del_proyecto, params.el_ticket, params.al_proyecto, numTicket]
             ).fetchOneRowIfExists();
             if (rowUpdatedTicket) {

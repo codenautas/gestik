@@ -18,7 +18,7 @@ login:
   activeClausule: activo
   unloggedLandPage: false
   plus:
-    maxAge-5-sec: 5000    
+    maxAge-5-sec: 5000
     maxAge: 8640000
     maxAge-10-day: 864000000
     allowHttpLogin: true
@@ -46,16 +46,16 @@ install:
       - ../node_modules/pg-triggers/lib/recreate-his.sql
       - ../node_modules/pg-triggers/lib/table-changes.sql
       - ../node_modules/pg-triggers/lib/function-changes-trg.sql
-      - ../node_modules/pg-triggers/lib/enance.sql    
+      - ../node_modules/pg-triggers/lib/enance.sql
       - ../install/ticket_pk_trg.sql
       - ../install/anotacion_pk_trg.sql
       - ../install/set_ticket_default_estado.sql
       - ../install/set_ticket_default_tipo.sql
       - ../install/tickets_actualizar_fecha_trg.sql
       - ../install/anotacion_constraint.sql
-      - ../install/insertar_equipo.sql
+      - ../install/insertar_equipo_trg.sql
       - ../install/archivo_borrar_trg.sql
       - ../install/no_editar_proyectos_cerrados_trg.sql
-logo: 
+logo:
   path: client/img
 `;
