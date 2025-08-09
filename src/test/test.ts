@@ -6,28 +6,49 @@ import * as discrepances from 'discrepances';
 
 import { date } from "best-globals";
 
-import { startServer, EmulatedSession } from "serial-tester";
+import { AppBackendConstructor, Contexts, EmulatedSession, startBackendAPIContext, startNavigatorContext } from "serial-tester";
 
 import { expected } from "cast-error";
 
 import * as ctts from "./contracts.js";
 
-const PORT = 3333;
+// const PORT = 3333;
 
 const ADMIN_REQ = {user:{usuario:'bob', rol:''}};
 
-class EmulatedGestikSession extends EmulatedSession<AppGestik> {
-    constructor(server: AppGestik) {
-        super(server, PORT);
-    }
+const TEST_BACKEND_VIA_API = {
+    name: "via api",
+    startContext: startBackendAPIContext
 }
 
-describe("gestik tests", function(){
+type EmulatedGestikSession = EmulatedSession<AppGestik>;
+
+
+const TEST_VIA_CHROMIUM = {
+    name: "via chromium",
+    startContext: (app:AppBackendConstructor<AppGestik>) => startNavigatorContext(app, {
+        browserType: 'chromium',
+        headless: false,
+        slowMo: 100
+    }),
+}
+
+console.log(TEST_BACKEND_VIA_API, TEST_VIA_CHROMIUM);
+
+var testIn = [
+    TEST_BACKEND_VIA_API,
+    // TEST_VIA_CHROMIUM,
+];
+
+var backendsAUsar = testIn.length;
+testIn.forEach(t => describe("gestik tests " + t.name, function(){
     // se necesitan *var* porque se inicializa en la función before
     var server: AppGestik;    // eslint-disable-line no-var
+    var serverContext: Contexts<AppGestik>;
     before(async function(){
         this.timeout(4000);
-        server = await startServer(AppGestik);
+        serverContext = await t.startContext(AppGestik);
+        server = serverContext.backend;
         await server.inDbClient(ADMIN_REQ, async (client) => {
             // limpia la base de datos
             await client.executeSentences([
@@ -42,19 +63,17 @@ describe("gestik tests", function(){
 
     after(async function(){
         this.timeout(10000);
-        await server.shutdownBackend()
+        await server.shutdownBackend({skipTurnOff: !!--backendsAUsar});
         console.log('server down!');
         server = null as unknown as AppGestik;
-        const pepe = setTimeout(function(){
-            console.log(100)
-        },100);
-        console.log(pepe);
+        await new Promise((resolve) => setTimeout(resolve, 100 + 5000));
+        console.log();
     })
 
     describe("not connected", function(){
         var session: EmulatedGestikSession;        // eslint-disable-line no-var
         before(function(){
-            session = new EmulatedGestikSession(server);
+            session = serverContext.createSession();
         })
         it("rechaza passowrd invalido", async function(){
             const result = await session.login({
@@ -88,7 +107,7 @@ describe("gestik tests", function(){
     describe("usuario administrador", function(){
         var session: EmulatedGestikSession;        // eslint-disable-line no-var
         before(async function(){
-            session = new EmulatedGestikSession(server);
+            session = serverContext.createSession();
             await session.login({
                 username: 'autotest-administrador',
                 password: 'clave1234',
@@ -126,20 +145,20 @@ describe("gestik tests", function(){
     describe("usuario desarrollador", function(){
         var session: EmulatedGestikSession;        // eslint-disable-line no-var
         before(async function(){
-            session = new EmulatedGestikSession(server);
+            session = serverContext.createSession();
             await session.login({
                 username: 'autotest-desarrollador',
                 password: 'clave1234',
             });
         })
         it("carga el ticket número 1", async function(){
-            const row = await session.saveRecord(ctts.tickets, {proyecto: 'INTERNO-autotest', asunto:'terminar de escribir los tests'}, 'new');
+            const row = await session.saveRecord(ctts.tickets, {proyecto: 'INTERNO-autotest', asunto:'terminar de escribir los tests (autotest)'}, 'new');
             // verifica el número de ticket y otros valores por defecto
             discrepances.showAndThrow(row, {
                 proyecto: 'INTERNO-autotest', 
                 ticket: 1, 
                 tipo_ticket: 'tarea',
-                asunto: 'terminar de escribir los tests',
+                asunto: 'terminar de escribir los tests (autotest)',
                 requirente: 'autotest-desarrollador',
                 estado: 'nuevo',
                 f_ticket: today,
@@ -159,7 +178,7 @@ describe("gestik tests", function(){
     describe("usuario usuario", function(){
         var session: EmulatedGestikSession;        // eslint-disable-line no-var
         before(async function(){
-            session = new EmulatedGestikSession(server);
+            session = serverContext.createSession();
             await session.login({
                 username: 'autotest-usuario',
                 password: 'clave1234',
@@ -185,13 +204,13 @@ describe("gestik tests", function(){
             discrepances.showAndThrow(error, new Error("Backend error: el nuevo registro viola la política de seguridad de registros «debe ser del equipo requirente» para la tabla «tickets»"));
         })
         it("puede cargar tickets si es_requirente", async function(){
-            const row = await session.saveRecord(ctts.tickets, {proyecto: 'PROYECTO1-autotest', asunto:'ticket nuevo de usuario'}, 'new');
+            const row = await session.saveRecord(ctts.tickets, {proyecto: 'PROYECTO1-autotest', asunto:'ticket nuevo de usuario (autotest)'}, 'new');
             // verifica el número de ticket y otros valores por defecto
             discrepances.showAndThrow(row, {
                 proyecto: 'PROYECTO1-autotest', 
                 ticket: 5, 
                 tipo_ticket: 'tarea',
-                asunto: 'ticket nuevo de usuario',
+                asunto: 'ticket nuevo de usuario (autotest)',
                 requirente: 'autotest-usuario',
                 estado: 'nuevo',
                 f_ticket: today,
@@ -205,4 +224,4 @@ describe("gestik tests", function(){
             ], 'all');
         })
     })
-})
+}));
