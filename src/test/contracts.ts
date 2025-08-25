@@ -33,6 +33,17 @@ export const proyectos = {
     })
 }
 
+export const equipos_proyectos = {
+    table: 'proyectos',
+    description: is.object({
+        equipo: is.string,
+        proyecto: is.string,
+        es_requirente: is.boolean,
+        es_asignado: is.boolean,
+        puede_leer: is.boolean,
+    })
+}
+
 const dolarFieldsDescription = {
     "$allow.update": is.optional.boolean,
     "$allow.delete": is.optional.boolean,

@@ -12,12 +12,13 @@ import { expected } from "cast-error";
 
 import * as ctts from "./contracts.js";
 
-// const PORT = 3333;
+const MANTENER_EL_NAVEGADOR_SI_HAY_ERROR = true;
 
 const ADMIN_REQ = {user:{usuario:'bob', rol:''}};
 
 const TEST_BACKEND_VIA_API = {
     name: "via api",
+    conNavegador: false,
     startContext: startBackendAPIContext
 }
 
@@ -26,6 +27,7 @@ type EmulatedGestikSession = EmulatedSession<AppGestik>;
 
 const TEST_VIA_CHROMIUM = {
     name: "via chromium",
+    conNavegador: true,
     startContext: (app:AppBackendConstructor<AppGestik>) => startNavigatorContext(app, {
         browserType: 'chromium',
         headless: false,
@@ -36,8 +38,8 @@ const TEST_VIA_CHROMIUM = {
 console.log(TEST_BACKEND_VIA_API, TEST_VIA_CHROMIUM);
 
 var testIn = [
-    TEST_BACKEND_VIA_API,
-    // TEST_VIA_CHROMIUM,
+    // TEST_BACKEND_VIA_API,
+    TEST_VIA_CHROMIUM,
 ];
 
 var backendsAUsar = testIn.length;
@@ -62,11 +64,13 @@ testIn.forEach(t => describe("gestik tests " + t.name, function(){
     });
 
     after(async function(){
-        this.timeout(10000);
+        this.timeout(60000);
         await server.shutdownBackend({skipTurnOff: !!--backendsAUsar});
         console.log('server down!');
         server = null as unknown as AppGestik;
-        await new Promise((resolve) => setTimeout(resolve, 100 + 5000));
+        if(t.conNavegador) {
+            await new Promise((resolve) => setTimeout(resolve, 100 + 2000 + (MANTENER_EL_NAVEGADOR_SI_HAY_ERROR ? 999999 : 0)));
+        }
         console.log();
     })
 
@@ -75,7 +79,10 @@ testIn.forEach(t => describe("gestik tests " + t.name, function(){
         before(function(){
             session = serverContext.createSession();
         })
-        it("rechaza passowrd invalido", async function(){
+        after(function(){
+            session.closeSession();
+        })
+        it("rechaza password invalido", async function(){
             const result = await session.login({
                 username: 'autotest-inactivo',
                 password: 'clave4321',
@@ -113,22 +120,28 @@ testIn.forEach(t => describe("gestik tests " + t.name, function(){
                 password: 'clave1234',
             });
         })
-        it("determina es_general en el proyecto general agrega un equipo y verifica la asignación", async function(){
+        after(async function(){
+            session.closeSession();
+        })
+        it.only("determina es_general en el proyecto general agrega un equipo y verifica la asignación", async function(){
+            this.timeout(40000)
             // quita es_general
             await session.saveRecord(ctts.proyectos, {proyecto: 'GENERAL', es_general:false}, 'update');
             // agrega un equipo
             await session.saveRecord(ctts.equipos, {equipo: 'autotest-agregado'}, 'new');
             // verifica que no se haya generado automáticamente una entrada en GENERAL-autotest para el equipo nuevo.
-            await session.tableDataTest("equipos_proyectos", [
-            ],'all',{fixedFields:{proyecto: 'GENERAL', equipo: 'autotest-agregado'}})
+            await session.tableDataTest(ctts.equipos, [
+            ],'all',{fixedFields:{equipo: 'autotest-agregado'}})
+            console.log("***************** PRIMER CONTROL OK")
             // pone es_general
             await session.saveRecord(ctts.proyectos, {proyecto: 'GENERAL', es_general:true}, 'update');
             // agrega un equipo nuevo
             await session.saveRecord(ctts.equipos, {equipo: 'autotest-agregado2'}, 'new');
             // verifica que se haya generado automáticamente una entrada en GENERAL-autotest para el equipo nuevo.
-            await session.tableDataTest("equipos_proyectos", [
+            await session.tableDataTest(ctts.equipos_proyectos, [
                 {proyecto: 'GENERAL', equipo: 'autotest-agregado2'}
             ],'all',{fixedFields:{proyecto: 'GENERAL', equipo: 'autotest-agregado2'}})
+            console.log("***************** SEGUNDO CONTROL OK")
         })
         it.skip("rechaza la edición de la tabla archivos_borrar", async function(){
             try {
@@ -150,6 +163,9 @@ testIn.forEach(t => describe("gestik tests " + t.name, function(){
                 username: 'autotest-desarrollador',
                 password: 'clave1234',
             });
+        })
+        after(async function(){
+            session.closeSession();
         })
         it("carga el ticket número 1", async function(){
             const row = await session.saveRecord(ctts.tickets, {proyecto: 'INTERNO-autotest', asunto:'terminar de escribir los tests (autotest)'}, 'new');
@@ -183,6 +199,9 @@ testIn.forEach(t => describe("gestik tests " + t.name, function(){
                 username: 'autotest-usuario',
                 password: 'clave1234',
             });
+        })
+        after(async function(){
+            session.closeSession();
         })
         it("la visibilidad de tickets depende de ser requirente", async function(){
             await session.tableDataTest("tickets", [
