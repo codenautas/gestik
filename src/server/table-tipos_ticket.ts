@@ -7,7 +7,8 @@ export function tipos_ticket(context: TableContext):TableDefinition{
         editable: context.user.rol == 'admin',
         name: 'tipos_ticket',
         fields: [
-            {name:'tipo_ticket', typeName:'text' }
+            {name:'tipo_ticket', typeName:'text'},
+            {name:'descripcion', typeName:'text'}
         ],
         primaryKey: ['tipo_ticket'],
         detailTables: [
