@@ -88,7 +88,8 @@ export const ProceduresGestik:ProcedureDef[] = [
                     select get_next_ticket_number(proyecto) as next_value
                         from equipos_proyectos ep
                             inner join equipos_usuarios eu on eu.equipo = ep.equipo
-                        where eu.usuario = $1 and ep.proyecto = $2 and ep.es_requirente
+                            inner join usuarios u on u.usuario = eu.usuario
+                        where eu.usuario = $1 and ep.proyecto = $2 and (ep.es_requirente or u.rol = 'admin')
                         limit 1
                     `,
                     [context.user.usuario, params.al_proyecto]
