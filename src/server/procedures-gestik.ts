@@ -32,7 +32,7 @@ export const ProceduresGestik:ProcedureDef[] = [
                 originalFilename = originalFilename.replace('pasted-$$anotacion',`pasted-${insertedRow.anotacion}`)
                 anotacion = insertedRow.anotacion;
             }
-            const filename=`${parameters.proyecto}/${parameters.ticket}/${originalFilename}`;
+            const filename=`${parameters.proyecto}/${parameters.ticket}/${anotacion}/${originalFilename}`;
             const tipoAdjunto = is.object({
                 archivo: is.string
             })

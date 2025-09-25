@@ -10,7 +10,7 @@ export function anotaciones(context:TableContext):TableDefinition{
         fields: [
             {name:'proyecto', typeName:'text'},
             {name:'ticket', typeName:'bigint' },
-            {name:'anotacion', typeName:'bigint', nullable:true, title:'anotación', editable:false, defaultDbValue:'0'},
+            {name:'anotacion', typeName:'bigint', nullable:true, title:'anotación', editable:false, sequence:{name:'anotaciones_id_seq',firstValue:1}},
             {name:'usuario', typeName:'text', editable:false, defaultValue: context.user.usuario  },
             {name:'detalle', typeName:'text'},
             {name:'proyecto_relacionado', typeName:'text', title:'link_proyecto'},
@@ -27,14 +27,14 @@ export function anotaciones(context:TableContext):TableDefinition{
             {references: 'usuarios', fields: ['usuario']},
             {
                 references: 'tickets', fields: [
-                    {source: 'proyecto_relacionado', target: 'proyecto'}, 
-                    {source: 'ticket_relacionado', target: 'ticket'}, 
+                    {source: 'proyecto_relacionado', target: 'proyecto'},
+                    {source: 'ticket_relacionado', target: 'ticket'},
                 ],
                 alias: 'tickets_relacionados'
             },
             {
                 references: 'proyectos', fields: [
-                    {source: 'proyecto_relacionado', target: 'proyecto'}, 
+                    {source: 'proyecto_relacionado', target: 'proyecto'},
                 ],
                 alias: 'proyectos_relacionados'
             },
@@ -43,7 +43,7 @@ export function anotaciones(context:TableContext):TableDefinition{
             {constraintType:'unique', fields:['proyecto','ticket','archivo']},
         ],
         hiddenColumns: ['archivo'],
-        clientSide:'anotaciones' 
+        clientSide:'anotaciones'
     }
     return td
 }
