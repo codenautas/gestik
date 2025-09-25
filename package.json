@@ -10,7 +10,7 @@
     "install"
   ],
   "dependencies": {
-    "backend-plus": "2.5.2-betha.16",
+    "backend-plus": "2.5.2-betha.23",
     "fs-extra": "^11.3.1",
     "serve-content": "^1.0.2",
     "pg-triggers": "^0.4.3"
