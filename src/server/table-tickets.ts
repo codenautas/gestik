@@ -2,22 +2,27 @@
 
 import { TableContext, TableDefinition, FieldDefinition } from "./types-gestik";
 
-const sqlPoliticasTickets = (modo : 'edit' | 'view') => `( 
+const sqlPoliticasTickets = (modo : 'edit' | 'view') => `(
         SELECT rol='admin' FROM usuarios WHERE usuario = get_app_user()
     ) OR (
-        requirente = get_app_user()
-    ) OR ( 
-        asignado = get_app_user()
-    ) OR (
-        SELECT true 
-            FROM equipos_usuarios eu INNER JOIN equipos_usuarios et ON eu.equipo = et.equipo
-            WHERE eu.usuario = get_app_user()
-                AND (et.usuario = tickets.requirente OR et.usuario = tickets.asignado) limit 1
-    ) OR (
-        SELECT ${modo == 'view' ? 'true' : '(ep.es_requirente OR ep.es_asignado)'}
+        (
+            SELECT ${modo == 'view' ? 'true' : '(ep.es_requirente OR ep.es_asignado)'}
             FROM equipos_usuarios eu INNER JOIN equipos_proyectos ep ON eu.equipo = ep.equipo
-            WHERE eu.usuario = get_app_user()
-                AND ep.proyecto = tickets.proyecto limit 1
+            WHERE eu.usuario = get_app_user() AND ep.proyecto = tickets.proyecto ${modo == 'view' ? 'AND ep.es_asignado is not true and ep.es_requirente is not true' : ''} limit 1
+        ) ${modo == 'view' ? 'OR' : 'AND'} (
+            (
+                requirente = get_app_user()
+            ) OR (
+                asignado = get_app_user()
+            ) OR (
+                SELECT true
+                FROM equipos_usuarios eu
+                JOIN equipos_usuarios et ON (eu.equipo = et.equipo)
+                JOIN equipos_proyectos ep ON (eu.equipo = ep.equipo)
+                WHERE eu.usuario = get_app_user() AND ep.proyecto = tickets.proyecto AND ((et.usuario = tickets.requirente) OR (et.usuario = tickets.asignado))
+                LIMIT 1
+            )
+        )
     )
 `;
 
@@ -37,7 +42,7 @@ export function tickets(_context: TableContext, opts: Opts = {}):TableDefinition
         {name:'proyecto'           , typeName:'text'  , zona:'1' ,siempre:true , },
         {name:'ticket'             , typeName:'bigint', zona:'1' ,siempre:true , nullable:true, editable:false, defaultDbValue:'0'},
         {name:'tipo_ticket'        , typeName:'text'  , zona:'1' , title:'tipo ticket'},
-        {name:'cant_anotaciones'   , typeName:'bigint', zona:'0' , inTable:false, editable:false, title:'c.a.', description: 'cantidad anotaciones'}, 
+        {name:'cant_anotaciones'   , typeName:'bigint', zona:'0' , inTable:false, editable:false, title:'c.a.', description: 'cantidad anotaciones'},
         {name:'asunto'             , typeName:'text'  , zona:'1' , title:'asunto', nullable:false},
         {name:'descripcion'        , typeName:'text'  , zona:'2' , title:'descripción' },
         {name:'requirente'         , typeName:'text'  , zona:'3' , specialDefaultValue: 'current_user'},
@@ -80,7 +85,7 @@ export function tickets(_context: TableContext, opts: Opts = {}):TableDefinition
         ],
         sql:{
             isTable,
-            fields:{ 
+            fields:{
                 cant_anotaciones:{ expr: `(SELECT nullif(count(*),0) FROM anotaciones a WHERE a.proyecto = tickets.proyecto and a.ticket = tickets.ticket)` },
                 asignado_pendiente:{ expr:`(CASE WHEN estados.esta_pendiente THEN tickets.asignado ELSE null END)`}
             },
