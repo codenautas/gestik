@@ -4,7 +4,10 @@ import { TableDefinition, TableContext } from "./types-gestik";
 
 export function anotaciones(context:TableContext):TableDefinition{
 
-    const sqlRequirenteOAsignado = `(
+    const sqlRequirenteOAsignado = `
+    (
+        SELECT rol='admin' FROM usuarios WHERE usuario = get_app_user()
+    ) OR (
         SELECT COALESCE(ep.es_requirente, false) OR COALESCE(ep.es_asignado, false)
         FROM equipos_proyectos ep
         JOIN equipos_usuarios eu ON (eu.equipo = ep.equipo)
@@ -19,7 +22,7 @@ export function anotaciones(context:TableContext):TableDefinition{
         fields: [
             {name:'proyecto', typeName:'text'},
             {name:'ticket', typeName:'bigint' },
-            {name:'anotacion', typeName:'bigint', nullable:true, title:'anotación', editable:false, sequence:{name:'anotaciones_id_seq',firstValue:1}},
+            {name:'anotacion', typeName:'bigint', nullable:true, title:'anotación', editable:false, defaultDbValue:'0'},
             {name:'usuario', typeName:'text', editable:false, defaultValue: context.user.usuario  },
             {name:'detalle', typeName:'text'},
             {name:'proyecto_relacionado', typeName:'text', title:'link_proyecto'},
@@ -29,6 +32,7 @@ export function anotaciones(context:TableContext):TableDefinition{
             {name:'subir', editable:false, clientSide:'subirAdjunto', typeName:'text'},
             {name:'archivo', title:'archivo', editable:false , typeName:'text'},
             {name:'bajar', editable:false, clientSide:'bajarAdjunto', typeName:'text'},
+            {name:'numero_adjunto', typeName:'bigint', editable:false, sequence:{name:'numero_adjunto_seq',firstValue:1}},
         ],
         primaryKey: ['proyecto', 'ticket', 'anotacion'],
         foreignKeys: [
@@ -51,7 +55,7 @@ export function anotaciones(context:TableContext):TableDefinition{
         constraints:[
             {constraintType:'unique', fields:['proyecto','ticket','archivo']},
         ],
-        hiddenColumns: ['archivo'],
+        hiddenColumns: ['archivo','numero_adjunto'],
         sql:{
             policies: {
                 update: {

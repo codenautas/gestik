@@ -1,8 +1,16 @@
 import {html} from "js-to-html";
-
 import * as likeAr from "like-ar";
-
 import "dialog-promise";
+
+const obtenerNombreArchivo = (ruta:string) => {
+    const regexGestik = /adjunto-gestik-\d+-(.*)/;
+    const matchGestik = ruta.match(regexGestik);
+    if (matchGestik && matchGestik[1]) {
+        return matchGestik[1];
+    }
+    const fileParts = ruta.split('/');
+    return fileParts.pop();
+}
 
 const getSubirArchivoPathAndParams = (depot:myOwn.Depot) =>
     ({
@@ -11,6 +19,7 @@ const getSubirArchivoPathAndParams = (depot:myOwn.Depot) =>
             proyecto:depot.row.proyecto,
             ticket:depot.row.ticket,
             anotacion:depot.row.anotacion,
+            numero_adjunto:depot.row.numero_adjunto
         }
     })
 
@@ -28,7 +37,7 @@ myOwn.clientSides.subirAdjunto = {
                 };
                 const {ajaxPath, params} = getSubirArchivoPathAndParams(depot);
                 my.dialogUpload(
-                    [ajaxPath], 
+                    [ajaxPath],
                     params,
                     function(result:{nombre: string, message:string, row:Record<string, string>}){
                         depot.rowControls.archivo.setTypedValue(result.nombre);
@@ -90,7 +99,7 @@ myOwn.clientSides.subirAdjunto = {
                 }
             }
         })
-     
+
     }
 }
 
@@ -99,10 +108,9 @@ myOwn.clientSides.bajarAdjunto = {
         const td=depot.rowControls[fieldName];
         td.innerHTML='';
         if(depot.row.archivo){
-            const fileParts = depot.row.archivo.split('/');
-            const fileName = fileParts.pop();
+            const fileName = obtenerNombreArchivo(depot.row.archivo);
             if(fileName){
-                td.appendChild(html.a({class:'link-descarga-archivo', href:`download/file?proyecto=${depot.row.proyecto}&ticket=${depot.row.ticket}&anotacion=${depot.row.anotacion}`, download:fileName},"archivo").create());            
+                td.appendChild(html.a({class:'link-descarga-archivo', href:`download/file?proyecto=${depot.row.proyecto}&ticket=${depot.row.ticket}&anotacion=${depot.row.anotacion}`, download:fileName},"archivo").create());
             }
         }
     },
@@ -115,14 +123,14 @@ myOwn.clientSides.link_a_ticket = {
         const td=depot.rowControls[fieldName];
         td.innerHTML='';
         if(depot.row.proyecto_relacionado && depot.row.ticket_relacionado){
-            td.appendChild(html.a({class:'link-descarga-archivo', href:`menu#w=ticket&autoproced=true&ff=,proyecto:${depot.row.proyecto_relacionado},ticket:${depot.row.ticket_relacionado}`},`${depot.row.proyecto_relacionado}-${depot.row.ticket_relacionado}`).create());            
+            td.appendChild(html.a({class:'link-descarga-archivo', href:`menu#w=ticket&autoproced=true&ff=,proyecto:${depot.row.proyecto_relacionado},ticket:${depot.row.ticket_relacionado}`},`${depot.row.proyecto_relacionado}-${depot.row.ticket_relacionado}`).create());
         }
     },
     prepare:function(_depot:myOwn.Depot, _fieldName:string):void{
     }
 }
 
-myOwn.wScreens.proc.result.cambiar_proyecto_ticket=function(result, divResult:HTMLDivElement){ 
+myOwn.wScreens.proc.result.cambiar_proyecto_ticket=function(result, divResult:HTMLDivElement){
     divResult.appendChild(
         html.div({class: 'result-div', style: 'background-color: orange;'}, result.message).create()
     )

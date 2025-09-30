@@ -2,7 +2,7 @@
 import { ProcedureContext, UploadedFileInfo } from "backend-plus";
 import * as fs from "fs-extra";
 import { ProcedureDef } from './types-gestik';
-import { guarantee, DefinedType, is } from "guarantee-type"
+import { guarantee, DefinedType, is } from "guarantee-type";
 
 export const ProceduresGestik:ProcedureDef[] = [
     {
@@ -12,6 +12,7 @@ export const ProceduresGestik:ProcedureDef[] = [
             {name: 'proyecto' , typeName: 'text'},
             {name: 'ticket'   , typeName: 'bigint'},
             {name: 'anotacion', typeName: 'bigint'},
+            {name: 'numero_adjunto', typeName: 'bigint'},
         ],
         files:{count:1},
         coreFunction:async function(context, parameters, files){
@@ -32,14 +33,14 @@ export const ProceduresGestik:ProcedureDef[] = [
                 originalFilename = originalFilename.replace('pasted-$$anotacion',`pasted-${insertedRow.anotacion}`)
                 anotacion = insertedRow.anotacion;
             }
-            const filename=`${parameters.proyecto}/${parameters.ticket}/${anotacion}/${originalFilename}`;
+            const filename=`adjunto-gestik-${parameters.numero_adjunto}-${originalFilename}`;
             const tipoAdjunto = is.object({
                 archivo: is.string
             })
             type TipoAdjunto = DefinedType<typeof tipoAdjunto>;
             const createResponse = function createResponse(adjuntoRow: TipoAdjunto){
                 const resultado = {
-                    message: `el archivo ${adjuntoRow.archivo} se subió correctamente.`,
+                    message: `el archivo ${originalFilename} se subió correctamente.`,
                     nombre: adjuntoRow.archivo,
                 }
                 return resultado
@@ -127,3 +128,4 @@ export const ProceduresGestik:ProcedureDef[] = [
         }
     },
 ];
+

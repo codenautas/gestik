@@ -48,6 +48,7 @@ install:
       - ../node_modules/pg-triggers/lib/function-changes-trg.sql
       - ../node_modules/pg-triggers/lib/enance.sql
       - ../install/ticket_pk_trg.sql
+      - ../install/anotacion_pk_trg.sql
       - ../install/set_ticket_default_estado.sql
       - ../install/set_ticket_default_tipo.sql
       - ../install/tickets_actualizar_fecha_trg.sql
