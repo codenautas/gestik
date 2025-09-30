@@ -3,6 +3,15 @@
 import { TableDefinition, TableContext } from "./types-gestik";
 
 export function anotaciones(context:TableContext):TableDefinition{
+
+    const sqlRequirenteOAsignado = `(
+        SELECT COALESCE(ep.es_requirente, false) OR COALESCE(ep.es_asignado, false)
+        FROM equipos_proyectos ep
+        JOIN equipos_usuarios eu ON (eu.equipo = ep.equipo)
+        WHERE eu.usuario = get_app_user() AND ep.proyecto = anotaciones.proyecto
+        LIMIT 1
+    )`;
+
     const td:TableDefinition = {
         editable: true,
         name: 'anotaciones',
@@ -43,6 +52,19 @@ export function anotaciones(context:TableContext):TableDefinition{
             {constraintType:'unique', fields:['proyecto','ticket','archivo']},
         ],
         hiddenColumns: ['archivo'],
+        sql:{
+            policies: {
+                update: {
+                    using: sqlRequirenteOAsignado,
+                },
+                delete: {
+                    using: sqlRequirenteOAsignado,
+                },
+                insert:{
+                    check: sqlRequirenteOAsignado,
+                }
+            },
+        },
         clientSide:'anotaciones'
     }
     return td
