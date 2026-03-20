@@ -1,6 +1,6 @@
 {
   "name": "gestik",
-  "version": "0.7.4",
+  "version": "0.7.5",
   "private": true,
   "license": "MIT",
   "description": "Gestión de tickets y requerimientos",
@@ -10,7 +10,7 @@
     "install"
   ],
   "dependencies": {
-    "backend-plus": "2.5.9",
+    "backend-plus": "^2.5.13",
     "fs-extra": "^11.3.1",
     "pg-triggers": "^0.4.3",
     "serve-content": "^1.0.2"
