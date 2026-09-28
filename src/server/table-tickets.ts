@@ -53,6 +53,7 @@ export function tickets(_context: TableContext, opts: Opts = {}):TableDefinition
         {name:'f_ticket'           , typeName:'date'  , zona:'3' , title:'fecha', defaultDbValue: 'current_date'},
         {name:'version'            , typeName:'text'  , zona:'3' , title:'versión' },
         {name:'esfuerzo_estimado'  , typeName:'text'  , zona:'3' , title:'esfuerzo estimado'},
+        {name:'f_inicio'           , typeName:'date'  , zona:'3' , title:'inicio'},
         {name:'f_realizacion'      , typeName:'date'  , zona:'3' , title:'realización'},
         {name:'f_instalacion'      , typeName:'date'  , zona:'3' , title:'instalación'},
         {name:'tema'               , typeName:'text'  , zona:'3' , },

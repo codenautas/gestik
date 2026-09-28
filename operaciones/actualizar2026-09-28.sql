@@ -1,0 +1,1 @@
+ALTER TABLE gestik.tickets ADD COLUMN f_inicio date;
