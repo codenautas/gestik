@@ -1,8 +1,8 @@
 "use strict"
 
-import { TableDefinition, TableContext } from "./types-gestik";
+import { TableDefinition } from "./types-gestik";
 
-export function anotaciones(context:TableContext):TableDefinition{
+export function anotaciones():TableDefinition{
 
     const sqlRequirenteOAsignado = `
     (
@@ -23,7 +23,7 @@ export function anotaciones(context:TableContext):TableDefinition{
             {name:'proyecto', typeName:'text'},
             {name:'ticket', typeName:'bigint' },
             {name:'anotacion', typeName:'bigint', nullable:true, title:'anotación', editable:false, defaultDbValue:'0'},
-            {name:'usuario', typeName:'text', editable:false, defaultValue: context.user.usuario  },
+            {name:'usuario', typeName:'text', editable:false, specialDefaultValue: 'current_user'},
             {name:'detalle', typeName:'text'},
             {name:'proyecto_relacionado', typeName:'text', title:'link_proyecto'},
             {name:'ticket_relacionado', typeName:'bigint', title:'link_ticket'},
