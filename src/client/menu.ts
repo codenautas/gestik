@@ -23,11 +23,16 @@ myOwn.clientSides.solapas = {
     update: function(depot, fieldName){
         const control = depot.rowControls[fieldName];
         const solapas_cant = depot.row.solapas_cant as {solapa:string, cant:number}[]
-        (solapas_cant || []).forEach(({solapa, cant}) => {
-            const button = control.buttons[solapa] as HTMLButtonElement
-            button.textContent = solapa;
-            button.appendChild(html.span({class:'numero-centrado'}, pretty(cant)).create());
-        });
+        const buttons = control.buttons as Record<string, HTMLButtonElement>;
+        if (buttons) {
+            (solapas_cant || []).forEach(({solapa, cant}) => {
+                const button = buttons[solapa];
+                if (button) {
+                    button.textContent = solapa;
+                    button.appendChild(html.span({class:'numero-centrado'}, pretty(cant)).create());
+                }
+            });
+        }
     },
     prepare: async function(depot, fieldName){
         const control = depot.rowControls[fieldName];

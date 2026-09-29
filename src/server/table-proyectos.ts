@@ -28,7 +28,7 @@ export function proyectos(context: TableContext):TableDefinition{
             ...(admin?[{ table: 'equipos_proyectos', fields: ['proyecto'], abr: 'Q', label: 'equipos' }]:[]),
             { table: 'proyectos_solapas', fields: ['proyecto'], abr: 'S', label: 'solapas' },
             { table: 'proyectos_estados', fields: ['proyecto'], abr: 'E', label: 'estados' },
-            { table: 'tickets', fields: [ 'proyecto', {source:'solapa', target:'estados__solapa', nullMeansAll:true} ], abr: 'T' },
+            { table: 'tickets', fields: [ 'proyecto', {source:'solapa', target:'estados__solapa', nullMeansAll:true} ], abr: 'T', refreshParent: true },
         ],
         sql:{
             fields:{
