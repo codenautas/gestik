@@ -9,6 +9,7 @@ begin
       select registrar_fechas into v_registrar_fechas from estados where new.estado = estado;
       if 'f_realizacion' = v_registrar_fechas and new.f_realizacion is null THEN new.f_realizacion := current_date; end if;
       if 'f_instalacion' = v_registrar_fechas and new.f_instalacion is null THEN new.f_instalacion := current_date; end if;
+      if 'f_inicio' = v_registrar_fechas and new.f_inicio is null THEN new.f_inicio := current_date; end if;
   	end if;
   return new;
 end;
