@@ -1,0 +1,64 @@
+name: test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      BACKEND_PLUS_LOCAL_CONFIG: autotest-config
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      # local-config.yaml no se versiona; en CI solo hace falta la clave de gestik_admin (base efímera)
+      - name: local-config
+        run: |
+          cat > local-config.yaml <<'EOF'
+          db:
+            password: autotest
+          EOF
+
+      # npm ci dispara "prepare" que compila todo (client, server, unlogged)
+      - run: npm ci
+
+      - name: dump-db
+        run: npm start -- --dump-db
+
+      # equivalente a: run-sql create-db
+      - name: create-db
+        run: psql -v ON_ERROR_STOP=on --file=local-db-dump-create-db.sql
+
+      # equivalente a: run-sql create-schema gestik_autotest_db
+      - name: create-schema
+        run: psql -v ON_ERROR_STOP=on --single-transaction --pset pager=off --quiet --file=local-db-dump.sql gestik_autotest_db
+
+      - name: test-only
+        run: |
+          npx tsc -p tsconfig-test.json
+          npx mocha --reporter spec --bail --check-leaks dist/test/test/ --exit

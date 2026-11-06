@@ -53,7 +53,43 @@ export const tickets = {
     })
 } satisfies CommonEntityDefinition
 
+export const tickets_fechas = {
+    table: 'tickets',
+    description: is.object({
+        proyecto: is.string,
+        ticket: is.optional.number,
+        asunto: is.string,
+        descripcion: is.optional.string,
+        estado: is.optional.string,
+        f_inicio: {optional: is.Date},
+        f_realizacion: {optional: is.Date},
+    })
+} satisfies CommonEntityDefinition
+
+export const anotaciones = {
+    table: 'anotaciones',
+    description: is.object({
+        proyecto: is.string,
+        ticket: is.number,
+        anotacion: is.optional.number,
+        usuario: is.optional.string,
+        detalle: is.optional.string,
+        proyecto_relacionado: is.optional.string,
+        ticket_relacionado: is.optional.number,
+    })
+} satisfies CommonEntityDefinition
+
 ////////////// PROCEDIMEINTOS
+
+export const cambiar_proyecto = {
+    procedure: 'cambiar_proyecto',
+    parameters: is.object({
+        del_proyecto: is.string,
+        el_ticket: is.number,
+        al_proyecto: is.string,
+    }),
+    result: is.string
+}
 
 export const si_cargara_novedad = {
     procedure: 'si_cargara_novedad',
