@@ -18,9 +18,7 @@ import { nombreAdjuntoSeguro, rutaAdjunto } from '../server/adjuntos';
 
 // const PORT = 3333;
 
-const ADMIN_REQ = {user:{usuario:'bob', rol:''}};
-
-// para pruebas directas contra la base, con un usuario que pase las políticas
+// para pruebas directas contra la base (y la limpieza inicial), con un usuario que pase las políticas
 const AUTOTEST_ADMIN_REQ = {user:{usuario:'autotest-administrador', rol:'admin'}};
 
 async function expectBackendError(action: () => Promise<unknown>, message: RegExp){
@@ -71,10 +69,11 @@ testIn.forEach(t => describe("gestik tests " + t.name, function(){
         this.timeout(4000);
         serverContext = await t.startContext(AppGestik);
         server = serverContext.backend;
-        await server.inDbClient(ADMIN_REQ, async (client) => {
+        await server.inDbClient(AUTOTEST_ADMIN_REQ, async (client) => {
             // limpia la base de datos
             await client.executeSentences([
-                // "CALL set_app_user('bob')",
+                // las anotaciones que dejaron corridas anteriores (con adjuntos encolan en archivos_borrar)
+                "DELETE FROM anotaciones WHERE proyecto like '%-autotest'",
                 "DELETE FROM archivos_borrar WHERE ruta_archivo like '%autotest%'",
                 "DELETE FROM equipos_proyectos WHERE equipo like '%autotest-agregado%'",
                 "DELETE FROM equipos WHERE equipo like '%autotest-agregado%'",
@@ -188,9 +187,9 @@ testIn.forEach(t => describe("gestik tests " + t.name, function(){
                 ...dolarFieldsTrue
             }, {notMemberAsUndefined: true, autoTypeCast: true});
         })
-        it("la visibilidad de tickets depende pertenecer a un equipo asignado", async function(){
+        it("un equipo asignado ve solo los tickets de su equipo", async function(){
+            // no ve el ticket 1: lo pidió autotest-usuario (otro equipo) y no tiene asignado
             await session.tableDataTest("tickets", [
-                {ticket: 1},
                 {ticket: 2},
                 {ticket: 3},
                 {ticket: 4},
@@ -206,14 +205,26 @@ testIn.forEach(t => describe("gestik tests " + t.name, function(){
                 password: 'clave1234',
             });
         })
-        it("la visibilidad de tickets depende de que su equipo esté en el proyecto", async function(){
+        it("un equipo requirente ve solo los tickets de su equipo en los proyectos donde está", async function(){
+            // ve el 1 (lo pidió él) y el 3 (lo pidió autotest-inactivo, de su mismo equipo)
+            // no ve el 2 ni el 4: los pidió y los tiene asignados autotest-desarrollador, de otro equipo
             // no ve PROYECTO2-autotest ticket 1 aunque es su requirente, porque su equipo no está en PROYECTO2-autotest
             await session.tableDataTest("tickets", [
                 {ticket: 1, proyecto: 'PROYECTO1-autotest'},
-                {ticket: 2, proyecto: 'PROYECTO1-autotest'},
                 {ticket: 3, proyecto: 'PROYECTO1-autotest'},
-                {ticket: 4, proyecto: 'PROYECTO1-autotest'},
             ],'all',{fixedFields:{tema:'prueba visibilidad'}});
+        })
+        it("no puede modificar tickets que no son de su equipo", async function(){
+            await expectBackendError(
+                () => session.saveRecord(ctts.tickets, {asunto:'modificado por otro equipo'}, 'update', ['PROYECTO1-autotest', 2]),
+                /.+/
+            );
+        })
+        it("no puede anotar en tickets que no son de su equipo", async function(){
+            await expectBackendError(
+                () => session.saveRecord(ctts.anotaciones, {proyecto: 'PROYECTO1-autotest', ticket: 2, detalle: 'no debería poder'}, 'new'),
+                /pol[ií]tica de seguridad|row-level security/
+            );
         })
         it("no puede cargar tickets si su equipo no es requirente ni asignado", async function(){
             await expectBackendError(
@@ -286,12 +297,47 @@ testIn.forEach(t => describe("gestik tests " + t.name, function(){
             );
         })
         it("puede anotar si además pertenece a un equipo con permiso de escritura", async function(){
-            const row = await auditorDesa.saveRecord(ctts.anotaciones, {proyecto: 'PROYECTO1-autotest', ticket: 1, detalle: 'anotación de auditor que es desarrollador'}, 'new');
+            // el ticket 4 es de autotest-desarrollador, que es del equipo de desarrollo
+            const row = await auditorDesa.saveRecord(ctts.anotaciones, {proyecto: 'PROYECTO1-autotest', ticket: 4, detalle: 'anotación de auditor que es desarrollador'}, 'new');
             discrepances.showAndThrow(pick(row, ['usuario']), {usuario: 'autotest-auditor-desa'});
+        })
+        it("por su equipo con permiso de escritura no puede anotar tickets que no son de ese equipo", async function(){
+            // el ticket 1 lo pidió autotest-usuario, que no es del equipo de desarrollo
+            await expectBackendError(
+                () => auditorDesa.saveRecord(ctts.anotaciones, {proyecto: 'PROYECTO1-autotest', ticket: 1, detalle: 'no debería poder'}, 'new'),
+                /pol[ií]tica de seguridad|row-level security/
+            );
         })
         it("puede cargar tickets si además pertenece a un equipo con permiso de escritura", async function(){
             const row = await auditorDesa.saveRecord(ctts.tickets, {proyecto: 'PROYECTO1-autotest', asunto:'ticket de auditor que es desarrollador (autotest)'}, 'new');
             discrepances.showAndThrow(pick(row, ['proyecto', 'requirente']), {proyecto: 'PROYECTO1-autotest', requirente: 'autotest-auditor-desa'});
+        })
+    })
+
+    describe("tickets cargados por un admin que no está en el equipo", function(){
+        it("el equipo requirente no los ve", async function(){
+            // PROYECTO2-autotest: el 1 es de autotest-usuario y autotest-desarrollador (otros equipos),
+            // el 3 lo cargó autotest-admin-externo, que no está en ningún equipo
+            const procesador = await nuevaSesion('autotest-procesador');
+            await procesador.tableDataTest("tickets", [
+                {ticket: 2},
+            ],'all',{fixedFields:{proyecto: 'PROYECTO2-autotest', tema:'prueba visibilidad'}});
+            await procesador.tableDataTest('anotaciones', [], 'all', {fixedFields:{proyecto: 'PROYECTO2-autotest', ticket: 3}});
+        })
+        it("el equipo requirente no puede anotarlos", async function(){
+            const procesador = await nuevaSesion('autotest-procesador');
+            await expectBackendError(
+                () => procesador.saveRecord(ctts.anotaciones, {proyecto: 'PROYECTO2-autotest', ticket: 3, detalle: 'no debería poder'}, 'new'),
+                /pol[ií]tica de seguridad|row-level security/
+            );
+        })
+        it("el admin ve todos los tickets del proyecto", async function(){
+            const admin = await nuevaSesion('autotest-admin-externo');
+            await admin.tableDataTest("tickets", [
+                {ticket: 1},
+                {ticket: 2},
+                {ticket: 3},
+            ],'all',{fixedFields:{proyecto: 'PROYECTO2-autotest', tema:'prueba visibilidad'}});
         })
     })
 
@@ -440,6 +486,10 @@ testIn.forEach(t => describe("gestik tests " + t.name, function(){
                 () => usuario.saveRecord(ctts.anotaciones, {proyecto: 'PROYECTO2-autotest', ticket: 1, detalle: 'no debería poder'}, 'new'),
                 /pol[ií]tica de seguridad|row-level security/
             );
+        })
+        it("un usuario no ve las anotaciones de tickets que no son de su equipo", async function(){
+            // el ticket 2 tiene las anotaciones que cargó el admin, pero es de autotest-desarrollador (otro equipo)
+            await usuario.tableDataTest('anotaciones', [], 'all', {fixedFields:{proyecto: 'PROYECTO1-autotest', ticket: 2}});
         })
         it("un usuario no ve anotaciones de proyectos donde su equipo no está", async function(){
             const procesador = await nuevaSesion('autotest-procesador');

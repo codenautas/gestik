@@ -2,21 +2,37 @@
 
 import { TableContext, TableDefinition, FieldDefinition } from "./types-gestik";
 
-// Los permisos dependen solo de los equipos del usuario en el proyecto (o de ser admin):
-// ver si algún equipo puede_leer, editar si algún equipo es_requirente o es_asignado.
-// No importa si el usuario es personalmente el requirente o el asignado del ticket.
-// Se usa también en las tablas hijas de tickets (ej: anotaciones).
-export const sqlPoliticasProyecto = (tabla: string, modo : 'edit' | 'view') => `(
+// Permisos sobre un ticket (la expresión usa las columnas proyecto, requirente y asignado de `tabla`):
+//   - admin: ve y edita todo.
+//   - equipo del usuario en el proyecto con es_requirente o es_asignado: ve y edita solo los tickets
+//     "de su equipo", o sea, cuyo requirente o asignado pertenece a ese mismo equipo.
+//   - equipo en el proyecto sin es_requirente ni es_asignado (auditores): ve todos los tickets, no edita.
+// No alcanza con ser personalmente requirente o asignado: el equipo tiene que estar en el proyecto.
+export const sqlPermisoTicket = (tabla: string, modo : 'edit' | 'view') => `(
         SELECT rol='admin' FROM usuarios WHERE usuario = get_app_user()
     ) OR EXISTS (
         SELECT 1
             FROM equipos_usuarios eu INNER JOIN equipos_proyectos ep ON eu.equipo = ep.equipo
             WHERE eu.usuario = get_app_user() AND ep.proyecto = ${tabla}.proyecto
-                AND ${modo == 'view' ? 'ep.puede_leer' : '(ep.es_requirente OR ep.es_asignado)'}
+                AND ${modo == 'view'
+                    ? `ep.puede_leer AND (ep.es_requirente IS NOT TRUE AND ep.es_asignado IS NOT TRUE OR`
+                    : `(ep.es_requirente OR ep.es_asignado) AND (`
+                } EXISTS (
+                    SELECT 1 FROM equipos_usuarios et
+                        WHERE et.equipo = eu.equipo AND et.usuario IN (${tabla}.requirente, ${tabla}.asignado)
+                ))
     )
 `;
 
-const sqlPoliticasTickets = (modo : 'edit' | 'view') => sqlPoliticasProyecto('tickets', modo);
+// Para las tablas hijas de tickets (ej: anotaciones): los mismos permisos que su ticket.
+export const sqlPermisoTicketPadre = (tabla: string, modo : 'edit' | 'view') => `EXISTS (
+        SELECT 1 FROM tickets t
+            WHERE t.proyecto = ${tabla}.proyecto AND t.ticket = ${tabla}.ticket
+                AND (${sqlPermisoTicket('t', modo)})
+    )
+`;
+
+const sqlPoliticasTickets = (modo : 'edit' | 'view') => sqlPermisoTicket('tickets', modo);
 
 export function sqlExprCantTickets(_context: TableContext, filter: string, joinEstados?:boolean){
     return `(SELECT nullif(count(*), 0) as cant_tickets FROM tickets t
