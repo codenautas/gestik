@@ -21,7 +21,8 @@ insert into usuarios (usuario, rol, interno) values
   ('autotest-inactivo'     , 'usuario', 'autotest-usuarios'     ),
   ('autotest-procesador'   , 'usuario', 'autotest-procesamiento'),
   ('autotest-auditor'      , 'usuario', 'autotest-auditores'    ),
-  ('autotest-auditor-desa' , 'usuario', 'autotest-auditores'    );
+  ('autotest-auditor-desa' , 'usuario', 'autotest-auditores'    ),
+  ('autotest-admin-externo', 'admin'  , null                    ); -- admin que no está en ningún equipo
 
 update usuarios 
   set md5clave = md5('clave1234'||usuario),
@@ -59,6 +60,7 @@ insert into tickets (proyecto, ticket, tema, requirente, estado, asignado, asunt
   ('PROYECTO1-autotest', 4, 'prueba visibilidad', 'autotest-desarrollador', 'en_proceso'  , 'autotest-desarrollador', 'ticket empezado 2'),
   ('PROYECTO2-autotest', 1, 'prueba visibilidad', 'autotest-usuario'      , 'en_proceso'  , 'autotest-desarrollador', 'ticket empezado 3'),
   ('PROYECTO2-autotest', 2, 'prueba visibilidad', 'autotest-procesador'   , 'en_proceso'  , 'autotest-desarrollador', 'ticket empezado 4'),
+  ('PROYECTO2-autotest', 3, 'prueba visibilidad', 'autotest-admin-externo', 'nuevo'       , null                    , 'ticket de admin sin equipo'),
   ('CERRADO-autotest'  , 1, 'prueba cerrado'    , 'autotest-desarrollador', 'nuevo'       , null                    , 'ticket de proyecto cerrado');
 
 -- se cierra después de cargar el ticket porque no_editar_proyectos_cerrados_trg impide insertar en proyectos cerrados

@@ -1,11 +1,11 @@
 "use strict"
 
 import { TableDefinition } from "./types-gestik";
-import { sqlPoliticasProyecto } from "./table-tickets";
+import { sqlPermisoTicketPadre } from "./table-tickets";
 
 export function anotaciones():TableDefinition{
 
-    const sqlRequirenteOAsignado = sqlPoliticasProyecto('anotaciones', 'edit');
+    const sqlEditarTicket = sqlPermisoTicketPadre('anotaciones', 'edit');
 
     const td:TableDefinition = {
         editable: true,
@@ -51,16 +51,16 @@ export function anotaciones():TableDefinition{
         sql:{
             policies: {
                 update: {
-                    using: sqlRequirenteOAsignado,
+                    using: sqlEditarTicket,
                 },
                 delete: {
-                    using: sqlRequirenteOAsignado,
+                    using: sqlEditarTicket,
                 },
                 insert:{
-                    check: sqlRequirenteOAsignado,
+                    check: sqlEditarTicket,
                 },
                 select: {
-                    using: sqlPoliticasProyecto('anotaciones', 'view'),
+                    using: sqlPermisoTicketPadre('anotaciones', 'view'),
                 }
             },
         },
