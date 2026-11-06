@@ -2,29 +2,21 @@
 
 import { TableContext, TableDefinition, FieldDefinition } from "./types-gestik";
 
-const sqlPoliticasTickets = (modo : 'edit' | 'view') => `(
+// Los permisos dependen solo de los equipos del usuario en el proyecto (o de ser admin):
+// ver si algún equipo puede_leer, editar si algún equipo es_requirente o es_asignado.
+// No importa si el usuario es personalmente el requirente o el asignado del ticket.
+// Se usa también en las tablas hijas de tickets (ej: anotaciones).
+export const sqlPoliticasProyecto = (tabla: string, modo : 'edit' | 'view') => `(
         SELECT rol='admin' FROM usuarios WHERE usuario = get_app_user()
-    ) OR (
-        (
-            SELECT ${modo == 'view' ? 'true' : '(ep.es_requirente OR ep.es_asignado)'}
+    ) OR EXISTS (
+        SELECT 1
             FROM equipos_usuarios eu INNER JOIN equipos_proyectos ep ON eu.equipo = ep.equipo
-            WHERE eu.usuario = get_app_user() AND ep.proyecto = tickets.proyecto ${modo == 'view' ? 'AND ep.es_asignado is not true and ep.es_requirente is not true' : ''} limit 1
-        ) ${modo == 'view' ? 'OR' : 'AND'} (
-            (
-                requirente = get_app_user()
-            ) OR (
-                asignado = get_app_user()
-            ) OR (
-                SELECT true
-                FROM equipos_usuarios eu
-                JOIN equipos_usuarios et ON (eu.equipo = et.equipo)
-                JOIN equipos_proyectos ep ON (eu.equipo = ep.equipo)
-                WHERE eu.usuario = get_app_user() AND ep.proyecto = tickets.proyecto AND ((et.usuario = tickets.requirente) OR (et.usuario = tickets.asignado))
-                LIMIT 1
-            )
-        )
+            WHERE eu.usuario = get_app_user() AND ep.proyecto = ${tabla}.proyecto
+                AND ${modo == 'view' ? 'ep.puede_leer' : '(ep.es_requirente OR ep.es_asignado)'}
     )
 `;
+
+const sqlPoliticasTickets = (modo : 'edit' | 'view') => sqlPoliticasProyecto('tickets', modo);
 
 export function sqlExprCantTickets(_context: TableContext, filter: string, joinEstados?:boolean){
     return `(SELECT nullif(count(*), 0) as cant_tickets FROM tickets t

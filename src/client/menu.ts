@@ -48,10 +48,11 @@ myOwn.clientSides.solapas = {
                     // @ts-ignore
                     if (event.ctrlKey) return
                     depot.row.solapa = solapa;
-                    if (depot.detailControls.tickets.show) {
-                        depot.detailControls.tickets.refreshAllRowsInGrid(true)
-                    } else {
-                        depot.detailControls.tickets.forceDisplayDetailGrid({})
+                    const detailTickets = depot.detailControls?.tickets;
+                    if (detailTickets?.show && typeof detailTickets.refreshAllRowsInGrid === 'function') {
+                        detailTickets.refreshAllRowsInGrid(true);
+                    } else if (detailTickets) {
+                        detailTickets.forceDisplayDetailGrid({});
                     }
                     solapas_cant.forEach(s => {
                         if (s.solapa == solapa) {

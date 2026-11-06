@@ -3,6 +3,7 @@ import { ProcedureContext, UploadedFileInfo } from "backend-plus";
 import * as fs from "fs-extra";
 import { ProcedureDef } from './types-gestik';
 import { guarantee, DefinedType, is } from "guarantee-type";
+import { nombreAdjuntoSeguro, rutaAdjunto } from "./adjuntos";
 
 export const ProceduresGestik:ProcedureDef[] = [
     {
@@ -20,7 +21,7 @@ export const ProceduresGestik:ProcedureDef[] = [
             const client=context.client;
             context.informProgress({message:be.messages.fileUploaded});
             const file = files![0]
-            let originalFilename = file.originalFilename;
+            let originalFilename = nombreAdjuntoSeguro(file.originalFilename);
             let anotacion = parameters.anotacion
             if(!anotacion){
                 const {row:insertedRow} = await client.query(`
@@ -34,6 +35,7 @@ export const ProceduresGestik:ProcedureDef[] = [
                 anotacion = insertedRow.anotacion;
             }
             const filename=`adjunto-gestik-${parameters.numero_adjunto}-${originalFilename}`;
+            rutaAdjunto(filename); // valida antes de grabar el nombre en la base
             const tipoAdjunto = is.object({
                 archivo: is.string
             })
@@ -46,7 +48,7 @@ export const ProceduresGestik:ProcedureDef[] = [
                 return resultado
             }
             const moveFile = async function moveFile(file:UploadedFileInfo, fileName:string){
-                const newPath = `local-attachments/${fileName}`;
+                const newPath = rutaAdjunto(fileName);
                 return fs.move(file.path, newPath, { overwrite: true });
             }
             const row = guarantee(tipoAdjunto, (await client.query(`

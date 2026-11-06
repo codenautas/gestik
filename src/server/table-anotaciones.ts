@@ -1,19 +1,11 @@
 "use strict"
 
 import { TableDefinition } from "./types-gestik";
+import { sqlPoliticasProyecto } from "./table-tickets";
 
 export function anotaciones():TableDefinition{
 
-    const sqlRequirenteOAsignado = `
-    (
-        SELECT rol='admin' FROM usuarios WHERE usuario = get_app_user()
-    ) OR (
-        SELECT COALESCE(ep.es_requirente, false) OR COALESCE(ep.es_asignado, false)
-        FROM equipos_proyectos ep
-        JOIN equipos_usuarios eu ON (eu.equipo = ep.equipo)
-        WHERE eu.usuario = get_app_user() AND ep.proyecto = anotaciones.proyecto
-        LIMIT 1
-    )`;
+    const sqlRequirenteOAsignado = sqlPoliticasProyecto('anotaciones', 'edit');
 
     const td:TableDefinition = {
         editable: true,
@@ -66,6 +58,9 @@ export function anotaciones():TableDefinition{
                 },
                 insert:{
                     check: sqlRequirenteOAsignado,
+                },
+                select: {
+                    using: sqlPoliticasProyecto('anotaciones', 'view'),
                 }
             },
         },

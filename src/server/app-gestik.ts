@@ -9,6 +9,7 @@ import { AppBackend, Context, Request,
 
 import {ProceduresGestik} from "./procedures-gestik";
 import { rm } from "fs/promises";
+import { rutaAdjunto } from "./adjuntos";
 
 import { usuarios   } from './table-usuarios';
 import { tickets, tickets1, tickets2, tickets3} from './table-tickets';
@@ -34,25 +35,36 @@ import * as backendPlus from "backend-plus";
 
 import {staticConfigYaml} from './def-config';
 
+// borra del disco los adjuntos encolados en archivos_borrar (por archivo_borrar_trg) y los saca de la cola
+// devuelve la cantidad de entradas procesadas
+export async function borrarArchivosPendientes(be:AppBackend){
+    return be.inTransaction(null, async (client)=>{
+        const {rows} = await client.query("select ruta_archivo from archivos_borrar").fetchAll();
+        for (const element of rows) {
+            await client.query(`delete from archivos_borrar where ruta_archivo = $1`, [element.ruta_archivo]).execute();
+            let path: string;
+            try {
+                path = rutaAdjunto(element.ruta_archivo);
+            } catch (err) {
+                console.error(`Error en cron, no se borra el archivo. ${err}`);
+                continue;
+            }
+            await rm(path, { force: true });
+        }
+        return rows.length;
+    })
+}
+
 const cronMantenimiento = (be:AppBackend) => {
     const interval = setInterval(async ()=>{
         try{
             const d = new Date();
             const date = `${d.getDate()}/${d.getMonth()}/${d.getFullYear()}, ${d.getHours()}:${d.getMinutes()}`;
             if(d.getHours() == 23 && d.getMinutes() == 58){
-                const result = await be.inTransaction(null, async (client)=>{
-                    const {rows} = await client.query("select ruta_archivo from archivos_borrar").fetchAll();
-                    if(rows.length>0){
-                        rows.forEach(async (element) => {
-                            const path = `local-attachments/${element.ruta_archivo}`;
-                            await client.query(`delete from archivos_borrar where ruta_archivo = $1`, [element.ruta_archivo]).execute();
-                            await rm(path, { force: true });
-                        });
-                        return `Se borraron archivos adjuntos en la fecha y hora: ${date}`;
-                    }else{
-                        return `No hay archivos adjuntos para borrar en la fecha y hora: ${date}`;
-                    }
-                })
+                const cantidad = await borrarArchivosPendientes(be);
+                const result = cantidad > 0
+                    ? `Se borraron archivos adjuntos en la fecha y hora: ${date}`
+                    : `No hay archivos adjuntos para borrar en la fecha y hora: ${date}`;
                 console.info("Resultado de cron: ", result);
             }
         }catch(err){
@@ -80,6 +92,7 @@ export class AppGestik extends AppBackend{
                     'SELECT proyecto, ticket, anotacion, archivo FROM anotaciones WHERE proyecto = $1 and ticket = $2 AND anotacion = $3',
                     [req.query.proyecto, req.query.ticket, req.query.anotacion]
                 ).fetchUniqueRow();
+                rutaAdjunto(result.row.archivo); // valida que no salga de la carpeta de adjuntos
                 const path = `local-attachments/${result.row.archivo}`;
                 MiniTools.serveFile(path, {})(req, res);
             })
