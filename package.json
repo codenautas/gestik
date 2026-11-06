@@ -25,7 +25,7 @@
     "@types/mocha": "^10.0.10",
     "@typescript-eslint/eslint-plugin": "^8.39.0",
     "@typescript-eslint/parser": "^8.39.0",
-    "backend-skins": "^0.1.39",
+    "backend-skins": "^0.1.40",
     "discrepances": "^0.2.14",
     "eslint": "^9.33.0",
     "form-data": "^4.0.4",
