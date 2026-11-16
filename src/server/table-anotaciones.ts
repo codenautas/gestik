@@ -48,6 +48,7 @@ export function anotaciones():TableDefinition{
             {constraintType:'unique', fields:['proyecto','ticket','archivo']},
         ],
         hiddenColumns: ['archivo','numero_adjunto'],
+        specialValidator: 'link_relacionado',
         sql:{
             policies: {
                 update: {

@@ -130,6 +130,21 @@ myOwn.clientSides.link_a_ticket = {
     }
 }
 
+// El link a otro ticket necesita los dos campos (hay un check en la base).
+// Si se completa uno, el otro pasa a ser obligatorio: la grilla no graba hasta que estén los dos
+// y marca la celda que falta (atributo my-special).
+myOwn.validators.link_relacionado = {
+    getMandatoryMap: function(row:Record<string, any>):Record<string, string>{
+        const mandatory:Record<string, string> = {};
+        if (row.proyecto_relacionado != null || row.ticket_relacionado != null) {
+            // el texto se muestra dentro de la celda vacía (ver menu.styl)
+            if (row.proyecto_relacionado == null) mandatory.proyecto_relacionado = 'completar proyecto';
+            if (row.ticket_relacionado == null) mandatory.ticket_relacionado = 'completar n° ticket';
+        }
+        return mandatory;
+    }
+}
+
 myOwn.wScreens.proc.result.cambiar_proyecto_ticket=function(result, divResult:HTMLDivElement){
     divResult.appendChild(
         html.div({class: 'result-div', style: 'background-color: orange;'}, result.message).create()
