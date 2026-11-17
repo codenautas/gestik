@@ -10,7 +10,7 @@
     "install"
   ],
   "dependencies": {
-    "backend-plus": "^2.8.0",
+    "backend-plus": "^2.9.0",
     "best-globals": "^2.2.3",
     "cast-error": "^0.1.7",
     "fs-extra": "^11.3.1",
