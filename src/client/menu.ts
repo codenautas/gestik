@@ -49,10 +49,16 @@ myOwn.clientSides.solapas = {
                     if (event.ctrlKey) return
                     depot.row.solapa = solapa;
                     const detailTickets = depot.detailControls?.tickets;
+                    let loading: unknown = null;
                     if (detailTickets?.show && typeof detailTickets.refreshAllRowsInGrid === 'function') {
-                        detailTickets.refreshAllRowsInGrid(true);
+                        loading = detailTickets.refreshAllRowsInGrid(true);
                     } else if (detailTickets) {
-                        detailTickets.forceDisplayDetailGrid({});
+                        loading = detailTickets.forceDisplayDetailGrid({});
+                    }
+                    if (loading) {
+                        // si se cambia de solapa antes de que termine la carga anterior, la promesa
+                        // puede rechazarse; la atrapamos para que no quede un unhandled rejection
+                        Promise.resolve(loading).catch(() => {});
                     }
                     solapas_cant.forEach(s => {
                         if (s.solapa == solapa) {
